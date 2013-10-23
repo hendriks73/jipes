@@ -15,6 +15,7 @@
     <body>
         <head>
             <meta name="keyword" content="java, sound, javax.sound, audio, mir, information retrieval, feature extraction, dsp, digital signal processing, FFT" />
+            <link rel="icon" type="image/x-icon" href="../favicon.ico" />
             <script src="./javascript/jquery-2.0.3.min.js" ></script>
             <script type="text/javascript">
                 $(document).ready( function() {
