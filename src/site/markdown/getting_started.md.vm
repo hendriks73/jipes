@@ -1,0 +1,273 @@
+<head><title>Getting Started</title></head>
+
+## Workaround escape issues with Markdown/Velocity, see http://mail-archives.apache.org/mod_mbox/maven-users/201303.mbox/%3c514AFC2F.9070106@apache.org%3e
+
+#set( $H2 = '##' )
+#set( $H3 = '###' )
+
+$H2 Getting Started
+
+The easiest way to use Jipes (other than simply using the
+[jar](http://www.beatunes.com/repo/maven2/com/tagtraum/jipes/)) is to start a
+[Maven](http://maven.apache.org/) project and introduce a Jipes dependency.
+
+To do so, add something like this to the dependencies section of your pom:
+
+    <dependency>
+        <groupId>com.tagtraum</groupId>
+        <artifactId>jipes</artifactId>
+        <version>${projectversion}</version>
+    </dependency>
+
+If Maven can't resolve this dependency, you might also want to add the following
+repository to the repositories section of your pom:
+
+    <repository>
+        <id>beatunes</id>
+        <name>beaTunes Repository</name>
+        <url>http://www.beatunes.com/repo/maven2</url>
+    </repository>
+
+Once you successfully added the dependency, you can create an IDE project for your favorite IDE
+by simply opening the `pom.xml` file.
+
+Since the Jipes source code is in the repository and was downloaded during project creation, you can now easily
+access the source code and the javadocs through your IDE.
+
+
+
+$H3 First Steps
+
+Jipes lets you process a signal by a directed graph of processors that each manipulate the signal and provide input for
+the next processor in the graph.
+
+To set up and run this processing graph, we first have to define a [SignalSource](apidocs/com/tagtraum/jipes/SignalSource.html).
+The easiest way to do this, is to instantiate an [AudioSignalSource](apidocs/com/tagtraum/jipes/audio/AudioSignalSource.html).
+It uses the Java [AudioSystem](http://docs.oracle.com/javase/7/docs/api/javax/sound/sampled/AudioSystem.html) to obtain an
+`AudioInputStream` from the given file.
+
+    SignalSource<AudioBuffer> source = new AudioSignalSource(new File("mono.wav"));
+    SignalPump<AudioBuffer> pump = new SignalPump<AudioBuffer>(source);
+
+The snippet above shows how to connect a [SignalPump](apidocs/com/tagtraum/jipes/SignalPump.html) with a `SignalSource`.
+Note that both are parametrized with the type [AudioBuffer](apidocs/com/tagtraum/jipes/audio/AudioBuffer.html),
+because we typically want to process data of that type. It also happens to be the type delivered by `AudioSignalSource`.
+
+Now that we have a pump that has a source, we need to specify where to pump those `AudioBuffer`s to.
+As our first example, we will compute the [zero crossing rate](http://en.wikipedia.org/wiki/Zero-crossing_rate),
+an indicator for signal noisiness. The higher the value, the noisier the signal. Obviously the zero crossing
+rate is of type `Float`. That means we have to define a `SignalProcessor` that takes `AudioBuffer`s as
+input and calculates `Float`s as output.
+
+Since we don't want to start from scratch, we simply inherit from
+[AbstractSignalProcessor](apidocs/com/tagtraum/jipes/AbstractSignalProcessor.html). It provides
+a skeleton implementation for both `SignalProcessor`s and `SignalPullProcessor`s - we will ignore the
+latter for now. Important for us is only that this abstract superclass already implements a bunch of infrastructure
+methods, so that we don't have to take care of them anymore.
+
+The only method we have to implement is the `processNext`
+method. In it we put the logic for computing the zero crossing rate.
+
+    String id = "ZCR";
+    SignalProcessor<AudioBuffer, Float> zeroCrossingRateProcessor = new AbstractSignalProcessor<AudioBuffer, Float>(id) {
+        private int samples;
+        private int crossings;
+        private float lastSample;
+    
+        /**
+         * Computes the zero crossing rate for the given and all preceding audio buffers.
+         *
+         * @param  buffer audio buffer
+         * @return current zero crossing rate
+         */
+        protected Float processNext(AudioBuffer buffer) throws IOException {
+            // we assume a single-channel/mono source
+            samples += buffer.getNumberOfSamples();
+            for (final float sample : buffer.getData()) {
+                crossings += lastSample * sample >= 0 ? 0 : 1;
+                lastSample = sample;
+            }
+            return crossings / (float) samples;
+        }
+    };
+
+Now that we have defined a simple processor, we just need to add it to the pump and start pumping, i.e.
+fill an `AudioBuffer` with data from the source, have the data processed by our `zeroCrossingRate`-processor,
+fill the buffer again and again let it be processed and so forth. In Jipes this is done by the
+'pump()' method:
+
+    pump.add(zeroCrossingRateProcessor);
+    Map<Object, Object> results = pump.pump();
+    Float zeroCrossingRate = (Float)results.get(id);
+
+The `pump()` method also returns a map of the results of all added processors with their ids as keys. In our
+simple example we can easily look up the *last* zero crossing rate under the id `"ZCR"`.
+
+Et voil&#x00e0;!
+
+We just built our first feature processor.
+
+
+
+$H3 Building a Graph
+
+Now, you probably noticed that little Java comment *"we assume a single-channel/mono source"* and thought *"wow, that's
+quite limiting..."* Well, be assured, Jipes does not limit you to mono files. But realistically you probably have a
+lot of stereo data that you only want to deal with in mono.
+
+Jipes has a solution for that.
+
+In its [com.tagtraum.jipes.audio](./apidocs/com/tagtraum/jipes/audio/package-summary.html)
+package Jipes offers a number of useful standard audio processors (e.g.
+[FFT](./apidocs/com/tagtraum/jipes/audio/FFT.html),
+[ConstantQTransform](./apidocs/com/tagtraum/jipes/audio/ConstantQTransform.html),
+[SlidingWindow](./apidocs/com/tagtraum/jipes/audio/SlidingWindow.html),
+[Downsample](./apidocs/com/tagtraum/jipes/audio/Downsample.html),
+[Novelty](./apidocs/com/tagtraum/jipes/audio/Novelty.html),
+[SelfSimilarity](./apidocs/com/tagtraum/jipes/audio/SelfSimilarity.html),
+..) that help
+you deal with the common conversion tasks you face all the time. One of them is certainly converting multi-channel
+input to single channel by averaging the channels. That's exactly what the
+[Mono](./apidocs/com/tagtraum/jipes/audio/Mono.html) processor does.
+
+To first convert the data to mono and then compute the zero crossing rate we have to build a pipeline.
+Like this:
+
+    SignalPipeline<AudioBuffer, Float> pipeline = new SignalPipeline<AudioBuffer, Float>(
+        new Mono(),
+        zeroCrossingRateProcessor
+    );
+    
+    SignalPump<AudioBuffer> stereoPump = new SignalPump<AudioBuffer>(new AudioSignalSource(new File("stereo.wav")));
+    stereoPump.add(pipeline);
+    Map<Object, Object> results = stereoPump.pump();
+    Float zeroCrossingRate = (Float)results.get(id);
+
+As you probably have guessed, the `SignalPipeline` allows you to chain multiple processors. One processor's output
+becomes the next one's input. They are connected automatically. A side-effect of this comfortable solution is,
+that type-checking is circumvented. Now, if you know what you're doing, that's not a problem, but if you want
+to make sure everything fits, you can also connect them yourself, without using the pipeline class.
+It's done with the `connectTo(...)` method:
+
+    final SignalProcessor<AudioBuffer, AudioBuffer> head = new Mono();
+    head
+        .connectTo(coolProcessorNumber1)
+        .connectTo(coolProcessorNumber2)
+        .connectTo(coolProcessorNumber3)
+        .connectTo(coolProcessorNumber4)
+    ;
+    coolPump.add(head);
+    ...
+
+Since the `connectTo(...)` method conveniently returns the just connected processor (i.e. its parameter),
+you can easily chain calls to build your own pipeline.
+
+
+
+$H3 Using Functions
+
+In our zero crossing rate example we decided to subclass an abstract skeleton processor. While that is certainly
+a valid approach to create processing functionality, there is a more elegant one:
+
+Function objects.
+
+In its [com.tagtraum.jipes.math](./apidocs/com/tagtraum/jipes/math/package-summary.html) sub-package Jipes
+defines a couple of interfaces that allow you to define mapping-,
+aggregation- and distance-functions. When thinking of the zero crossing rate in terms of a function, we need to
+define an [AggregateFunction](./apidocs/com/tagtraum/jipes/math/AggregateFunction.html):
+
+    // first create a common function for float arrays
+    AggregateFunction<float[], Float> zcrFloatFunction = new AggregateFunction<float[], Float>() {
+        private int samples;
+        private int crossings;
+        private float lastSample;
+    
+        public Float aggregate(float[] data) {
+            samples += data.length;
+            for (final float sample : data) {
+                crossings += lastSample * sample >= 0 ? 0 : 1;
+                lastSample = sample;
+            }
+            return crossings / (float) samples;
+        }
+    }
+    // create an AudioBuffer version of the float[] function
+    AggregateFunction<AudioBuffer, Float> zcrFunction = AudioBufferFunctions.createAggregateFunction(zcrFloatFunction);
+    
+    // register the function with an Aggregate processor
+    SignalProcessor<AudioBuffer, Float> zcrProcessor = new Aggregate<AudioBuffer, Float>(zcrFunction);
+
+We could of course define the function right away for the types `AudioBuffer` and `Float`. However,
+for illustrative purposes we take a little detour and define it for a simple `float[]`. That way we define
+a domain independent version, one that we could perhaps re-use somewhere else. To actually use it for
+`AudioBuffer`s, we wrap it using the
+`AudioBufferFunctions.createAggregateFunction(...)` method. Once that is done, we create an
+[Aggregate](./apidocs/com/tagtraum/jipes/universal/Aggregate.html) processor that uses the function.
+
+At first glance, this might look like a couple of unnecessary indirections... until you realize that this
+way of putting things together lets you create complex feature pipelines quickly.
+
+Just code up the mathematical function you need and re-use it at your convenience. And of course, Jipes comes
+with a bunch of functions already built in. They can be found in the
+[AggregateFunctions](./apidocs/com/tagtraum/jipes/math/AggregateFunctions.html),
+[MapFunctions](./apidocs/com/tagtraum/jipes/math/MapFunctions.html)
+and [DistanceFunctions](./apidocs/com/tagtraum/jipes/math/DistanceFunctions.html) classes.
+
+Good examples for `MapFunction`s are btw filters or windows (Hann, Hamming & Co).
+
+
+
+$H3 Putting it all together
+
+Now that we know how to build functions, processors and pipelines, let's put it all together and build something
+a little more complex. Perhaps something that needs a [LogFrequencySpectrum](apidocs/com/tagtraum/jipes/audio/LogFrequencySpectrum.html)
+with certain properties. A `superMagicPipeline`:
+
+    SignalPipeline<AudioBuffer, Float> superMagicPipeline = new SignalPipeline<AudioBuffer, Float>(
+        // convert to mono
+        new Mono(),
+        // quarter frequency FIR low pass filter
+        new Mapping<AudioBuffer>(AudioBufferFunctions.createMapFunction(Filters.createFir1_16thOrderLowpassCutoffQuarter())),
+        // downsample: keep only every 4th frame
+        new Downsample(4),
+        // window with size 4k and hopsize 2k
+        new SlidingWindow(4 * 1024, 2 * 1024),
+        // only look at the first 40k frames
+        new FrameNumberFilter(0, 40 * 1024),
+        // apply Hamming window of size 4k
+        new Mapping<AudioBuffer>(AudioBufferFunctions.createMapFunction(new WindowFunctions.Hamming(4 * 1024))),
+        // perform constant Q transform with given min/max frequencies and 36 bins per octave
+        new ConstantQTransform(25.956543f, 3520.0f, 12*3),
+        // and now do something super magically fancy with the provided log frequency spectra :-)
+        new SuperMagicProcessor()
+    );
+
+And now imagine you have a second pipeline, that needs the same log frequency spectra. Let's call it
+`unbelievablyCoolPipeline`:
+
+    SignalPipeline<AudioBuffer, Float> unbelievablyCoolPipeline = new SignalPipeline<AudioBuffer, Float>(
+        new Mono(),
+        new Mapping<AudioBuffer>(AudioBufferFunctions.createMapFunction(Filters.createFir1_16thOrderLowpassCutoffQuarter())),
+        new Downsample(4),
+        new SlidingWindow(4 * 1024, 2 * 1024),
+        new FrameNumberFilter(0, 40 * 1024),
+        new Mapping<AudioBuffer>(AudioBufferFunctions.createMapFunction(new WindowFunctions.Hamming(4 * 1024))),
+        new ConstantQTransform(25.956543f, 3520.0f, 12*3),
+        // do something unbelievably fancy with the provided log frequency spectra
+        new UnbelievablyCoolProcessor()
+    );
+
+Since we are interested in results from both pipelines we simply add them both to a pump
+and call its `pump()` method. The nifty thing: Internally Jipes rebuilds the pipelines, so that the first
+part of both pipelines is only executed once (*this implies that you shouldn't do anything with a pipeline, once you
+added it*)!
+
+    ...
+    pump.add(superMagicPipeline);
+    pump.add(unbelievablyCoolPipeline);
+    Map<Object, Object> results = pump.pump();
+    ...
+
+Note that this optimization relies on the processors occurring in the same order and being equal in the sense of
+their `equals(...)` method. So when implementing your own processors, make sure you go all the way..
+

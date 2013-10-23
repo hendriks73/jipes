@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Jipes" xmlns="http://maven.apache.org/DECORATION/1.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.4.0 http://maven.apache.org/xsd/decoration-1.4.0.xsd">
+    <version position="right"/>
+    <googleAnalyticsAccountId>UA-7561371-2</googleAnalyticsAccountId>
+    <bannerLeft>
+        <name>Jipes</name>
+        <href>http://www.tagtraum.com/jipes/</href>
+        <src>./images/jipes-banner.png</src>
+    </bannerLeft>
+    <bannerRight>
+        <href>http://www.tagtraum.com/</href>
+        <src>./images/tagtraum-banner.png</src>
+    </bannerRight>
+    <body>
+        <head>
+            <meta name="keyword" content="java, sound, javax.sound, audio, mir, information retrieval, feature extraction, dsp, digital signal processing, FFT" />
+            <script src="./javascript/jquery-2.0.3.min.js" ></script>
+            <script type="text/javascript">
+                $(document).ready( function() {
+                    $("pre").each(function() {
+                        if (!$(this).hasClass("prettyprint")) {
+                            $(this).addClass("prettyprint");
+                        }
+                    });
+                });
+            </script>
+            <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js" ></script>
+        </head>
+        <links>
+            <item name="tagtraum" href="http://www.tagtraum.com/"/>
+            <item name="beaTunes" href="http://www.beatunes.com/"/>
+        </links>
+
+        <menu name="Jipes">
+            <item name="Introduction" href="index.html"/>
+            <item name="Getting Started" href="getting_started.html"/>
+            <item name="Deferring Data Flow" href="defer_dataflow.html"/>
+            <item name="Split / Join" href="split_join.html"/>
+            <item name="Spectra" href="spectra.html"/>
+            <item name="Release" href="http://www.beatunes.com/repo/maven2/com/tagtraum/jipes/"/>
+            <item name="Notes" href="notes.html"/>
+            <item name="JavaDocs" href="apidocs/index.html"/>
+            <!--
+            <item name="Download" href="download.html"/>
+            <item name="Release Notes" href="release-notes.html" />
+            <item name="General Information" href="about.html"/>
+            <item name="For Maven 1.x Users" href="maven1.html"/>
+            <item name="Road Map" href="roadmap.html" />
+            -->
+        </menu>
+
+        <menu ref="reports"/>
+    </body>
+</project>
