@@ -4,7 +4,7 @@
         <maven>3.0.5</maven>
     </prerequisites>
     <groupId>com.tagtraum</groupId>
-    <version>0.9.8-SNAPSHOT</version>
+    <version>0.9.7-SNAPSHOT</version>
     <artifactId>jipes</artifactId>
     <packaging>jar</packaging>
     <name>Jipes</name>
