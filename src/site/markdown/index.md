@@ -1,5 +1,4 @@
 <head><title>Introduction</title></head>
-<a href="https://github.com/hendriks73/jipes"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
 
 
 ## Introduction
@@ -62,3 +61,6 @@ Significant Non-Java DSP projects are:
 * C/C++: [Vamp](http://vamp-plugins.org/)
 
 There are certainly more frameworks. Feel free to contact me, if you want your framework included in this list.
+
+
+<a href="https://github.com/hendriks73/jipes"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
