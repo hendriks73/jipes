@@ -18,7 +18,7 @@
             <script src="./javascript/jquery-2.0.3.min.js" ></script>
             <script type="text/javascript">
                 $(document).ready( function() {
-                    $("pre").each(function() {
+                    $("div.source pre").each(function() {
                         if (!$(this).hasClass("prettyprint")) {
                             $(this).addClass("prettyprint");
                         }
@@ -41,13 +41,6 @@
             <item name="Release" href="http://www.beatunes.com/repo/maven2/com/tagtraum/jipes/"/>
             <item name="Notes" href="notes.html"/>
             <item name="JavaDocs" href="apidocs/index.html"/>
-            <!--
-            <item name="Download" href="download.html"/>
-            <item name="Release Notes" href="release-notes.html" />
-            <item name="General Information" href="about.html"/>
-            <item name="For Maven 1.x Users" href="maven1.html"/>
-            <item name="Road Map" href="roadmap.html" />
-            -->
         </menu>
 
         <menu ref="reports"/>

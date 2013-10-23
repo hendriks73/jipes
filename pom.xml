@@ -9,13 +9,13 @@
     <artifactId>jipes</artifactId>
     <packaging>jar</packaging>
     <name>Jipes</name>
-    <description>A digital signal processing (DSP) framework for efficient feature computation.</description>
+    <description>A Java-based digital signal processing (DSP) framework for efficient feature computation.</description>
     <url>http://www.tagtraum.com/jipes</url>
     <inceptionYear>2011</inceptionYear>
     <licenses>
         <license>
-            <name>LGPL</name>
-            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+            <name>LGPL 2.1</name>
+            <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html</url>
             <comments>LGPL</comments>
         </license>
     </licenses>
@@ -200,10 +200,15 @@
         </site>
     </distributionManagement>
     <scm>
-        <!-- jipes is open source - but since it currently shares its repository with beaTunes, she scm is not public. sorry. -->
-        <!-- <connection>scm:svn:svn+ssh://www.beatunes.com/var/svn/repos/jipes/trunk</connection> -->
-        <developerConnection>scm:svn:svn+ssh://svn.beatunes.com/var/svn/repos/jipes/trunk</developerConnection>
+        <connection>scm:git:git://github.com/hendriks73/jipes.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/hendriks73/jipes.git</developerConnection>
+        <url>https://github.com/hendriks73/jipes/tree/master</url>
+        <tag>HEAD</tag>
     </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/hendriks73/jipes/issues</url>
+    </issueManagement>
     <properties>
         <!-- alias, because of http://maven.apache.org/plugins/maven-site-plugin/examples/creating-content.html#Filtering -->
         <projectversion>${project.version}</projectversion>
