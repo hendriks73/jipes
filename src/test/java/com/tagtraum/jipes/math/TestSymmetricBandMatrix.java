@@ -21,7 +21,7 @@ public class TestSymmetricBandMatrix {
 
     @Test
     public void testWriteAndRead() {
-        final SymmetricBandMatrix matrix = new SymmetricBandMatrix(5, 3);
+        final SymmetricBandMatrix matrix = new SymmetricBandMatrix(5, 3, 0f);
         final float[] values = new float[5*5];
         for (int i=0; i<values.length; i++) {
             values[i] = new Random().nextFloat();
@@ -57,26 +57,26 @@ public class TestSymmetricBandMatrix {
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void testIndexOutOfBoundsOutOfBand() {
-        new SymmetricBandMatrix(5, 3).set(0, 2, 5);
+        new SymmetricBandMatrix(5, 3, 0f).set(0, 2, 5);
     }
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void testIndexOutOfBoundsNegativeRow() {
-        new SymmetricBandMatrix(5, 3).get(-1, 0);
+        new SymmetricBandMatrix(5, 3, 0f).get(-1, 0);
     }
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void testIndexOutOfBoundsNegativeColumn() {
-        new SymmetricBandMatrix(5, 3).get(0, -1);
+        new SymmetricBandMatrix(5, 3, 0f).get(0, -1);
     }
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void testIndexOutOfBoundsTooLargeRow() {
-        new SymmetricBandMatrix(5, 3).get(5, 0);
+        new SymmetricBandMatrix(5, 3, 0f).get(5, 0);
     }
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void testIndexOutOfBoundsTooLargeColumn() {
-        new SymmetricBandMatrix(5, 3).get(0, 5);
+        new SymmetricBandMatrix(5, 3, 0f).get(0, 5);
     }
 }

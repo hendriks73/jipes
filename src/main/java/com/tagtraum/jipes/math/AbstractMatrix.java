@@ -18,16 +18,6 @@ public abstract class AbstractMatrix implements Matrix {
     protected boolean zeroPadded;
     protected MatrixBackingBuffer buffer;
 
-    public void copyValuesFrom(final Matrix matrix) {
-        final int rows = Math.min(this.rows, matrix.getNumberOfRows());
-        final int columns = Math.min(this.columns, matrix.getNumberOfColumns());
-        for (int row=0; row<rows; row++) {
-            for (int column=0; column<columns; column++) {
-                set(row, column, matrix.get(row, column));
-            }
-        }
-    }
-
     @Override
     public Matrix add(final Matrix m) {
         return new AddMatrix(this, m);
@@ -84,11 +74,6 @@ public abstract class AbstractMatrix implements Matrix {
         return get(toIndex(row, column));
     }
 
-    public void set(final int row, final int column, final float value) {
-        checkBounds(row, column);
-        set(toIndex(row, column), value);
-    }
-
     protected boolean isValidXORZeroPadded(final int row, final int column) {
         if (isValid(row, column)) {
             if (isZeroPadded()) return true;
@@ -109,10 +94,6 @@ public abstract class AbstractMatrix implements Matrix {
 
     protected int toIndex(final int row, final int column) {
         return row * columns + column;
-    }
-
-    protected void set(final int index, final float value) {
-        buffer.set(index, value);
     }
 
     protected float get(final int index) {
@@ -189,10 +170,6 @@ public abstract class AbstractMatrix implements Matrix {
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        protected void set(final int index, final float value) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     private static class TranslatedMatrix extends AbstractMatrix {
@@ -227,11 +204,6 @@ public abstract class AbstractMatrix implements Matrix {
 
         @Override
         protected float get(final int index) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        protected void set(final int index, final float value) {
             throw new UnsupportedOperationException();
         }
 
@@ -271,11 +243,6 @@ public abstract class AbstractMatrix implements Matrix {
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        protected void set(final int index, final float value) {
-            throw new UnsupportedOperationException();
-        }
-
     }
 
     private static class SubtractMatrix extends AbstractMatrix {
@@ -312,10 +279,6 @@ public abstract class AbstractMatrix implements Matrix {
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        protected void set(final int index, final float value) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     private static class ScalarMultiplicationMatrix extends AbstractMatrix {
@@ -352,10 +315,6 @@ public abstract class AbstractMatrix implements Matrix {
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        protected void set(final int index, final float value) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     private static class MultiplicationMatrix extends AbstractMatrix {
@@ -397,11 +356,6 @@ public abstract class AbstractMatrix implements Matrix {
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        protected void set(final int index, final float value) {
-            throw new UnsupportedOperationException();
-        }
-
     }
 
     private static class TransposeMatrix extends AbstractMatrix {
@@ -433,11 +387,6 @@ public abstract class AbstractMatrix implements Matrix {
 
         @Override
         protected float get(final int index) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        protected void set(final int index, final float value) {
             throw new UnsupportedOperationException();
         }
 

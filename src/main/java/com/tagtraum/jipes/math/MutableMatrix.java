@@ -24,4 +24,27 @@ public interface MutableMatrix extends Matrix {
      * not in the valid range
      */
     void set(final int row, final int column, final float value);
+
+
+    /**
+     * Copies values from another {@link Matrix} to this matrix.
+     *
+     * @param fromMatrix other matrix
+     */
+    void copy(Matrix fromMatrix);
+
+    /**
+     * Copies values from a defined offset from another matrix to a defined offset of this matrix.
+     *
+     * @param fromMatrix other matrix
+     * @param fromRow row start offset of from matrix
+     * @param fromColumn column start offset of from matrix
+     * @param toRow column start offset of this matrix
+     * @param toColumn column start offset of this matrix
+     * @param rows number of rows to copy
+     * @param columns number of column to copy
+     */
+    void copy(Matrix fromMatrix, int fromRow, int fromColumn,
+              int toRow, int toColumn,
+              int rows, int columns);
 }

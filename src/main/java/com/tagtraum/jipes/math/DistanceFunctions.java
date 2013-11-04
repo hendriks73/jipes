@@ -186,6 +186,27 @@ public final class DistanceFunctions {
     }
 
     /**
+     * Creates stateful similarity function.
+     *
+     * @return similarity function
+     * @see #createCosineDistanceFunction()
+     */
+    public static DistanceFunction<float[]> createCosineSimilarityFunction() {
+        final DistanceFunction<float[]> cosineDistanceFunction = createCosineDistanceFunction();
+        return new DistanceFunction<float[]>() {
+            @Override
+            public float distance(final float[] a, final float[] b) {
+                return 1-cosineDistanceFunction.distance(a, b);
+            }
+
+            @Override
+            public String toString() {
+                return "CosineSimilarity{caching,stateful}";
+            }
+        };
+    }
+
+    /**
      * Creates a cosine similarity function.
      * <p/>
      * Assuming the arrays to compare are fourier spectra, limiting the length and selecting an

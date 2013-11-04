@@ -13,7 +13,7 @@ package com.tagtraum.jipes.math;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class SymmetricMatrix extends AbstractMatrix implements MutableMatrix {
+public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMatrix {
 
     /**
      * Creates a square, symmetric matrix with the given number of rows and columns.
@@ -59,7 +59,7 @@ public class SymmetricMatrix extends AbstractMatrix implements MutableMatrix {
      */
     public SymmetricMatrix(final Matrix matrix, final MatrixBackingBuffer buffer, final boolean zeroPadded) {
         this(matrix.getNumberOfRows(), buffer, zeroPadded, true);
-        copyValuesFrom(matrix);
+        copy(matrix);
     }
 
     protected SymmetricMatrix(final int length, final MatrixBackingBuffer buffer, final boolean zeroPadded, final boolean allocate) {

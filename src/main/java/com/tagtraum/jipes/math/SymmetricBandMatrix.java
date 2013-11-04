@@ -23,6 +23,7 @@ package com.tagtraum.jipes.math;
 public class SymmetricBandMatrix extends SymmetricMatrix {
 
     private final int columnsPerRow;
+    private final float defaultValue;
 
     /**
      * Creates a square, symmetric band matrix with the given number of rows and columns.
@@ -30,9 +31,10 @@ public class SymmetricBandMatrix extends SymmetricMatrix {
      *
      * @param length rows == columns (square)
      * @param bandwidth bandwidth == k1 + k2 + 1, with k1 and k2 being the number of diagonals above and below the main diagonal
+     * @param defaultValue value to return for elements outside the band
      */
-    public SymmetricBandMatrix(final int length, final int bandwidth) {
-        this(length, bandwidth, false, false);
+    public SymmetricBandMatrix(final int length, final int bandwidth, final float defaultValue) {
+        this(length, bandwidth, new FloatBackingBuffer(false), defaultValue, false);
     }
 
     /**
@@ -42,10 +44,11 @@ public class SymmetricBandMatrix extends SymmetricMatrix {
      * @param length rows == columns (square)
      * @param bandwidth bandwidth == k1 + k2 + 1, with k1 and k2 being the number of diagonals above and below the main diagonal
      * @param buffer backing buffer
+     * @param defaultValue value to return for elements outside the band
      * @param zeroPadded zero pad?
      */
-    public SymmetricBandMatrix(final int length, final int bandwidth, final MatrixBackingBuffer buffer, final boolean zeroPadded) {
-        this(length, bandwidth, buffer, zeroPadded, true);
+    public SymmetricBandMatrix(final int length, final int bandwidth, final MatrixBackingBuffer buffer, final float defaultValue, final boolean zeroPadded) {
+        this(length, bandwidth, buffer, zeroPadded, defaultValue, true);
     }
 
     /**
@@ -59,13 +62,15 @@ public class SymmetricBandMatrix extends SymmetricMatrix {
      * @param zeroPadded zero pad?
      */
     public SymmetricBandMatrix(final int length, final int bandwidth, final boolean direct, final boolean zeroPadded) {
-        this(length, bandwidth, new FloatBackingBuffer(direct), zeroPadded);
+        this(length, bandwidth, new FloatBackingBuffer(direct), 0f, zeroPadded);
     }
 
-    protected SymmetricBandMatrix(final int length, final int bandwidth, final MatrixBackingBuffer buffer, final boolean zeroPadded, final boolean allocate) {
+    protected SymmetricBandMatrix(final int length, final int bandwidth, final MatrixBackingBuffer buffer,
+                                  final boolean zeroPadded, final float defaultValue, final boolean allocate) {
         super(length, buffer, zeroPadded, false);
         if (bandwidth % 2 == 0) throw new IllegalArgumentException("Bandwidth most be odd because of symmetry: " + bandwidth);
-        this.columnsPerRow = ((bandwidth-1)/2 + 1);
+        this.columnsPerRow = Math.min(((bandwidth-1)/2 + 1), length);
+        this.defaultValue = defaultValue;
         // to make things easy, we allocate more than necessary. Example 5x5 matrix:
         //
         // ***..
@@ -81,8 +86,41 @@ public class SymmetricBandMatrix extends SymmetricMatrix {
     }
 
     @Override
+    public void copy(final Matrix fromMatrix) {
+        if (fromMatrix instanceof SymmetricBandMatrix && this.columnsPerRow == ((SymmetricBandMatrix) fromMatrix).columnsPerRow) {
+            // since we know that the internal structure is identical, we can make copying vastly less complicated...
+            final SymmetricBandMatrix that = (SymmetricBandMatrix) fromMatrix;
+            final int length = columnsPerRow * fromMatrix.getNumberOfColumns();
+            for (int i=0; i<length; i++) {
+                this.buffer.set(i, that.buffer.get(i));
+            }
+        }
+        else {
+            super.copy(fromMatrix);
+        }
+    }
+
+    @Override
+    public void copy(final Matrix fromMatrix, final int fromRow, final int fromColumn,
+                     final int toRow, final int toColumn,
+                     final int rows, final int columns) {
+
+        for (int currentFromRow = fromRow, currentToRow = toRow; currentFromRow< fromRow + rows; currentFromRow++, currentToRow++) {
+            for (int currentFromColumn = fromColumn, currentToColumn = toColumn; currentFromColumn< fromColumn + columns; currentFromColumn++, currentToColumn++) {
+                // simply ignore values that can't be set
+                if (currentToRow < currentToColumn && currentToColumn>=columnsPerRow+currentToRow && currentToColumn<this.columns) continue;
+                if (currentToColumn < currentToRow && currentToRow>=columnsPerRow+currentToColumn && currentToRow<this.rows) continue;
+                set(currentToRow, currentToColumn, fromMatrix.get(currentFromRow, currentFromColumn));
+            }
+        }
+    }
+
+
+
+
+    @Override
     public float get(final int row, final int column) {
-        if (row < column && column>=columnsPerRow+row && column<columns) return 0f;
+        if (row < column && column>=columnsPerRow+row && column<columns) return defaultValue;
         return super.get(row, column);
     }
 

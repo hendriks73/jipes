@@ -3,6 +3,10 @@
 Notes
 -----
 
+* 0.9.8
+    * Enhanced SelfSimilarity to better deal with long tracks (BandMatrix)
+
+
 * 0.9.7
     * Added close method to AudioSignalSource for better resource management
     * Added NoopSignalProcessor, Novelty, OnsetStrength, SelfSimilarity, AudioMatrix

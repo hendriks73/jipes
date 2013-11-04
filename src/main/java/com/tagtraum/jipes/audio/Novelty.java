@@ -288,7 +288,7 @@ public class Novelty<I extends AudioBuffer> extends AbstractSignalProcessor<I, A
      */
     private void shiftSimilarityMatrixByOne() {
         final SymmetricMatrix newMatrix = new SymmetricMatrix(similarityMatrix.getNumberOfRows());
-        newMatrix.copyValuesFrom(similarityMatrix.translate(-1, -1));
+        newMatrix.copy(similarityMatrix.translate(-1, -1));
         similarityMatrix = newMatrix;
     }
 
