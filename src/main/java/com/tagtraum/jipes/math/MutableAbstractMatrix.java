@@ -11,7 +11,14 @@ package com.tagtraum.jipes.math;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class MutableAbstractMatrix extends AbstractMatrix implements MutableMatrix {
+public abstract class MutableAbstractMatrix extends AbstractMatrix implements MutableMatrix {
+
+    /**
+     * Calls {@link MatrixBackingBuffer#allocate(int)} on the used buffer.
+     *
+     * @param buffer buffer
+     */
+    protected abstract void allocate(final MatrixBackingBuffer buffer);
 
     @Override
     public void copy(final Matrix fromMatrix) {

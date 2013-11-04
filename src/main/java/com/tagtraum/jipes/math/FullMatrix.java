@@ -26,7 +26,6 @@ public class FullMatrix extends MutableAbstractMatrix implements MutableMatrix, 
      * @throws IOException
      */
     public FullMatrix(final File csvFile, final String charset, final char separator, final boolean ignoreFirstLine) throws IOException {
-        this(0, 0, null, false, false);
         final CSVReader csvReader = new CSVReader();
         csvReader.read(csvFile, charset, separator, ignoreFirstLine);
         this.rows = csvReader.getRows();
@@ -52,7 +51,6 @@ public class FullMatrix extends MutableAbstractMatrix implements MutableMatrix, 
                 return floats.get(index);
             }
         };
-
     }
 
     /**
@@ -112,8 +110,13 @@ public class FullMatrix extends MutableAbstractMatrix implements MutableMatrix, 
         this.columns = columns;
         this.zeroPadded = zeroPadded;
         if (allocate) {
-            buffer.allocate(rows*columns);
+            allocate(buffer);
         }
+    }
+
+    @Override
+    protected void allocate(final MatrixBackingBuffer buffer) {
+        buffer.allocate(this.rows*this.columns);
     }
 
     /**
@@ -207,6 +210,7 @@ public class FullMatrix extends MutableAbstractMatrix implements MutableMatrix, 
                     }
                 }
             }
+            floats.flip();
             columns = floats.limit()/rows;
         }
 

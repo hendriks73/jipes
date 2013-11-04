@@ -5,6 +5,7 @@ Notes
 
 * 0.9.8
     * Enhanced SelfSimilarity to better deal with long tracks (BandMatrix)
+    * Allow construction of FullMatrix from CSV file
 
 
 * 0.9.7

@@ -28,6 +28,8 @@ public interface MutableMatrix extends Matrix {
 
     /**
      * Copies values from another {@link Matrix} to this matrix.
+     * If this matrix does not support the setting of certain elements (e.g. {@link SymmetricBandMatrix}),
+     * the method fails silently, i.e. no values are copied, and no exception is raised.
      *
      * @param fromMatrix other matrix
      */
@@ -35,6 +37,8 @@ public interface MutableMatrix extends Matrix {
 
     /**
      * Copies values from a defined offset from another matrix to a defined offset of this matrix.
+     * If this matrix does not support the setting of certain elements (e.g. {@link SymmetricBandMatrix}),
+     * the method fails silently, i.e. no values are copied, and no exception is raised.
      *
      * @param fromMatrix other matrix
      * @param fromRow row start offset of from matrix

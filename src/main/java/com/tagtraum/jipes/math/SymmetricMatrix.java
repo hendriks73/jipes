@@ -68,8 +68,13 @@ public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMat
         this.columns = length;
         this.zeroPadded = zeroPadded;
         if (allocate) {
-            buffer.allocate((length*(length+1))/2);
+            allocate(buffer);
         }
+    }
+
+    @Override
+    protected void allocate(final MatrixBackingBuffer buffer) {
+        buffer.allocate((rows*(rows+1))/2);
     }
 
     @Override
