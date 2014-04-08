@@ -56,6 +56,22 @@ public class FullMatrix extends MutableAbstractMatrix implements MutableMatrix, 
     /**
      * Creates a fully backed matrix with the given number of rows and columns.
      * Memory is allocated from the Java heap. The matrix is <em>not</em> zero-padded.
+     * Initial values are taken from the provided array, continuously row by row.
+     * The values are copied, not referenced.
+     *
+     * @param rows rows
+     * @param columns columns
+     * @param values initial values
+     * @see MutableMatrix#copy(float[])
+     */
+    public FullMatrix(final int rows, final int columns, final float[] values) {
+        this(rows, columns, new FloatBackingBuffer(false), false);
+        copy(values);
+    }
+
+    /**
+     * Creates a fully backed matrix with the given number of rows and columns.
+     * Memory is allocated from the Java heap. The matrix is <em>not</em> zero-padded.
      *
      * @param rows rows
      * @param columns columns

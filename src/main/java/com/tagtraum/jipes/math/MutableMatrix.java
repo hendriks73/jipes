@@ -25,6 +25,19 @@ public interface MutableMatrix extends Matrix {
      */
     void set(final int row, final int column, final float value);
 
+    /**
+     * Fills all writable elements of this matrix with the given value.
+     *
+     * @param value value
+     */
+    void fill(float value);
+
+    /**
+     * Copies values from the provided array row by row to this matrix.
+     *
+     * @param values values
+     */
+    void copy(float[] values);
 
     /**
      * Copies values from another {@link Matrix} to this matrix.

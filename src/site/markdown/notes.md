@@ -5,6 +5,8 @@ Notes
 
 * 0.9.8
     * Enhanced SelfSimilarity to better deal with long tracks (BandMatrix)
+    * Increased SelfSimilarity performance
+    * Added Matrix.enlarge(m)
     * Allow construction of FullMatrix from CSV file
 
 

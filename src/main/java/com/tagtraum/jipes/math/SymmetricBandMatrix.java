@@ -23,7 +23,7 @@ package com.tagtraum.jipes.math;
 public class SymmetricBandMatrix extends SymmetricMatrix {
 
     private final int columnsPerRow;
-    private final float defaultValue;
+    private float defaultValue;
 
     /**
      * Creates a square, symmetric band matrix with the given number of rows and columns.
@@ -67,7 +67,7 @@ public class SymmetricBandMatrix extends SymmetricMatrix {
 
     protected SymmetricBandMatrix(final int length, final int bandwidth, final MatrixBackingBuffer buffer,
                                   final boolean zeroPadded, final float defaultValue, final boolean allocate) {
-        super(length, buffer, zeroPadded, false);
+        super(0, length, buffer, zeroPadded, false);
         if (bandwidth % 2 == 0) throw new IllegalArgumentException("Bandwidth most be odd because of symmetry: " + bandwidth);
         this.columnsPerRow = Math.min(((bandwidth - 1) / 2 + 1), length);
         this.defaultValue = defaultValue;
@@ -88,6 +88,36 @@ public class SymmetricBandMatrix extends SymmetricMatrix {
     @Override
     protected void allocate(final MatrixBackingBuffer buffer) {
         buffer.allocate(columnsPerRow * rows);
+    }
+
+    /**
+     * Fills the matrix with the given values and adjusts the <code>defaultValue</code>
+     * returned for elements outside the band.
+     *
+     * @param value value
+     */
+    @Override
+    public void fill(final float value) {
+        for (int row = 0; row<rows; row++) {
+            for (int column = 0; column<columns; column++) {
+                if (row < column && column>=columnsPerRow+row && column<this.columns) continue;
+                if (column < row && row>=columnsPerRow+column && row<this.rows) continue;
+                set(row, column, value);
+            }
+        }
+        defaultValue = value;
+    }
+
+    @Override
+    public void copy(final float[] values) {
+        for (int row = 0, i = 0; row<rows; row++) {
+            for (int column = 0; column<columns; column++) {
+                if (row < column && column>=columnsPerRow+row && column<this.columns) continue;
+                if (column < row && row>=columnsPerRow+column && row<this.rows) continue;
+                set(row, column, values[i]);
+                i++;
+            }
+        }
     }
 
     @Override
@@ -141,9 +171,10 @@ public class SymmetricBandMatrix extends SymmetricMatrix {
 
     @Override
     public String toString() {
-        return "SymmetricBandFloatMatrix{" +
-                "bandwidth=" + (columnsPerRow-1)*2+1 +
+        return "SymmetricBandMatrix{" +
+                "bandwidth=" + ((columnsPerRow-1)*2+1) +
                 ", length=" + columns +
+                ", offset=" + offset +
                 ", zeroPad=" + isZeroPadded() +
                 '}';
     }

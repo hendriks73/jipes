@@ -55,6 +55,50 @@ public class TestSymmetricMatrix {
 
     }
 
+    @Test
+    public void testWriteAndReadWithColumnOffset() {
+        final SymmetricMatrix matrix = new SymmetricMatrix(3, 5, new FloatBackingBuffer(false), true);
+        final float[] values = new float[5*5];
+        for (int i=0; i<values.length; i++) {
+            values[i] = new Random().nextFloat();
+        }
+        for (int row=0; row<5; row++) {
+            for (int column=row; column<5; column++) {
+                if (Math.max(row, column)<3) continue;
+                matrix.set(row, column, values[row*5+column]);
+            }
+        }
+        for (int row=0; row<5; row++) {
+            for (int column=row; column<5; column++) {
+                if (Math.max(row, column)<3) continue;
+                assertEquals(values[row * 5 + column], matrix.get(row, column), 0.0001f);
+            }
+        }
+
+        for (int column=0; column<5; column++) {
+            for (int row=column; row<5; row++) {
+                if (Math.max(row, column)<3) continue;
+                assertEquals(values[column * 5 + row], matrix.get(row, column), 0.0001f);
+            }
+        }
+
+        // for visual confirmation
+        /*
+        for (int row=0; row<5; row++) {
+            for (int column = 0; column < 5; column++) {
+                System.out.print(matrix.get(row, column) + "\t");
+                if (column == 4) System.out.println();
+            }
+        }
+        */
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testSetWithColumnOffset() {
+        final SymmetricMatrix matrix = new SymmetricMatrix(3, 5, new FloatBackingBuffer(false), true);
+        matrix.set(2, 2, 3);
+    }
+
     @Test(expected=IndexOutOfBoundsException.class)
     public void testIndexOutOfBoundsNegativeRow() {
         new SymmetricMatrix(5).get(-1, 0);

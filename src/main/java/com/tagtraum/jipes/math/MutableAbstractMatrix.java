@@ -20,6 +20,26 @@ public abstract class MutableAbstractMatrix extends AbstractMatrix implements Mu
      */
     protected abstract void allocate(final MatrixBackingBuffer buffer);
 
+
+    @Override
+    public void fill(final float value) {
+        for (int row = 0; row<rows; row++) {
+            for (int column = 0; column<columns; column++) {
+                set(row, column, value);
+            }
+        }
+    }
+
+    @Override
+    public void copy(final float[] values) {
+        for (int row = 0, i = 0; row<rows; row++) {
+            for (int column = 0; column<columns; column++) {
+                set(row, column, values[i]);
+                i++;
+            }
+        }
+    }
+
     @Override
     public void copy(final Matrix fromMatrix) {
         final int rows = Math.min(this.rows, fromMatrix.getNumberOfRows());

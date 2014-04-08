@@ -15,6 +15,8 @@ package com.tagtraum.jipes.math;
  */
 public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMatrix {
 
+    protected int offset;
+
     /**
      * Creates a square, symmetric matrix with the given number of rows and columns.
      * Memory is allocated from the Java heap. The matrix is <em>not</em> zero-padded.
@@ -34,7 +36,33 @@ public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMat
      * @param zeroPadded zero padded?
      */
     public SymmetricMatrix(final int length, final MatrixBackingBuffer buffer, final boolean zeroPadded) {
-        this(length, buffer, zeroPadded, true);
+        this(0, length, buffer, zeroPadded, true);
+    }
+
+    /**
+     * Creates a square, symmetric matrix with the given number of rows and columns.
+     * Memory is allocated using the given backing buffer. The matrix may be zero-padded.
+     *
+     * @param buffer backing buffer
+     * @param length rows == columns (square)
+     * @param offset columns &lt; this offset cannot be stored
+     * @param zeroPadded zero padded?
+     */
+    public SymmetricMatrix(final int offset, final int length, final MatrixBackingBuffer buffer, final boolean zeroPadded) {
+        this(offset, length, buffer, zeroPadded, true);
+    }
+
+    /**
+     * Creates a square, symmetric matrix with the given number of rows and columns.
+     * Memory is allocated using a {@link FloatBackingBuffer}. The matrix may be zero-padded.
+     *
+     * @param length rows == columns (square)
+     * @param offset columns &lt; this offset cannot be stored
+     * @param direct allocate the backing buffer directly/natively or on the Java heap
+     * @param zeroPadded zero padded?
+     */
+    public SymmetricMatrix(final int offset, final int length, final boolean direct, final boolean zeroPadded) {
+        this(offset, length, new FloatBackingBuffer(direct), zeroPadded);
     }
 
     /**
@@ -58,11 +86,12 @@ public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMat
      * @param zeroPadded zero padded?
      */
     public SymmetricMatrix(final Matrix matrix, final MatrixBackingBuffer buffer, final boolean zeroPadded) {
-        this(matrix.getNumberOfRows(), buffer, zeroPadded, true);
+        this(0, matrix.getNumberOfRows(), buffer, zeroPadded, true);
         copy(matrix);
     }
 
-    protected SymmetricMatrix(final int length, final MatrixBackingBuffer buffer, final boolean zeroPadded, final boolean allocate) {
+    protected SymmetricMatrix(final int offset, final int length, final MatrixBackingBuffer buffer, final boolean zeroPadded, final boolean allocate) {
+        this.offset = offset;
         this.buffer = buffer;
         this.rows = length;
         this.columns = length;
@@ -74,7 +103,9 @@ public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMat
 
     @Override
     protected void allocate(final MatrixBackingBuffer buffer) {
-        buffer.allocate((rows*(rows+1))/2);
+        final int fullSize = (rows * (rows + 1)) / 2;
+        final int columnOffsetSize = (offset * (offset + 1)) / 2;
+        buffer.allocate(fullSize - columnOffsetSize);
     }
 
     @Override
@@ -96,10 +127,24 @@ public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMat
     }
 
     @Override
+    protected boolean isInvalid(final int row, final int column) {
+        return super.isInvalid(row, column) || column < offset;
+    }
+
+    @Override
     protected int toIndex(final int row, final int column) {
-        final int regularIndex = row*rows+column;
-        final int correction = (row*(row+1))/2;
+        final int regularIndex = row*(rows- offset)+column- offset;
+        final int correction = row- offset > 0 ? ((row- offset)*(row- offset +1))/2 : 0;
         return regularIndex - correction;
+    }
+
+    @Override
+    public String toString() {
+        return "SymmetricMatrix{" +
+                "length=" + columns +
+                ", offset=" + offset +
+                ", zeroPad=" + isZeroPadded() +
+                '}';
     }
 
 }

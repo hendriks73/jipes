@@ -50,7 +50,12 @@ public abstract class AbstractMatrix implements Matrix {
 
     @Override
     public Matrix hadamardMultiply(final Matrix m) {
-        return new HadmardProductMatrix(this, m);
+        return new HadamardProductMatrix(this, m);
+    }
+
+    @Override
+    public Matrix enlarge(final Matrix m) {
+        return new EnlargeMatrix(this, m);
     }
 
     @Override
@@ -75,7 +80,7 @@ public abstract class AbstractMatrix implements Matrix {
     }
 
     protected boolean isValidXORZeroPadded(final int row, final int column) {
-        if (isValid(row, column)) {
+        if (isInvalid(row, column)) {
             if (isZeroPadded()) return true;
             else throw new IndexOutOfBoundsException("Row: " + row + ", Column: " + column);
         }
@@ -83,12 +88,12 @@ public abstract class AbstractMatrix implements Matrix {
     }
 
     protected void checkBounds(final int row, final int column) {
-        if (isValid(row, column)) {
+        if (isInvalid(row, column)) {
             throw new IndexOutOfBoundsException("Row: " + row + ", Column: " + column);
         }
     }
 
-    protected boolean isValid(final int row, final int column) {
+    protected boolean isInvalid(final int row, final int column) {
         return row<0 || column<0 || row>=getNumberOfRows() || column>=getNumberOfColumns();
     }
 
@@ -129,18 +134,18 @@ public abstract class AbstractMatrix implements Matrix {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-                "rows=" + rows +
-                ", columns=" + columns +
-                ", zeroPadded=" + zeroPadded +
+                "rows=" + getNumberOfRows() +
+                ", columns=" + getNumberOfColumns() +
+                ", zeroPadded=" + isZeroPadded() +
                 '}';
     }
 
-    private static class HadmardProductMatrix extends AbstractMatrix {
+    private static class HadamardProductMatrix extends AbstractMatrix {
 
         private final Matrix m1;
         private final Matrix m2;
 
-        public HadmardProductMatrix(final Matrix m1, final Matrix m2) {
+        public HadamardProductMatrix(final Matrix m1, final Matrix m2) {
             this.m1 = m1;
             this.m2 = m2;
         }
@@ -383,6 +388,43 @@ public abstract class AbstractMatrix implements Matrix {
         @Override
         public boolean isZeroPadded() {
             return m.isZeroPadded();
+        }
+
+        @Override
+        protected float get(final int index) {
+            throw new UnsupportedOperationException();
+        }
+
+    }
+
+    private static class EnlargeMatrix extends AbstractMatrix {
+        private final Matrix m1;
+        private final Matrix m2;
+
+        public EnlargeMatrix(final Matrix m1, final Matrix m2) {
+            this.m1 = m1;
+            this.m2 = m2;
+        }
+
+        @Override
+        public float get(final int row, final int column) {
+            if (row >= m1.getNumberOfRows() || column >= m1.getNumberOfColumns()) return m2.get(row, column);
+            else return m1.get(row, column);
+        }
+
+        @Override
+        public int getNumberOfRows() {
+            return Math.max(m1.getNumberOfRows(), m2.getNumberOfRows());
+        }
+
+        @Override
+        public int getNumberOfColumns() {
+            return Math.max(m1.getNumberOfColumns(), m2.getNumberOfColumns());
+        }
+
+        @Override
+        public boolean isZeroPadded() {
+            return m2.isZeroPadded();
         }
 
         @Override

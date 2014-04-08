@@ -101,6 +101,21 @@ public interface Matrix {
     Matrix transpose();
 
     /**
+     * Creates a <em>view</em> that is as large as the larger of the two involved matrices.
+     * Values are equal to the values of this matrix, as long as its maximal indices
+     * aren't exceeded. Once they are exceeded, the given matrix is used as "backup".
+     * If its indices are also exceeded its padding (if available) is returned upon
+     * read operations.<br>
+     * In essence this operation adds the given matrix to this matrix for those rows
+     * and columns where this matrix isn't defined. The existing values of the given
+     * matrix are invisible for those indices where this matrix is defined.
+     *
+     * @param m matrix
+     * @return enlarged matrix combining this and the given matrix
+     */
+    Matrix enlarge(Matrix m);
+
+    /**
      * Creates a <em>view</em> that is equal to the result of a matrix translation.
      * I.e. the content of the matrix is moved to a different position in a larger matrix.
      *

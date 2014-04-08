@@ -12,7 +12,9 @@ import com.tagtraum.jipes.math.*;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import static com.tagtraum.jipes.audio.AudioBufferFunctions.createDistanceFunction;
 
@@ -29,6 +31,7 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
     private AudioFormat audioFormat;
     private DistanceFunction<I> distanceFunction = createDistanceFunction(DistanceFunctions.createCosineSimilarityFunction());
     private AudioMatrix matrix;
+    private Matrix combinedChunksMatrix;
     private int firstFrame = -1;
     private int secondFrame = -1;
     private Object id;
@@ -36,6 +39,7 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
     private MutableMatrix similarityMatrix;
     private int chunkOffset = 0;
     private int spectraOffset;
+    private boolean copyOnMatrixEnlargement;
 
 
     /**
@@ -87,7 +91,7 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
      *
      * @param bandwidth bandwidth, must be odd. Values 0 or less indicate full bandwidth
      * @see com.tagtraum.jipes.math.SymmetricBandMatrix
-     * @see #createMatrix(int, int)
+     * @see #createMatrix(int, int, int)
      */
     public void setBandwidth(final int bandwidth) {
         if (bandwidth > 0 && bandwidth % 2 == 0) throw new IllegalArgumentException("Bandwidth most be odd because of symmetry: " + bandwidth);
@@ -95,7 +99,7 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
     }
 
     /**
-     * Matrix bandwidth for matrices created by {@link #createMatrix(int, int)}.
+     * Matrix bandwidth for matrices created by {@link #createMatrix(int, int, int)}.
      *
      * @return bandwidth or 0 or less for full bandwidth
      * @see com.tagtraum.jipes.math.SymmetricBandMatrix
@@ -112,6 +116,27 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
      */
     public void setDistanceFunction(final DistanceFunction<I> distanceFunction) {
         this.distanceFunction = distanceFunction;
+    }
+
+    /**
+     * Indicates whether the similarity matrix should be copied or enlarged
+     * (see {@link com.tagtraum.jipes.math.Matrix#enlarge(com.tagtraum.jipes.math.Matrix)})
+     * with a new matrix.
+     *
+     * @return true or false
+     */
+    public boolean isCopyOnMatrixEnlargement() {
+        return copyOnMatrixEnlargement;
+    }
+
+    /**
+     * Copy the whole matrix, if we need to increase its size?
+     *
+     * @param copyOnMatrixEnlargement if true, the similarity matrix will be copied, if we need to increase its size
+     * @see #isCopyOnMatrixEnlargement()
+     */
+    public void setCopyOnMatrixEnlargement(final boolean copyOnMatrixEnlargement) {
+        this.copyOnMatrixEnlargement = copyOnMatrixEnlargement;
     }
 
     @Override
@@ -133,18 +158,24 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
     @Override
     public void flush() throws IOException {
         calculateMatrixChunk();
-        this.matrix = new RealAudioMatrix(firstFrame, similarityMatrix, audioFormat);
+        this.matrix = new RealAudioMatrix(firstFrame, combinedChunksMatrix, audioFormat);
         this.signalProcessorSupport.process(matrix);
         this.signalProcessorSupport.flush();
     }
 
     private void calculateMatrixChunk() {
         if (similarityMatrix == null) {
-            similarityMatrix = createMatrix(spectra.size()+spectraOffset, bandwidth);
+            similarityMatrix = createMatrix(0, spectra.size()+spectraOffset, bandwidth);
+            combinedChunksMatrix = similarityMatrix;
         } else if (similarityMatrix.getNumberOfRows()<spectra.size()+spectraOffset) {
-            final MutableMatrix similarityMatrix = createMatrix(spectra.size()+spectraOffset, bandwidth);
+            final MutableMatrix similarityMatrix = createMatrix(this.similarityMatrix.getNumberOfRows(), spectra.size()+spectraOffset, bandwidth);
+            if (copyOnMatrixEnlargement) {
+                similarityMatrix.copy(this.similarityMatrix);
+                combinedChunksMatrix = similarityMatrix;
+            } else {
+                combinedChunksMatrix = combinedChunksMatrix.enlarge(similarityMatrix);
+            }
             chunkOffset = this.similarityMatrix.getNumberOfRows();
-            similarityMatrix.copy(this.similarityMatrix);
             this.similarityMatrix = similarityMatrix;
         }
 
@@ -152,10 +183,16 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
         final int startRow = Math.max(0, chunkOffset - chunk + 1);
         final int length = similarityMatrix.getNumberOfRows();
 
+        // because the following loop is critical, we want RandomAccess to the spectra list
+        final List<I> randomAccessSpectra = new ArrayList<I>(spectra);
+
         for (int row=startRow; row<length; row++) {
-            for (int column=chunkOffset; column<length; column++) {
-                if (bandwidth > 0 && column > row+ bandwidth /2) break;
-                final float d = distanceFunction.distance(spectra.get(row-spectraOffset), spectra.get(column-spectraOffset));
+            final I spectrumA = randomAccessSpectra.get(row - spectraOffset);
+            final int maxColumn = row + bandwidth / 2;
+            // max of row/chunkOffset to exploit symmetry
+            for (int column=Math.max(row, chunkOffset); column<length; column++) {
+                if (bandwidth > 0 && column > maxColumn) break;
+                final float d = distanceFunction.distance(spectrumA, randomAccessSpectra.get(column - spectraOffset));
                 similarityMatrix.set(row, column, d);
             }
         }
@@ -173,16 +210,20 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
      * e.g. one that is backed by an {@link com.tagtraum.jipes.math.UnsignedByteBackingBuffer}
      * to preserve memory.
      *
+     * @param previousLength the length of the previously used matrix, in essence information about the part
+     *                       that does not need to be covered by the new matrix (may be ignored).
      * @param length length
      * @param bandwidth bandwidth
      * @return mutable matrix
      */
-    protected MutableMatrix createMatrix(final int length, final int bandwidth) {
+    protected MutableMatrix createMatrix(final int previousLength, final int length, final int bandwidth) {
         final int memoryBanded = Math.min(((bandwidth-1)/2 + 1), length) * length;
         final int memorySymmetric = (length*(length+1))/2;
-        return bandwidth > 0 && memoryBanded < memorySymmetric
+        final boolean banded = bandwidth > 0 && memoryBanded < memorySymmetric;
+        setCopyOnMatrixEnlargement(banded);
+        return banded
                 ? new SymmetricBandMatrix(length, bandwidth, false, true)
-                : new SymmetricMatrix(length, false, true);
+                : new SymmetricMatrix(previousLength, length, false, true);
     }
 
     private void deriveOutputFormat(final AudioFormat inputFormat) {

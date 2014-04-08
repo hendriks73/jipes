@@ -138,44 +138,22 @@ public final class DistanceFunctions {
     public static DistanceFunction<float[]> createCosineDistanceFunction() {
         return new DistanceFunction<float[]>() {
             private Map<float[], Double> cache = new HashMap<float[], Double>();
-            private float[] lastA;
-            private float[] lastB;
-            private double lastEuclideanNormA;
-            private double lastEuclideanNormB;
 
             @Override
             public float distance(final float[] a, final float[] b) {
                 if (a == b) return 0;
-                final double euclideanNormA;
-                if (a == lastA) {
-                    euclideanNormA = lastEuclideanNormA;
-                } else {
-                    final Double cachedEuclideanNorm = cache.get(a);
-                    if (cachedEuclideanNorm == null) {
-                        euclideanNormA = Floats.euclideanNorm(a);
-                        cache.put(a, euclideanNormA);
-                    } else {
-                        euclideanNormA = cachedEuclideanNorm;
-                    }
-                }
-                lastA = a;
-                lastEuclideanNormA = euclideanNormA;
-
-                final double euclideanNormB;
-                if (b == lastB) {
-                    euclideanNormB = lastEuclideanNormB;
-                } else {
-                    final Double cachedEuclideanNorm = cache.get(b);
-                    if (cachedEuclideanNorm == null) {
-                        euclideanNormB = Floats.euclideanNorm(b);
-                        cache.put(a, euclideanNormA);
-                    } else {
-                        euclideanNormB = cachedEuclideanNorm;
-                    }
-                }
-                lastB = b;
-                lastEuclideanNormB = euclideanNormB;
+                final double euclideanNormA = euclideanNorm(a);
+                final double euclideanNormB = euclideanNorm(b);
                 return 1-(float)Floats.cosineSimilarity(a, b, 0, a.length, euclideanNormA, euclideanNormB);
+            }
+
+            private double euclideanNorm(final float[] a) {
+                Double norm = cache.get(a);
+                if (norm == null) {
+                    norm = Floats.euclideanNorm(a);
+                    cache.put(a, norm);
+                }
+                return norm;
             }
 
             @Override
