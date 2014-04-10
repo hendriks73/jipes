@@ -133,9 +133,9 @@ public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMat
 
     @Override
     protected int toIndex(final int row, final int column) {
-        final int regularIndex = row*(rows- offset)+column- offset;
-        final int correction = row- offset > 0 ? ((row- offset)*(row- offset +1))/2 : 0;
-        return regularIndex - correction;
+        final long regularIndex = row*(long)(rows - offset) + column - offset;
+        final long correction = row - offset > 0 ? ((row - offset)*(row - offset + 1L))/2L : 0;
+        return (int)(regularIndex - correction);
     }
 
     @Override
