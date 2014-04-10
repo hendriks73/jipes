@@ -103,9 +103,9 @@ public class SymmetricMatrix extends MutableAbstractMatrix implements MutableMat
 
     @Override
     protected void allocate(final MatrixBackingBuffer buffer) {
-        final int fullSize = (rows * (rows + 1)) / 2;
-        final int columnOffsetSize = (offset * (offset + 1)) / 2;
-        buffer.allocate(fullSize - columnOffsetSize);
+        final long fullSize = (rows * (rows + 1L)) / 2L;
+        final long columnOffsetSize = (offset * (offset + 1L)) / 2L;
+        buffer.allocate((int)(fullSize - columnOffsetSize));
     }
 
     @Override
