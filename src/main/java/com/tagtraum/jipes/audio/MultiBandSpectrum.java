@@ -98,6 +98,45 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
         return scale;
     }
 
+    /**
+     * Creates and array of frequency boundaries exactly +-50 cents to the given MIDI
+     * notes.
+     *
+     * @param lowMidi low MIDI note
+     * @param highMidi high MIDI note
+     * @return frequency boundaries
+     */
+    public static float[] createMidiBands(final int lowMidi, final int highMidi) {
+        return createMidiBands(lowMidi, highMidi, 1);
+    }
+
+    /**
+     * Creates an array of frequency boundaries by dividing each note into the given number of bins.
+     *
+     * @param binsPerSemitone bins/semitone
+     * @param lowMidi low MIDI note
+     * @param highMidi high MIDI note
+     * @return frequency boundaries
+     */
+    public static float[] createMidiBands(final int lowMidi, final int highMidi, final int binsPerSemitone) {
+        final int semitones = highMidi - lowMidi;
+        final float[] bands = new float[semitones*binsPerSemitone+1];
+        for (int i=0; i<semitones; i++) {
+            for (int bin = 0; bin<binsPerSemitone; bin++) {
+                // subtract x cents
+                final double cents = 100.0/binsPerSemitone*bin - 50.0;
+                bands[i*binsPerSemitone+bin] = midiToFrequency(lowMidi+i, cents);
+            }
+        }
+        bands[bands.length-1] = midiToFrequency(highMidi, 50.0);
+        return bands;
+    }
+
+    private static float midiToFrequency(final int midiNote, final double cents) {
+        final double freq = (Math.pow(2.0, (midiNote -69.0)/12.0) * 440.0);
+        return (float) (freq*Math.pow(2.0, cents /1200.0));
+    }
+
     private float[] computeBins(final float[] frequencies, final float[] values) {
         return computeBins(frequencies, values, values.length);
     }
