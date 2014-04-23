@@ -8,6 +8,8 @@ Notes
     * Increased SelfSimilarity performance
     * Added Matrix.enlarge(m)
     * Allow construction of FullMatrix from CSV file
+    * Added Welch window function
+    * Added ability to create MIDI-based frequency bands
 
 
 * 0.9.7
