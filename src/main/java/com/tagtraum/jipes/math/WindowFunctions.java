@@ -43,7 +43,7 @@ public final class WindowFunctions {
     };
 
     /**
-     * Triangle function that always uses a Hann window that is as long as the provided data.
+     * Function that always uses a Hann window that is as long as the provided data.
      */
     public static MapFunction<float[]> HANN = new MapFunction<float[]>() {
         public float[] map(final float[] array) {
@@ -57,7 +57,7 @@ public final class WindowFunctions {
     };
 
     /**
-     * Triangle function that always uses a Hamming window that is as long as the provided data.
+     * Function that always uses a Hamming window that is as long as the provided data.
      */
     public static MapFunction<float[]> HAMMING = new MapFunction<float[]>() {
         public float[] map(final float[] array) {
@@ -67,6 +67,20 @@ public final class WindowFunctions {
         @Override
         public String toString() {
             return "HAMMING_WINDOW";
+        }
+    };
+
+    /**
+     * Function that always uses a Welch window that is as long as the provided data.
+     */
+    public static MapFunction<float[]> WELCH = new MapFunction<float[]>() {
+        public float[] map(final float[] array) {
+            return new Welch(array.length).map(array);
+        }
+
+        @Override
+        public String toString() {
+            return "WELCH_WINDOW";
         }
     };
 
@@ -229,6 +243,61 @@ public final class WindowFunctions {
         @Override
         public String toString() {
             return "Hamming{" +
+                    "length=" + scales.length +
+                    '}';
+        }
+    }
+
+    /**
+     * Welch window function.
+     * <p/>
+     * This implementation re-uses its output buffer.
+     * Do not hold on to it or rely on it staying unchanged. If you must hold on to it,
+     * create a copy using {@link Object#clone()}.
+     *
+     * @see <a href="http://en.wikipedia.org/wiki/Window_function#Welch_window">Welch Window</a>
+     */
+    public static class Welch implements MapFunction<float[]> {
+
+        private float[] scales;
+        private float[] out;
+
+        public Welch(final int length) {
+            this.out = new float[length];
+            this.scales = new float[length];
+            final float a = (length - 1f) / 2f;
+            final float b = (length + 1f) / 2f;
+            for (int i=0; i<length; i++) {
+                final float c = (i - a) / b;
+                this.scales[i] = (1-c*c);
+            }
+        }
+
+        public float[] map(final float[] data) {
+            if (data.length != scales.length) throw new IllegalArgumentException("Data length must equal scales length.");
+            for (int i=0; i<data.length; i++) {
+                out[i] = data[i] * scales[i];
+            }
+            return out;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final Hann other = (Hann) o;
+            if (scales.length != other.scales.length) return false;
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return scales != null ? Arrays.hashCode(scales) : 0;
+        }
+
+        @Override
+        public String toString() {
+            return "Welch{" +
                     "length=" + scales.length +
                     '}';
         }
