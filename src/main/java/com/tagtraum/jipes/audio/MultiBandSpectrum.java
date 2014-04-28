@@ -186,8 +186,8 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
         int binIndex = 0;
         int offset = 0;
         for (final int length : valuesPerBin) {
-            for (int i = offset; i < length; i++) {
-                bins[binIndex] += values[i];
+            for (int i = 0; i < length; i++) {
+                bins[binIndex] += values[i+offset];
             }
             offset += length;
             binIndex++;
