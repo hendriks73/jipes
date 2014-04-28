@@ -158,9 +158,13 @@ public final class WindowFunctions {
             this.scales = new float[length];
             this.out = new float[length];
             final int lengthMinus1 = length - 1;
-            for (int n = 0; n < length; n++) {
-                final double cosArg = (DOUBLE_PI * n) / lengthMinus1;
-                scales[n] = (float) (0.5 - 0.5 * cos(cosArg));
+            if (lengthMinus1 == 0) {
+                scales[0] = 1;
+            } else {
+                for (int n = 0; n < length; n++) {
+                    final double cosArg = (DOUBLE_PI * n) / lengthMinus1;
+                    scales[n] = (float) (0.5 - 0.5 * cos(cosArg));
+                }
             }
         }
 
@@ -212,9 +216,13 @@ public final class WindowFunctions {
             this.scales = new float[length];
             this.out = new float[length];
             final int lengthMinus1 = length - 1;
-            for (int n = 0; n < length; n++) {
-                final double cosArg = (DOUBLE_PI * n) / lengthMinus1;
-                scales[n] = (float) (0.54 - 0.46 * cos(cosArg));
+            if (lengthMinus1 == 0) {
+                scales[0] = 1;
+            } else {
+                for (int n = 0; n < length; n++) {
+                    final double cosArg = (DOUBLE_PI * n) / lengthMinus1;
+                    scales[n] = (float) (0.54 - 0.46 * cos(cosArg));
+                }
             }
         }
 
