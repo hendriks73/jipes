@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 /**
  * <p>Represents an audio spectrum divided into bands as produced for example by
- * {@link #createLogarithmicBands(float, float, int)}.</p>
+ * {@link #createLogarithmicBands(float, float, int)} or {@link #createMidiBands(int, int)}.</p>
  *
  * <p>The bands <em>do not</em> have to be logarithmically spaced.</p>
  *
@@ -31,6 +31,13 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
     private int numberOfBands;
     private float[] bandBoundariesInHz;
 
+    /**
+     * Creates a multi band spectrum from another spectrum.
+     *
+     * @param frameNumber frame number
+     * @param audioSpectrum audio spectrum to copy data from
+     * @param bandBoundariesInHz band boundaries in Hz
+     */
     public MultiBandSpectrum(int frameNumber, final AudioSpectrum audioSpectrum, final float[] bandBoundariesInHz) {
         super(frameNumber, null, null, audioSpectrum.getAudioFormat());
         this.bandBoundariesInHz = bandBoundariesInHz;
@@ -47,6 +54,16 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
         }
     }
 
+    /**
+     * Constructs a new multi band spectrum. Important: Provided real/imaginary data must already
+     * be in bins. The provided band boundaries merely describe those bins.
+     *
+     * @param frameNumber frame number
+     * @param real real
+     * @param imaginary imaginary
+     * @param audioFormat audio format
+     * @param bandBoundariesInHz band boundaries in Hz
+     */
     public MultiBandSpectrum(int frameNumber, final float[] real, final float[] imaginary, final AudioFormat audioFormat, final float[] bandBoundariesInHz) {
         super(frameNumber, null, null, audioFormat);
         this.realData = real;
@@ -107,24 +124,38 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
      * @return frequency boundaries
      */
     public static float[] createMidiBands(final int lowMidi, final int highMidi) {
-        return createMidiBands(lowMidi, highMidi, 1);
+        return createMidiBands(lowMidi, highMidi, 1, 0);
     }
 
     /**
      * Creates an array of frequency boundaries by dividing each note into the given number of bins.
      *
-     * @param binsPerSemitone bins/semitone
      * @param lowMidi low MIDI note
      * @param highMidi high MIDI note
+     * @param binsPerSemitone bins/semitone
      * @return frequency boundaries
      */
     public static float[] createMidiBands(final int lowMidi, final int highMidi, final int binsPerSemitone) {
+        return createMidiBands(lowMidi, highMidi, binsPerSemitone, 0);
+    }
+
+    /**
+     * Creates an array of frequency boundaries by dividing each note into the given number of bins
+     * and allowing for a different then the standard 440Hz tuning specified in cents.
+     *
+     * @param binsPerSemitone bins/semitone
+     * @param lowMidi low MIDI note
+     * @param highMidi high MIDI note
+     * @param centDeviation deviation in cent from concert pitch (A4=440Hz)
+     * @return frequency boundaries
+     */
+    public static float[] createMidiBands(final int lowMidi, final int highMidi, final int binsPerSemitone, final float centDeviation) {
         final int semitones = highMidi - lowMidi;
         final float[] bands = new float[semitones*binsPerSemitone+1];
         for (int i=0; i<semitones; i++) {
             for (int bin = 0; bin<binsPerSemitone; bin++) {
                 // subtract x cents
-                final double cents = 100.0/binsPerSemitone*bin - 50.0;
+                final double cents = 100.0/binsPerSemitone*bin - 50.0 + centDeviation;
                 bands[i*binsPerSemitone+bin] = midiToFrequency(lowMidi+i, cents);
             }
         }
@@ -138,23 +169,29 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
     }
 
     private float[] computeBins(final float[] frequencies, final float[] values) {
-        return computeBins(frequencies, values, values.length);
-    }
-
-    private float[] computeBins(final float[] frequencies, final float[] values, final int length) {
-        final float[] bins = new float[numberOfBands+2];
-        float currentBin = 0;
-        int binIndex = 0;
-        for (int i=0; i<frequencies.length; i++) {
-            final double freq = frequencies[i];
-            while (binIndex < bandBoundariesInHz.length && freq >= bandBoundariesInHz[binIndex]) {
-                bins[binIndex] = currentBin;
-                currentBin = 0;
-                binIndex++;
+        final int[] valuesPerBin = new int[numberOfBands+2];
+        int currentEntry = 0;
+        int bin = 0;
+        for (final float freq : frequencies) {
+            while (bin < bandBoundariesInHz.length && freq >= bandBoundariesInHz[bin]) {
+                valuesPerBin[bin] = currentEntry;
+                currentEntry = 0;
+                bin++;
             }
-            currentBin += values[i];
+            currentEntry++;
         }
-        bins[binIndex] = currentBin;
+        valuesPerBin[bin] = currentEntry;
+
+        final float[] bins = new float[numberOfBands+2];
+        int binIndex = 0;
+        int offset = 0;
+        for (final int length : valuesPerBin) {
+            for (int i = offset; i < length; i++) {
+                bins[binIndex] += values[i];
+            }
+            offset += length;
+            binIndex++;
+        }
         // remove outOfBand bins
         final float[] inBandBins = new float[numberOfBands];
         System.arraycopy(bins, 1, inBandBins, 0, inBandBins.length);
