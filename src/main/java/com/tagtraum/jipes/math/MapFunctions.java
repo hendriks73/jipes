@@ -14,10 +14,20 @@ package com.tagtraum.jipes.math;
  */
 public final class MapFunctions {
 
-    private static final FloatNormalization SHORT_TO_ONE_NORMALIZATION = new FloatNormalization() {
+    private static final class ShortToOneNormalization extends FloatNormalization {
 
         public double getDivisor(final float[] buffer) {
             return Short.MAX_VALUE + 1;
+        }
+
+        @Override
+        public int hashCode() {
+            return 42;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            return obj instanceof ShortToOneNormalization;
         }
 
         @Override
@@ -25,7 +35,7 @@ public final class MapFunctions {
             return "SHORT_TO_ONE_NORMALIZATION";
         }
 
-    };
+    }
 
     private MapFunctions() {
     }
@@ -167,7 +177,7 @@ public final class MapFunctions {
      * @return normalization
      */
     public static MapFunction<float[]> createShortToOneNormalization() {
-        return SHORT_TO_ONE_NORMALIZATION;
+        return new ShortToOneNormalization();
     }
 
     /**

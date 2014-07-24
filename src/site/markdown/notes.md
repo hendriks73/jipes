@@ -3,6 +3,11 @@
 Notes
 -----
 
+* 0.9.9
+
+    * Fixed concurrency issue with MapFunctions.createShortToOneNormalization()
+    
+
 * 0.9.8
     * Enhanced SelfSimilarity to better deal with long tracks (BandMatrix)
     * Increased SelfSimilarity performance
