@@ -3,6 +3,11 @@
 Notes
 -----
 
+* 0.9.10
+
+    * Fixed potential NPE in AudioBuffer.getTimestamp() implementations
+
+
 * 0.9.9
 
     * Fixed concurrency issue with MapFunctions.createShortToOneNormalization()

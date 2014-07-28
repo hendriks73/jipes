@@ -66,7 +66,8 @@ public class RealAudioBuffer implements AudioBuffer, Cloneable {
     }
 
     public long getTimestamp(final TimeUnit timeUnit) {
-        return timeUnit.convert((long) (frameNumber * 1000l * 1000l * 1000l / (double)audioFormat.getSampleRate()), TimeUnit.NANOSECONDS);
+        if (audioFormat == null) return -1;
+        else return timeUnit.convert((long) (frameNumber * 1000l * 1000l * 1000l / (double)audioFormat.getSampleRate()), TimeUnit.NANOSECONDS);
     }
 
     public int getFrameNumber() {

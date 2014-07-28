@@ -31,7 +31,7 @@ public interface AudioBuffer {
      * If we didn't start reading at the beginning of the file (i.e. timestamp == 0),
      * the offset may not be 100% precise.
      *
-     * @return time in ms
+     * @return time in ms or -1, if it cannot be determined
      * @see #getFrameNumber()
      * @see #getTimestamp(java.util.concurrent.TimeUnit)
      */
@@ -43,7 +43,7 @@ public interface AudioBuffer {
      * the offset may not be 100% precise.
      *
      * @param timeUnit time unit
-     * @return time in the given unit
+     * @return time in the given unit or -1, if it cannot be determined
      * @see #getTimestamp()
      */
     long getTimestamp(TimeUnit timeUnit);
