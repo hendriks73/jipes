@@ -26,6 +26,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see FFTFactory
+ * @see DCT
  */
 public class FFT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpectrum> {
 

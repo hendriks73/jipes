@@ -6,6 +6,7 @@ Notes
 * 0.9.10
 
     * Fixed potential NPE in AudioBuffer.getTimestamp() implementations
+    * Added DCT implementation
 
 
 * 0.9.9
