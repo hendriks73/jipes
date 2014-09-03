@@ -6,8 +6,12 @@
  */
 package com.tagtraum.jipes.math;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.Math.*;
 
 /**
  * Factory for DC{@link com.tagtraum.jipes.math.Transform}s. Using the factory allows for sliding-in a faster, perhaps
@@ -80,20 +84,22 @@ public abstract class DCTFactory {
 
     /**
      * Default implementation for a FFT based DCT using
-     * the <a href="http://dsp.stackexchange.com/questions/2807/fast-cosine-transform-via-fft#10606">4N FFT, no shifts approach</a>.
+     * the <a href="http://dsp.stackexchange.com/questions/2807/fast-cosine-transform-via-fft#10606">N FFT approach</a>.
      */
     private static class FFTBasedDCT implements Transform {
 
+        private static final Map<Integer, float[][]> FACTORS = new HashMap<Integer, float[][]>();
         private final int numberOfSamples;
         private final Transform fft;
+        private final float[][] factors;
         private float[] frequencies;
 
         private FFTBasedDCT(final int numberOfSamples) {
-            final int fftLength = numberOfSamples * 4;
-            if (!isPowerOfTwo(fftLength)) throw new IllegalArgumentException("N is not a power of 2");
+            if (!isPowerOfTwo(numberOfSamples)) throw new IllegalArgumentException("N is not a power of 2");
             if (numberOfSamples <=0) throw new IllegalArgumentException("N must be greater than 0");
             this.numberOfSamples = numberOfSamples;
-            this.fft = FFTFactory.getInstance().create(fftLength);
+            this.factors = getFactors(numberOfSamples);
+            this.fft = FFTFactory.getInstance().create(numberOfSamples);
 
             this.frequencies = new float[numberOfSamples];
             for (int index=0; index<numberOfSamples; index++) {
@@ -105,23 +111,56 @@ public abstract class DCTFactory {
             }
         }
 
+        private synchronized static float[][] getFactors(final int numberOfSamples) {
+            float[][] factors = FACTORS.get(numberOfSamples);
+            if (factors == null) {
+                factors = halfSampleShift(numberOfSamples);
+                FACTORS.put(numberOfSamples, factors);
+            }
+            return factors;
+        }
+
         public float[][] inverseTransform(final float[] real, final float[] imaginary) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
 
         public float[][] transform(final float[] real) throws UnsupportedOperationException {
-            final float[] padded = new float[real.length * 4];
-            for (int i=0; i<real.length; i++) {
-                final int a = i * 2 + 1;
-                final int b = padded.length - a;
-                padded[a] = real[i];
-                padded[b] = real[i];
+            // reorder [a, b, c, d, e, f] to [a, c, e, f, d, b]
+            final float[] reordered = new float[real.length];
+            for (int i=0; i<real.length/2; i++) {
+                final int a = i * 2;
+                reordered[i] = real[a];
+                reordered[real.length-1-i] = real[a+1];
             }
-            final float[][] fftOut = fft.transform(padded);
+            final float[][] fftOut = fft.transform(reordered);
             // for now we return only a single array of real values, no frequency array
             final float[][] out = new float[1][real.length];
-            System.arraycopy(fftOut[0], 0, out[0], 0, real.length);
+
+            final float[] re = fftOut[0];
+            final float[] im = fftOut[1];
+            for (int k=0; k<real.length; k++) {
+                out[0][k] = 2 * multiplyIgnoreImaginary(re[k], im[k], factors[0][k], factors[1][k]);
+            }
             return out;
+        }
+
+        private static float[][] halfSampleShift(final int length) {
+            final float[][] factors = new float[2][];
+            factors[0] = new float[length];
+            factors[1] = new float[length];
+            final float[] real = factors[0];
+            final float[] imag = factors[1];
+            final int N2 = 2 * length;
+            for (int k=0; k<length; k++) {
+                final double x = -PI * k / N2;
+                real[k] = (float) cos(x);
+                imag[k] = (float) sin(x);
+            }
+            return factors;
+        }
+
+        private static float multiplyIgnoreImaginary(final float re1, final float im1, final float re2, final float im2) {
+            return re1 * re2 - im1 * im2;
         }
 
         public float[][] transform(final float[] real, final float[] imaginary) throws UnsupportedOperationException {
