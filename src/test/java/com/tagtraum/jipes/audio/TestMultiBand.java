@@ -63,6 +63,20 @@ public class TestMultiBand extends TestCase {
         assertEquals(100, powers[2], 0.0001);
     }
 
+    public void testGetBin() throws IOException {
+        final MultiBand<LinearFrequencySpectrum> processor = new MultiBand<LinearFrequencySpectrum>(new float[]{1000, 2000, 3000});
+        processor.connectTo(constSource);
+        final MultiBandSpectrum spectrum = processor.read();
+        assertEquals(-1, spectrum.getBin(999));
+        assertEquals(0, spectrum.getBin(1000));
+        assertEquals(0, spectrum.getBin(1999));
+        assertEquals(1, spectrum.getBin(2000));
+        assertEquals(1, spectrum.getBin(2999));
+        assertEquals(-1, spectrum.getBin(3000));
+        assertEquals(-1, spectrum.getBin(3001));
+    }
+
+
     public void testNullGenerator() throws IOException {
         final MultiBand<AudioSpectrum> processor = new MultiBand<AudioSpectrum>(new float[] {50, 60});
         processor.connectTo(new NullAudioSpectrumSource());

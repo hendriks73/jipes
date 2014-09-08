@@ -229,10 +229,10 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
      * @return bin
      */
     public int getBin(final float frequency) {
-        float lastFreq = 0;
-        for (int bin=0; bin<bandBoundariesInHz.length; bin++) {
-            final float freq = bandBoundariesInHz[bin];
-            if (frequency > lastFreq && frequency < freq) return bin;
+        for (int bin=0; bin<bandBoundariesInHz.length-1; bin++) {
+            final float lastFreq = bandBoundariesInHz[bin];
+            final float freq = bandBoundariesInHz[bin+1];
+            if (frequency >= lastFreq && frequency < freq) return bin;
         }
         return -1;
     }

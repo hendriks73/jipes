@@ -6,6 +6,7 @@ Notes
 * 0.9.10
 
     * Fixed potential NPE in AudioBuffer.getTimestamp() implementations
+    * Fixed MultiBandSpectrum.getBin(freq)
     * Added DCT implementation
 
 
