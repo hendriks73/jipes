@@ -37,4 +37,10 @@ public class TestFloats {
         final int[] peaks = Floats.peaks(new float[]{0, 0, 2, 0, 0, 0}, 2, false);
         assertEquals(1, peaks.length);
     }
+
+    @Test
+    public void testVariance() {
+        final float variance = Floats.variance(new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9});
+        assertEquals(6.6666666666667f, variance, 0.000001f);
+    }
 }
