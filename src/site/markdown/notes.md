@@ -8,6 +8,8 @@ Notes
     * Fixed potential NPE in AudioBuffer.getTimestamp() implementations
     * Fixed MultiBandSpectrum.getBin(freq)
     * Added DCT implementation
+    * Renamed SignalSplit.connections(int) to getConnectedProcessors(int)
+    * Java 8 style Javadocs.
 
 
 * 0.9.9
