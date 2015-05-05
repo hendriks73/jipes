@@ -122,7 +122,7 @@ public class BandSplit<T extends AudioSpectrum> implements SignalSplit<T, AudioB
         return signalProcessorSupport.disconnectFrom(channel, audioBufferSignalProcessor);
     }
 
-    public SignalProcessor<AudioBuffer, ?>[] connections(final int channel) {
+    public SignalProcessor<AudioBuffer, ?>[] getConnectedProcessors(final int channel) {
         return signalProcessorSupport.getConnectedProcessors(channel);
     }
 

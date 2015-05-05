@@ -55,7 +55,7 @@ public interface SignalSplit<I, O> extends SignalProcessor<I, O> {
      * @see #disconnectFrom(com.tagtraum.jipes.SignalProcessor)
      * @see #connectTo(com.tagtraum.jipes.SignalProcessor)
      */
-    SignalProcessor<O, ?>[] connections(int channel);
+    SignalProcessor<O, ?>[] getConnectedProcessors(int channel);
 
     /**
      * Number of channels the signal is split up into.

@@ -99,7 +99,7 @@ public class InterleavedChannelSplit implements SignalSplit<AudioBuffer, AudioBu
         return signalProcessorSupport.disconnectFrom(channel, audioBufferSignalProcessor);
     }
 
-    public SignalProcessor<AudioBuffer, ?>[] connections(final int channel) {
+    public SignalProcessor<AudioBuffer, ?>[] getConnectedProcessors(final int channel) {
         return signalProcessorSupport.getConnectedProcessors(channel);
     }
 

@@ -135,14 +135,12 @@ public class TestSlidingWindow extends TestCase {
         assertFalse(results.isEmpty());
         System.out.println("results: " + results.size());
 
-        /*
         for (final float[] buf : results) {
             for (final float f : buf) {
                 System.out.print(f + "\t");
             }
             System.out.println();
         }
-        */
 
         for (final float[] floats : results) {
             assertEquals(firstValue, floats[0], 0.00001);

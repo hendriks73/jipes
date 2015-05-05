@@ -317,7 +317,7 @@ public class SignalPump<I> {
             final SignalSplit<?,?> split = (SignalSplit<?,?>)processor;
             childProcessors = new SignalProcessor<?,?>[split.getChannelCount()][];
             for (int channel=0; channel< split.getChannelCount(); channel++) {
-                childProcessors[channel] = split.connections(channel);
+                childProcessors[channel] = split.getConnectedProcessors(channel);
             }
         } else if (processor instanceof SignalPipeline) {
             childProcessors = new SignalProcessor<?,?>[1][];
