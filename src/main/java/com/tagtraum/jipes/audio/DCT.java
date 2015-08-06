@@ -81,11 +81,11 @@ public class DCT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
     @Override
     public String toString() {
         if (length > 0) {
-            return "FFT{" +
+            return "DCT{" +
                     "length=" + length +
                     '}';
         } else {
-            return "FFT{" +
+            return "DCT{" +
                     "length=equal to first input" +
                     '}';
         }
