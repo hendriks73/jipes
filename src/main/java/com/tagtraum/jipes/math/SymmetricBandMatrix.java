@@ -68,7 +68,7 @@ public class SymmetricBandMatrix extends SymmetricMatrix {
     protected SymmetricBandMatrix(final int length, final int bandwidth, final MatrixBackingBuffer buffer,
                                   final boolean zeroPadded, final float defaultValue, final boolean allocate) {
         super(0, length, buffer, zeroPadded, false);
-        if (bandwidth % 2 == 0) throw new IllegalArgumentException("Bandwidth most be odd because of symmetry: " + bandwidth);
+        if (bandwidth % 2 == 0) throw new IllegalArgumentException("Bandwidth must be odd because of symmetry: " + bandwidth);
         this.columnsPerRow = Math.min(((bandwidth - 1) / 2 + 1), length);
         this.defaultValue = defaultValue;
         // to make things easy, we allocate more than necessary. Example 5x5 matrix:
