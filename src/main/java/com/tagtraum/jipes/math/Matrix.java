@@ -31,6 +31,30 @@ public interface Matrix {
     float get(final int row, final int column);
 
     /**
+     * Gets the values from <code>row</code>.
+     * If the matrix supports zero-padding, this method may return
+     * <code>0f</code> for undefined rows or columns.
+     *
+     * @param row row
+     * @return value
+     * @throws IndexOutOfBoundsException if the row is out of bounds and the matrix does not
+     * support zero padding
+     */
+    float[] getRow(final int row);
+
+    /**
+     * Gets the value from <code>column</code>.
+     * If the matrix supports zero-padding, this method may return
+     * <code>0f</code> for undefined columns.
+     *
+     * @param column column
+     * @return value
+     * @throws IndexOutOfBoundsException if the column is out of bounds and the matrix does not
+     * support zero padding
+     */
+    float[] getColumn(final int column);
+
+    /**
      * Number of rows
      *
      * @return rows

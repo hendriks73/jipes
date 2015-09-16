@@ -79,6 +79,24 @@ public abstract class AbstractMatrix implements Matrix {
         return get(toIndex(row, column));
     }
 
+    @Override
+    public float[] getRow(final int row) {
+        final float[] values = new float[getNumberOfColumns()];
+        for (int column=0; column< values.length; column++) {
+            values[column] = get(row, column);
+        }
+        return values;
+    }
+
+    @Override
+    public float[] getColumn(final int column) {
+        final float[] values = new float[getNumberOfRows()];
+        for (int row=0; row< values.length; row++) {
+            values[row] = get(row, column);
+        }
+        return values;
+    }
+
     protected boolean isValidXORZeroPadded(final int row, final int column) {
         if (isInvalid(row, column)) {
             if (isZeroPadded()) return true;
