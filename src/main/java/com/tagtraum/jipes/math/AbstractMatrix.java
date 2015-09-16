@@ -7,10 +7,10 @@
 package com.tagtraum.jipes.math;
 
 /**
-* Base implementation for a {@link Matrix}.
-*
-* @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
-*/
+ * Base implementation for a {@link Matrix}.
+ *
+ * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
+ */
 public abstract class AbstractMatrix implements Matrix {
 
     protected int rows;
