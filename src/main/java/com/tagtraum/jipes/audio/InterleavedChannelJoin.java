@@ -37,7 +37,7 @@ public class InterleavedChannelJoin extends Join<AudioBuffer, AudioBuffer> {
         public AudioBuffer aggregate(final List<AudioBuffer> collection) {
             final AudioBuffer firstAudioBuffer = collection.get(0);
             final int channels = collection.size();
-            if (audioFormat != null) {
+            if (audioFormat == null) {
                 audioFormat = new AudioFormat(
                     firstAudioBuffer.getAudioFormat().getEncoding(),
                     firstAudioBuffer.getAudioFormat().getSampleRate(),
