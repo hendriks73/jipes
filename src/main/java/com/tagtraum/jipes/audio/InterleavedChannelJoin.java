@@ -49,10 +49,10 @@ public class InterleavedChannelJoin extends Join<AudioBuffer, AudioBuffer> {
                     );
             }
 
-            final float[] real = new float[firstAudioBuffer.getData().length*channels];
+            final float[] real = new float[firstAudioBuffer.getRealData().length*channels];
             for (int i=0; i< channels; i++) {
                 final AudioBuffer buffer = collection.get(i);
-                final float[] data = buffer.getData();
+                final float[] data = buffer.getRealData();
                 for (int j=0; j< data.length; j++) {
                     real[j*channels+i] = data[j];
                 }
