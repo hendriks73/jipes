@@ -13,8 +13,6 @@ import com.tagtraum.jipes.math.StatefulMapFunction;
 
 /**
  * Factory methods for turning <code>float[]</code> functions into {@link AudioBuffer} functions.
- * <p/>
- * Date: 5/16/11
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see MapFunction
@@ -240,7 +238,7 @@ public final class AudioBufferFunctions {
 
         public T map(final T buffer) {
             float[] unscaled = buffer.getRealData();
-            final float[] real = function.map(unscaled);
+            final float[] real = function.map(unscaled).clone();
             final AudioBuffer out;
             if (buffer instanceof RealAudioBuffer) {
                 if (realAudioBuffer == null) {
@@ -250,7 +248,7 @@ public final class AudioBufferFunctions {
                 }
                 out = realAudioBuffer;
             } else {
-                final float[] imaginary = buffer.getImaginaryData() != null ? function.map(buffer.getImaginaryData()) : null;
+                final float[] imaginary = buffer.getImaginaryData() != null ? function.map(buffer.getImaginaryData()).clone() : null;
                 out = buffer.derive(real, imaginary);
             }
             return (T)out;
@@ -288,7 +286,7 @@ public final class AudioBufferFunctions {
         }
 
         public T map(final T buffer) {
-            final float[] real = function.map(buffer.getRealData());
+            final float[] real = function.map(buffer.getRealData()).clone();
             final AudioBuffer out;
             if (buffer instanceof RealAudioBuffer) {
                 if (realAudioBuffer == null) {
@@ -298,7 +296,7 @@ public final class AudioBufferFunctions {
                 }
                 out = realAudioBuffer;
             } else {
-                final float[] imaginary = buffer.getImaginaryData() != null ? function.map(buffer.getImaginaryData()) : null;
+                final float[] imaginary = buffer.getImaginaryData() != null ? function.map(buffer.getImaginaryData()).clone() : null;
                 out = buffer.derive(real, imaginary);
             }
             return (T)out;
