@@ -35,6 +35,7 @@ public class Join<I, O> implements SignalProcessor<I, O> {
     private List<I> parts = new ArrayList<I>();
     private O lastOut;
     private Object id;
+    private boolean flushed;
 
     public Join(final int partsPerUnit, final AggregateFunction<List<I>, O> aggregateFunction) {
         this(partsPerUnit, aggregateFunction, null);
@@ -71,14 +72,16 @@ public class Join<I, O> implements SignalProcessor<I, O> {
 
     /**
      * Only flush, if we just aggregated some signal, but not, if we are still waiting for missing parts.
+     * Also, flush at most once.
      * This effectively swallows flush calls, if they occur before we put all the pieces together.
      * We do this to avoid pre-mature/multiple flushing.
      *
      * @throws IOException
      */
     public void flush() throws IOException {
-        if (parts.size() % partsPerUnit == 0) {
+        if (parts.size() % partsPerUnit == 0 && !flushed) {
             signalProcessorSupport.flush();
+            flushed = true;
         }
     }
 
