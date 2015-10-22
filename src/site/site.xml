@@ -1,16 +1,37 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Jipes" xmlns="http://maven.apache.org/DECORATION/1.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/DECORATION/1.4.0 http://maven.apache.org/xsd/decoration-1.4.0.xsd">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.4</version>
+    </skin>
+    <!-- ribbon is not retina capable yet -->
+    <!--
+    <custom>
+        <fluidoSkin>
+            <gitHub>
+                <projectId>hendriks73/jipes</projectId>
+                <ribbonOrientation>left</ribbonOrientation>
+                <ribbonColor>gray</ribbonColor>
+            </gitHub>
+        </fluidoSkin>
+    </custom>
+    -->
     <version position="right"/>
     <googleAnalyticsAccountId>UA-7561371-2</googleAnalyticsAccountId>
     <bannerLeft>
         <name>Jipes</name>
         <href>http://www.tagtraum.com/jipes/</href>
         <src>./images/jipes-banner.png</src>
+        <width>300</width>
+        <height>120</height>
     </bannerLeft>
     <bannerRight>
         <href>http://www.tagtraum.com/</href>
         <src>./images/tagtraum-banner.png</src>
+        <width>90</width>
+        <height>60</height>
     </bannerRight>
     <body>
         <head>
