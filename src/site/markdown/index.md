@@ -63,5 +63,4 @@ Significant Non-Java DSP projects are:
 
 There are certainly more frameworks. Feel free to contact me, if you want your framework included in this list.
 
-
-<a href="https://github.com/hendriks73/jipes"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
+<a href="https://github.com/hendriks73/jipes"><img style="position: absolute; top: 0; left: 0; border: 0; width: 149px; height: 149px;" src="http://aral.github.com/fork-me-on-github-retina-ribbons/left-grey@2x.png" alt="Fork me on GitHub"></a>
