@@ -136,7 +136,7 @@ public final class Floats {
      *
      * @param a array
      * @param b array
-     * @return sum
+     * @return difference
      */
     public static float[] subtract(final float[] a, final float[] b) {
         final float[] result = new float[Math.max(a.length, b.length)];
@@ -151,6 +151,28 @@ public final class Floats {
             for (int i=a.length; i<b.length; i++) {
                 result[i] = -result[i];
             }
+        }
+        return result;
+    }
+
+    /**
+     * Adds the corresponding elements of two arrays.
+     * If one array is longer than the other, the shorter array is padded with zeros so that
+     * both arrays have the same length.
+     *
+     * @param a array
+     * @param b array
+     * @return sum
+     */
+    public static float[] add(final float[] a, final float[] b) {
+        final float[] result = new float[Math.max(a.length, b.length)];
+        for (int i=0, max = Math.min(a.length, b.length); i<max; i++) {
+            result[i] = a[i] + b[i];
+        }
+        if (a.length > b.length)
+            System.arraycopy(a, b.length, result, b.length, a.length-b.length);
+        else if (b.length > a.length) {
+            System.arraycopy(b, a.length, result, a.length, b.length-a.length);
         }
         return result;
     }
@@ -200,7 +222,7 @@ public final class Floats {
         for (int i=offset; i<offset+length; i++) {
             sum += array[i];
         }
-        return (float) (sum / (length-offset));
+        return (float) sum / length;
     }
 
     /**
@@ -244,23 +266,37 @@ public final class Floats {
      * Calculates the min value of a given array.
      *
      * @param array float array
+     * @param offset offset into the array
+     * @param length length
      * @return minimum
      */
-    public static float min(final float[] array) {
+    public static float min(final float[] array, final int offset, final int length) {
         float min = Float.POSITIVE_INFINITY;
-        for (final float v : array) {
+        for (int i=offset; i<offset+length; i++) {
+            final float v = array[i];
             if (v < min) min = v;
         }
         return min;
     }
 
+
     /**
-     * Calculates the max value of a given array.
+     * Calculates the min value of a given array.
+     *
+     * @param array float array
+     * @return minimum
+     */
+    public static float min(final float[] array) {
+        return min(array, 0, array.length);
+    }
+
+    /**
+     * Calculates the maximum value of a given array.
      *
      * @param array float array
      * @param offset offset into the array
      * @param length length
-     * @return max
+     * @return maximum
      */
     public static float max(final float[] array, final int offset, final int length) {
         float max = Float.NEGATIVE_INFINITY;
@@ -272,10 +308,10 @@ public final class Floats {
     }
 
     /**
-     * Calculates the max value of a given array.
+     * Calculates the maximum value of a given array.
      *
      * @param array float array
-     * @return max
+     * @return maximum
      */
     public static float max(final float[] array) {
         return max(array, 0, array.length);
@@ -346,6 +382,46 @@ public final class Floats {
             this.index = index;
             this.value = value;
         }
+    }
+
+    /**
+     * Multiplies the given array with the given factor.
+     *
+     * @param array array
+     * @param factor factor
+     */
+    public static void multiply(final float[] array, final float factor) {
+        for (int i=0; i<array.length; i++) {
+            array[i] *= factor;
+        }
+    }
+
+    /**
+     * Computes the dot product.
+     *
+     * @param a array a
+     * @param b array b
+     * @return dot product
+     */
+    public static double dotProduct(final float[] a, final float[] b) {
+        return dotProduct(a, b, 0, a.length);
+    }
+
+    /**
+     * Computes the dot product.
+     *
+     * @param a array a
+     * @param b array b
+     * @param offset offset into both arrays
+     * @param length length
+     * @return dot product
+     */
+    public static double dotProduct(final float[] a, final float[] b, final int offset, final int length) {
+        double dotProduct = 0;
+        for (int i=offset, max=Math.min(offset+length, a.length); i<max; i++) {
+            dotProduct += a[i]*(double)b[i];
+        }
+        return dotProduct;
     }
 
     /**
@@ -431,6 +507,63 @@ public final class Floats {
     }
 
     /**
+     * Median of the provided data.
+     *
+     * @param array data
+     * @return median
+     */
+    public static float median(final float[] array) {
+        return median(array, 0, array.length);
+    }
+
+    /**
+     * Median of the provided data.
+     *
+     * @param array data
+     * @param offset offset
+     * @param length length
+     * @return median
+     */
+    public static float median(final float[] array, final int offset, final int length) {
+        final float[] region = new float[length];
+        System.arraycopy(array, offset, region, 0, length);
+        Arrays.sort(region);
+        if (length % 2 == 0) {
+            return (region[length/2] + region[length/2-1]) / 2f;
+        } else {
+            return region[length/2];
+        }
+    }
+
+    /**
+     * Mean absolute deviation around a central point.
+     *
+     * @param centralPoint central point
+     * @param array data
+     * @param offset offset
+     * @param length length
+     * @return mean absolute deviation
+     */
+    public static float meanAbsoluteDeviation(final float centralPoint, final float[] array, final int offset, final int length) {
+        double sum = 0;
+        for (int i=offset; i<offset+length; i++) {
+            sum += Math.abs(array[i] - centralPoint);
+        }
+        return (float)sum / length;
+    }
+
+    /**
+     * Mean absolute deviation around a central point.
+     *
+     * @param centralPoint central point
+     * @param array data
+     * @return mean absolute deviation
+     */
+    public static float meanAbsoluteDeviation(final float centralPoint, final float[] array) {
+        return meanAbsoluteDeviation(centralPoint, array, 0, array.length);
+    }
+
+    /**
      * Variance of the provided data.
      *
      * @param array data
@@ -443,7 +576,7 @@ public final class Floats {
         double sum = 0;
         for (int i=offset; i<offset+length; i++) {
             final float diff = array[i] - mean;
-            sum += diff * diff / array.length;
+            sum += (diff * diff) / length;
         }
         return (float)sum;
     }
@@ -652,11 +785,7 @@ public final class Floats {
         if (a==b) return 1f;
         final double normProduct = euclideanNormA * euclideanNormB;
         if (normProduct == 0) return 0;
-        double dotProduct = 0;
-        for (int i=offset, max=Math.min(offset+length, a.length); i<max; i++) {
-            dotProduct += a[i]*(double)b[i];
-        }
-        return dotProduct / normProduct;
+        return dotProduct(a, b, offset, length) / normProduct;
     }
 
     /**
