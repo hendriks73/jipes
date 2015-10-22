@@ -10,7 +10,7 @@
 <p>
     Unlike many other digital signal processing (DSP) libraries or frameworks, Jipes is not meant for
     real time processing of a single audio stream that is manipulated and eventually played back. Instead, it
-    focuses on efficiently executing mutiple processing pipelines that transform a signal into a feature
+    focuses on efficiently executing multiple processing pipelines that transform a signal into a feature
     or feature set. While doing so, Jipes attempts to avoid duplication of work, by applying some simple
     optimizations. For example, if two pipelines each require the same audio data,
     a certain window size, application of a Hann window and
@@ -26,7 +26,7 @@
     of the library, while many useful functions for processing data arrays are offered in the math sub-package.
 </p>
 <p>
-    Even though Jipes is written in and for Java, an object oriented language, it borrows some functional concepts.
+    Even though Jipes is written in and for Java 6, an object oriented language, it borrows some functional concepts.
     One of the key interfaces in Jipes is that of the <code>MapFunction</code>. It does what you might suspect&#151;it
     maps some sort of data into other data of the same type. This principle is useful for example for a simple filter
     or mapping of a pitch vector to a chroma feature. Other functions let you aggregate data or compute the distance
