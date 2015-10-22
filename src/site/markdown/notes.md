@@ -2,6 +2,21 @@
 
 Notes
 -----
+* 0.9.11
+
+    * Added OLA (overlap-add) processor
+    * Added IFFT (inverse FFT) processor
+    * Added Channel processor
+    * Added GriffinLim transform
+    * Added ComplexAudioBuffer
+    * Added bulk getRow and getColumn methods to Matrix
+    * Added bulk setRow and setColumn methods to MutableMatrix
+    * Fixed missing AudioFormat of InterleavedChannelJoin buffers
+    * Fixed InterleavedChannelJoin to use real instead of data
+    * Fixed mutability issue in AudioBufferFunctions.createMapFunction()
+    * Renamed WindowFunctions to WindowFunction.
+    * Avoid double-flushing by Join
+
 
 * 0.9.10
 
