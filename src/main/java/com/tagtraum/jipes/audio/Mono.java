@@ -18,6 +18,7 @@ import javax.sound.sampled.AudioFormat;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see InterleavedChannelSplit
+ * @see Channel
  */
 public class Mono extends AbstractSignalProcessor<AudioBuffer, AudioBuffer> {
 
