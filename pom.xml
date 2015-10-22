@@ -200,7 +200,7 @@
             <name>beaTunes Repository</name>
             <url>sftp://www.beatunes.com/var/www/html/repo/maven2</url>
         </repository>
-        <downloadUrl>http://www.beatunes.com/repo/maven2</downloadUrl>
+        <downloadUrl>https://www.beatunes.com/repo/maven2</downloadUrl>
         <site>
             <id>tagtraum-site</id>
             <url>ftp://www.tagtraum-industries.de/jipes/</url>
