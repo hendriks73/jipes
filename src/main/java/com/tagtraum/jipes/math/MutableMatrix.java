@@ -23,7 +23,29 @@ public interface MutableMatrix extends Matrix {
      * @throws IllegalArgumentException if the given value cannot be stored in the matrix, e.g. because it is
      * not in the valid range
      */
-    void set(final int row, final int column, final float value);
+    void set(int row, int column, float value);
+
+    /**
+     * Sets the given values.
+     *
+     * @param row row
+     * @param values values
+     * @throws IndexOutOfBoundsException row is out of bounds
+     * @throws IllegalArgumentException if the given value cannot be stored in the matrix, e.g. because it is
+     * not in the valid range
+     */
+    void setRow(int row, float[] values);
+
+    /**
+     * Sets the given values.
+     *
+     * @param column column
+     * @param values values
+     * @throws IndexOutOfBoundsException column is out of bounds
+     * @throws IllegalArgumentException if the given value cannot be stored in the matrix, e.g. because it is
+     * not in the valid range
+     */
+    void setColumn(int column, float[] values);
 
     /**
      * Fills all writable elements of this matrix with the given value.

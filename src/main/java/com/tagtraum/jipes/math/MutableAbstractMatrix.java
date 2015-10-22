@@ -69,6 +69,21 @@ public abstract class MutableAbstractMatrix extends AbstractMatrix implements Mu
         set(toIndex(row, column), value);
     }
 
+    @Override
+    public void setColumn(final int column, final float[] values) {
+        if (values.length != getNumberOfRows()) throw new IllegalArgumentException("Array must have the same length as column: " + getNumberOfRows());
+        for (int row=0; row<values.length; row++) {
+            set(row, column, values[row]);
+        }
+    }
+
+    @Override
+    public void setRow(final int row, final float[] values) {
+        if (values.length != getNumberOfColumns()) throw new IllegalArgumentException("Array must have the same length as row: " + getNumberOfColumns());
+        for (int column=0; column<values.length; column++) {
+            set(row, column, values[column]);
+        }
+    }
 
     protected void set(final int index, final float value) {
         buffer.set(index, value);
