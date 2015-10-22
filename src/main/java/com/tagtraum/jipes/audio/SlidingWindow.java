@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 /**
  * Provides overlapping frame blocks (aka slices or windows or frames) of a defined size.
+ * This is the counterpart of {@link SlidingWindow}.
  * <br/>
  * If no new data can be obtained the last few blocks/windows are zero padded until
  * all data disappeared from the window. Only then {@link #read()} returns <code>null</code>.
@@ -22,10 +23,9 @@ import java.util.Arrays;
  * buffers being immutable. If you need to keep a buffer around for longer than the call in which
  * it was given to you, {@link Object#clone()} it.
  * <p/>
- * Date: Jul 22, 2010
- * Time: 1:52:01 PM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
+ * @see OLA
  */
 public class SlidingWindow extends AbstractSignalProcessor<AudioBuffer, AudioBuffer> {
 

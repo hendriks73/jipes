@@ -11,16 +11,16 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * <p>
  * Buffer that holds real, time domain audio data and some meta information in the form of
  * an {@link javax.sound.sampled.AudioFormat} instance. The imaginary part of the represented data
  * is always zero.
  * <p/>
- * Date: Aug 25, 2010
- * Time: 4:48:08 PM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see com.tagtraum.jipes.SignalPullProcessor
  * @see com.tagtraum.jipes.SignalProcessor
+ * @see ComplexAudioBuffer
  */
 public class RealAudioBuffer implements AudioBuffer, Cloneable {
 
@@ -80,7 +80,7 @@ public class RealAudioBuffer implements AudioBuffer, Cloneable {
 
     /**
      * Because this is a real-only buffer, the result is the same as calling {@link #getRealData()}.
-     * Note that this is different than calling {@link #getMagnitudes()} in that the result contains positive
+     * Note that this is different from calling {@link #getMagnitudes()} in that the result contains positive
      * and negative numbers, while the magnitudes are positive-only.
      *
      * @return real data

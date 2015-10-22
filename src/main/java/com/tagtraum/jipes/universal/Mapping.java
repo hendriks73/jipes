@@ -9,18 +9,18 @@ package com.tagtraum.jipes.universal;
 import com.tagtraum.jipes.AbstractSignalProcessor;
 import com.tagtraum.jipes.math.MapFunction;
 import com.tagtraum.jipes.math.StatefulMapFunction;
+import com.tagtraum.jipes.math.WindowFunction;
 
 import java.io.IOException;
 
 /**
  * Applies a {@link com.tagtraum.jipes.math.MapFunction} to <em>each</em>
  * provided object of type T (for example to all data of a {@link com.tagtraum.jipes.audio.RealAudioBuffer}}).
- * The function could be e.g. a {@link com.tagtraum.jipes.math.WindowFunctions.Hamming} window or a
+ * The function could be e.g. a {@link WindowFunction.Hamming} window or a
  * {@link com.tagtraum.jipes.math.Filters.FIRFilter}. Due to its universal nature, this is a central
  * {@link com.tagtraum.jipes.SignalProcessor} class.
  * <p/>
- * Date: Jul 22, 2010
- * Time: 2:38:54 PM
+ *
  * @param <T> type to map data from <em>and</em> to
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
