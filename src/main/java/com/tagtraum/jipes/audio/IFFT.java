@@ -14,33 +14,36 @@ import com.tagtraum.jipes.math.Transform;
 import java.io.IOException;
 
 /**
- * Transforms samples obtained with {@link com.tagtraum.jipes.audio.AudioBuffer#getData()}
- * using the FFT. The result will be a {@link com.tagtraum.jipes.audio.LinearFrequencySpectrum}, containing
+ * <p>
+ * Transforms samples obtained from a given {@link LinearFrequencySpectrum}
+ * using the inverse FFT. The result will be an {@link AudioBuffer}, containing
  * the real part, the imaginary part and methods for accessing all kinds of other goodies.<br>
  * Should the number of samples fed into this processor not be a power of two, the sample array will
- * be zero padded at the end before applying the FFT.
+ * be zero padded at the end before applying the inverse FFT.
  * <p/>
- * The returned {@link com.tagtraum.jipes.audio.AudioSpectrum} object is re-used. If you need to hold on
+ * <p>
+ * The returned {@link AudioBuffer} object is re-used. If you need to hold on
  * to it for longer than the current method call, you must either {@link Object#clone()} it or
- * create a copy using a copy constructor like {@link com.tagtraum.jipes.audio.LinearFrequencySpectrum#LinearFrequencySpectrum(com.tagtraum.jipes.audio.LinearFrequencySpectrum)}.
+ * create a copy using a copy constructor.
+ * </p>
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see FFTFactory
  * @see DCT
- * @see IFFT
+ * @see FFT
  */
-public class FFT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpectrum> {
+public class IFFT extends AbstractSignalProcessor<LinearFrequencySpectrum, AudioBuffer> {
 
     private Transform fft;
     private int length;
     private float requiredResolutionInHz;
-    private LinearFrequencySpectrum linearFrequencySpectrum;
+    private ComplexAudioBuffer audioBuffer;
 
     /**
      * @param length minimum size of the array to transform - shorter buffers will be zero padded
      * @param requiredResolutionInHz min res in Hz
      */
-    private FFT(final int length, final float requiredResolutionInHz) {
+    private IFFT(final int length, final float requiredResolutionInHz) {
         if (length > 0 && requiredResolutionInHz > 0) throw new IllegalArgumentException("Either length or requiredResolutionInHz must be 0");
         this.length = length;
         this.requiredResolutionInHz = requiredResolutionInHz;
@@ -49,7 +52,7 @@ public class FFT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
     /**
      * @param length minimum size of the array to transform - shorter buffers will be zero padded
      */
-    public FFT(final int length) {
+    public IFFT(final int length) {
         this(length, 0);
     }
 
@@ -57,16 +60,16 @@ public class FFT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
      *
      * @param requiredResolutionInHz min res in Hz (achieved through zero padding)
      */
-    public FFT(final float requiredResolutionInHz) {
+    public IFFT(final float requiredResolutionInHz) {
         this(0, requiredResolutionInHz);
     }
 
-    public FFT() {
+    public IFFT() {
         this(0, 0);
     }
 
     @Override
-    protected LinearFrequencySpectrum processNext(final AudioBuffer buffer) throws IOException {
+    protected AudioBuffer processNext(final LinearFrequencySpectrum buffer) throws IOException {
         if (buffer.getAudioFormat() != null && buffer.getAudioFormat().getChannels() != 1) {
             throw new IOException("Source must be mono.");
         }
@@ -74,19 +77,19 @@ public class FFT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
             length = (int)Math.ceil(buffer.getAudioFormat().getSampleRate()/requiredResolutionInHz);
         }
 
-        final float[] floats = Floats.zeroPadAtEnd(length, buffer.getData());
+        final float[] realFloats = Floats.zeroPadAtEnd(length, buffer.getRealData());
+        final float[] imaginaryFloats = Floats.zeroPadAtEnd(length, buffer.getImaginaryData());
         if (fft == null) {
-            this.fft = FFTFactory.getInstance().create(floats.length);
-            if (length == 0) length = floats.length;
+            this.fft = FFTFactory.getInstance().create(realFloats.length);
+            if (length == 0) length = realFloats.length;
         }
-        final float[][] realFftResult = fft.transform(floats);
-        assert realFftResult[0].length == floats.length;
-        if (linearFrequencySpectrum == null) {
-            linearFrequencySpectrum = new LinearFrequencySpectrum(buffer.getFrameNumber(), realFftResult[0], realFftResult[1], buffer.getAudioFormat());
+        final float[][] inverseFftResult = fft.inverseTransform(realFloats, imaginaryFloats);
+        if (audioBuffer == null) {
+            audioBuffer = new ComplexAudioBuffer(buffer.getFrameNumber(), inverseFftResult[0], inverseFftResult[1], buffer.getAudioFormat());
         } else {
-            linearFrequencySpectrum.reuse(buffer.getFrameNumber(), realFftResult[0], realFftResult[1], buffer.getAudioFormat());
+            audioBuffer.reuse(buffer.getFrameNumber(), inverseFftResult[0], inverseFftResult[1], buffer.getAudioFormat());
         }
-        return linearFrequencySpectrum;
+        return audioBuffer;
     }
 
     @Override
@@ -105,15 +108,15 @@ public class FFT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
     @Override
     public String toString() {
         if (length > 0) {
-            return "FFT{" +
+            return "IFFT{" +
                     "length=" + length +
                     '}';
         } else if (requiredResolutionInHz > 0) {
-            return "FFT{" +
+            return "IFFT{" +
                     "requiredResolutionInHz=" + requiredResolutionInHz +
                     '}';
         } else {
-            return "FFT{" +
+            return "IFFT{" +
                     "length=equal to first input" +
                     '}';
         }
