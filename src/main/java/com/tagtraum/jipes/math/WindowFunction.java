@@ -128,11 +128,13 @@ public abstract class WindowFunction implements MapFunction<float[]> {
     }
 
     /**
-     * Helper class to invert (1/x) the invert of window functions.
+     * Helper class to invert (1/x) window functions.
      * <p/>
      * This implementation re-uses its output buffer.
      * Do not hold on to it or rely on it staying unchanged. If you must hold on to it,
      * create a copy using {@link Object#clone()}.
+     *
+     * @see #invert()
      */
     public static class InverseWindowFunction extends WindowFunction {
 
