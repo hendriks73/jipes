@@ -9,7 +9,7 @@ applications or more specifically personal music software like [beaTunes](http:/
 
 Unlike many other digital signal processing (DSP) libraries or frameworks, Jipes is not meant for real time
 processing of a single audio stream that is manipulated and eventually played back. Instead, it focuses on
-efficiently executing mutiple processing pipelines that transform a signal into a feature or feature set. While
+efficiently executing multiple processing pipelines that transform a signal into a feature or feature set. While
 doing so, Jipes attempts to avoid duplication of work, by applying some simple optimizations. For example, if two
 pipelines each require the same audio data, a certain window size, application of a Hann window and the
 transformation of the signal via FFT, Jipes will perform these processing steps exactly once. Only when processing
@@ -58,6 +58,7 @@ Significant Non-Java DSP projects are:
 
 * Matlab: [MIRToolbox](https://www.jyu.fi/hum/laitokset/musiikki/en/research/coe/materials/mirtoolbox)
 * C++: [Marsyas](http://marsyas.info/)
+* C++: [Essentia](http://essentia.upf.edu)
 * C/C++: [Vamp](http://vamp-plugins.org/)
 
 There are certainly more frameworks. Feel free to contact me, if you want your framework included in this list.
