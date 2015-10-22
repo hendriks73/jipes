@@ -51,7 +51,7 @@ Jipes is licensed under [LGPL](./license.html).
 
 Other Java DSP projects worth mentioning are:
 
-* [TarsosDSP](http://tarsos.0110.be/)
+* [TarsosDSP](https://github.com/JorenSix/TarsosDSP)
 * [jAudio](http://jaudio.sourceforge.net/)
 
 Significant Non-Java DSP projects are:
