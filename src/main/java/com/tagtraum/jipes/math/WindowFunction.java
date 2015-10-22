@@ -16,16 +16,50 @@ import static java.lang.Math.cos;
  * <p/>
  * <em>Note that some implementations may re-use their output buffer!</em>
  * <p/>
- * Date: 5/17/11
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see <a href="http://en.wikipedia.org/wiki/Window_function">Window functions on Wikipedia</a>
  */
-public final class WindowFunctions {
+public abstract class WindowFunction implements MapFunction<float[]> {
 
     private static final double DOUBLE_PI = 2.0 * PI;
+    private float[] coefficients;
+    private float[] out;
+    private int length;
 
-    private WindowFunctions() {
+    public WindowFunction(final float[] coefficients) {
+        this.coefficients = coefficients;
+        this.length = coefficients.length;
+        this.out = new float[length];
+    }
+
+    public float[] getCoefficients() {
+        return coefficients.clone();
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public float[] map(final float[] data) {
+        if (data.length != coefficients.length) throw new IllegalArgumentException("Data length must equal coefficients length.");
+        for (int i=0; i<data.length; i++) {
+            out[i] = data[i] * coefficients[i];
+        }
+        return out;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final WindowFunction that = (WindowFunction) o;
+        return Arrays.equals(coefficients, that.coefficients);
+    }
+
+    @Override
+    public int hashCode() {
+        return coefficients != null ? Arrays.hashCode(coefficients) : 0;
     }
 
     /**
@@ -85,56 +119,78 @@ public final class WindowFunctions {
     };
 
     /**
+     * Inverts this window function. I.e. each coefficient is replaced with {@code 1/x}.
+     *
+     * @return inverse window function
+     */
+    public WindowFunction invert() {
+        return new InverseWindowFunction(this);
+    }
+
+    /**
+     * Helper class to invert (1/x) the invert of window functions.
+     * <p/>
+     * This implementation re-uses its output buffer.
+     * Do not hold on to it or rely on it staying unchanged. If you must hold on to it,
+     * create a copy using {@link Object#clone()}.
+     */
+    public static class InverseWindowFunction extends WindowFunction {
+
+        private final WindowFunction function;
+
+        public InverseWindowFunction(final WindowFunction function) {
+            super(function instanceof InverseWindowFunction
+                    ? ((InverseWindowFunction) function).function.coefficients
+                    : invert(function.coefficients));
+            this.function = function;
+        }
+
+        private static float[] invert(final float[] coefficients) {
+            final float[] inverse = new float[coefficients.length];
+            for (int n = 0; n < coefficients.length; n++) {
+                inverse[n] = 1f/coefficients[n];
+            }
+            return inverse;
+        }
+
+        @Override
+        public String toString() {
+            return "InverseWindowFunction{" +
+                    "function=" + function +
+                    '}';
+        }
+    }
+
+    /**
      * Triangle window function.
      * <p/>
      * This implementation re-uses its output buffer.
      * Do not hold on to it or rely on it staying unchanged. If you must hold on to it,
      * create a copy using {@link Object#clone()}.
      */
-    public static class Triangle implements MapFunction<float[]> {
-
-        private float[] scales;
-        private float[] out;
+    public static class Triangle extends WindowFunction {
 
         public Triangle(final int length) {
-            this.scales = new float[length];
-            this.out = new float[length];
+            super(coefficients(length));
+        }
+
+        private static float[] coefficients(final int length) {
+            float[] coefficients = new float[length];
             final float halfLength = length/2;
             for (int n = 0; n < length; n++) {
                 if (n <= length / 2) {
-                    scales[n] = (float) n/halfLength;
+                    coefficients[n] = (float) n/halfLength;
                 } else {
-                    scales[n] = 2.0f - (float) n/halfLength;
+                    coefficients[n] = 2.0f - (float) n/halfLength;
                 }
             }
-        }
-
-        public float[] map(final float[] data) {
-            if (data.length != scales.length) throw new IllegalArgumentException("Data length must equal scales length.");
-            for (int i=0; i<data.length; i++) {
-                out[i] = data[i] * scales[i];
-            }
-            return out;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            final Triangle other = (Triangle) o;
-            if (scales.length != other.scales.length) return false;
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return scales != null ? Arrays.hashCode(scales) : 0;
+            return coefficients;
         }
 
         @Override
         public String toString() {
             return "Triangle{" +
-                    "length=" + scales.length +
+                    "length=" + getLength() +
                     '}';
         }
     }
@@ -149,51 +205,30 @@ public final class WindowFunctions {
      *
      * @see <a href="http://en.wikipedia.org/wiki/Window_function#Hann_window">Hann Window</a>
      */
-    public static class Hann implements MapFunction<float[]> {
-
-        private float[] scales;
-        private float[] out;
+    public static class Hann extends WindowFunction {
 
         public Hann(final int length) {
-            this.scales = new float[length];
-            this.out = new float[length];
+            super(coefficients(length));
+        }
+
+        private static float[] coefficients(final int length) {
+            final float[] coefficients = new float[length];
             final int lengthMinus1 = length - 1;
             if (lengthMinus1 == 0) {
-                scales[0] = 1;
+                coefficients[0] = 1;
             } else {
                 for (int n = 0; n < length; n++) {
                     final double cosArg = (DOUBLE_PI * n) / lengthMinus1;
-                    scales[n] = (float) (0.5 - 0.5 * cos(cosArg));
+                    coefficients[n] = (float) (0.5 - 0.5 * cos(cosArg));
                 }
             }
-        }
-
-        public float[] map(final float[] data) {
-            if (data.length != scales.length) throw new IllegalArgumentException("Data length must equal scales length.");
-            for (int i=0; i<data.length; i++) {
-                out[i] = data[i] * scales[i];
-            }
-            return out;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            final Hann other = (Hann) o;
-            if (scales.length != other.scales.length) return false;
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return scales != null ? Arrays.hashCode(scales) : 0;
+            return coefficients;
         }
 
         @Override
         public String toString() {
             return "Hann{" +
-                    "length=" + scales.length +
+                    "length=" + getLength() +
                     '}';
         }
     }
@@ -207,51 +242,30 @@ public final class WindowFunctions {
      *
      * @see <a href="http://en.wikipedia.org/wiki/Window_function#Hamming_window">Hamming Window</a>
      */
-    public static class Hamming implements MapFunction<float[]> {
-
-        private float[] scales;
-        private float[] out;
+    public static class Hamming extends WindowFunction {
 
         public Hamming(final int length) {
-            this.scales = new float[length];
-            this.out = new float[length];
+            super(coefficients(length));
+        }
+
+        private static float[] coefficients(final int length) {
+            final float[] coefficients = new float[length];
             final int lengthMinus1 = length - 1;
             if (lengthMinus1 == 0) {
-                scales[0] = 1;
+                coefficients[0] = 1;
             } else {
                 for (int n = 0; n < length; n++) {
                     final double cosArg = (DOUBLE_PI * n) / lengthMinus1;
-                    scales[n] = (float) (0.54 - 0.46 * cos(cosArg));
+                    coefficients[n] = (float) (0.54 - 0.46 * cos(cosArg));
                 }
             }
-        }
-
-        public float[] map(final float[] data) {
-            if (data.length != scales.length) throw new IllegalArgumentException("Data length must equal scales length.");
-            for (int i=0; i<data.length; i++) {
-                out[i] = data[i] * scales[i];
-            }
-            return out;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            final Hamming other = (Hamming) o;
-            if (scales.length != other.scales.length) return false;
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return scales != null ? Arrays.hashCode(scales) : 0;
+            return coefficients;
         }
 
         @Override
         public String toString() {
             return "Hamming{" +
-                    "length=" + scales.length +
+                    "length=" + getLength() +
                     '}';
         }
     }
@@ -265,48 +279,27 @@ public final class WindowFunctions {
      *
      * @see <a href="http://en.wikipedia.org/wiki/Window_function#Welch_window">Welch Window</a>
      */
-    public static class Welch implements MapFunction<float[]> {
-
-        private float[] scales;
-        private float[] out;
+    public static class Welch extends WindowFunction {
 
         public Welch(final int length) {
-            this.out = new float[length];
-            this.scales = new float[length];
+            super(coefficients(length));
+        }
+
+        private static float[] coefficients(final int length) {
+            final float[] coefficients = new float[length];
             final float a = (length - 1f) / 2f;
             final float b = (length + 1f) / 2f;
             for (int i=0; i<length; i++) {
                 final float c = (i - a) / b;
-                this.scales[i] = (1-c*c);
+                coefficients[i] = (1-c*c);
             }
-        }
-
-        public float[] map(final float[] data) {
-            if (data.length != scales.length) throw new IllegalArgumentException("Data length must equal scales length.");
-            for (int i=0; i<data.length; i++) {
-                out[i] = data[i] * scales[i];
-            }
-            return out;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            final Hann other = (Hann) o;
-            if (scales.length != other.scales.length) return false;
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return scales != null ? Arrays.hashCode(scales) : 0;
+            return coefficients;
         }
 
         @Override
         public String toString() {
             return "Welch{" +
-                    "length=" + scales.length +
+                    "length=" + getLength() +
                     '}';
         }
     }

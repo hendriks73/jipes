@@ -9,7 +9,7 @@ package com.tagtraum.jipes;
 import com.tagtraum.jipes.audio.AudioBuffer;
 import com.tagtraum.jipes.audio.Mono;
 import com.tagtraum.jipes.audio.SlidingWindow;
-import com.tagtraum.jipes.math.WindowFunctions;
+import com.tagtraum.jipes.math.WindowFunction;
 import com.tagtraum.jipes.universal.Mapping;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public class TestSignalPump {
 
         final SignalProcessor<AudioBuffer, AudioBuffer> monoProcessor1 = new Mono();
 
-        final Mapping<AudioBuffer> hammingProcessor = new Mapping<AudioBuffer>(com.tagtraum.jipes.audio.AudioBufferFunctions.createMapFunction(WindowFunctions.HAMMING));
+        final Mapping<AudioBuffer> hammingProcessor = new Mapping<AudioBuffer>(com.tagtraum.jipes.audio.AudioBufferFunctions.createMapFunction(WindowFunction.HAMMING));
         monoProcessor1.connectTo(hammingProcessor);
 
         final SlidingWindow slidingWindowProcessor1 = new SlidingWindow(128);
@@ -52,7 +52,7 @@ public class TestSignalPump {
 
         final SignalProcessor<AudioBuffer, AudioBuffer> monoProcessor2 = new Mono();
 
-        final Mapping<AudioBuffer> hannProcessor = new Mapping<AudioBuffer>(com.tagtraum.jipes.audio.AudioBufferFunctions.createMapFunction(WindowFunctions.HANN));
+        final Mapping<AudioBuffer> hannProcessor = new Mapping<AudioBuffer>(com.tagtraum.jipes.audio.AudioBufferFunctions.createMapFunction(WindowFunction.HANN));
         monoProcessor2.connectTo(hannProcessor);
 
         final SlidingWindow slidingWindowProcessor3 = new SlidingWindow(128);

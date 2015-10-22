@@ -11,7 +11,7 @@ import com.tagtraum.jipes.audio.AudioBuffer;
 import com.tagtraum.jipes.audio.RealAudioBuffer;
 import com.tagtraum.jipes.math.Filters;
 import com.tagtraum.jipes.math.Floats;
-import com.tagtraum.jipes.math.WindowFunctions;
+import com.tagtraum.jipes.math.WindowFunction;
 import org.junit.Test;
 
 import javax.sound.sampled.AudioFormat;
@@ -93,7 +93,7 @@ public class TestMapping {
 
     @Test
     public void testBasicHamming() throws IOException {
-        final Mapping<AudioBuffer> processor = new Mapping<AudioBuffer>(com.tagtraum.jipes.audio.AudioBufferFunctions.createMapFunction(WindowFunctions.HAMMING));
+        final Mapping<AudioBuffer> processor = new Mapping<AudioBuffer>(com.tagtraum.jipes.audio.AudioBufferFunctions.createMapFunction(WindowFunction.HAMMING));
         processor.connectTo(constSource);
         final float[] constFloats = constSource.read().getData();
         final float[] floats = processor.read().getData();
@@ -114,7 +114,7 @@ public class TestMapping {
 
     @Test
     public void testBasicHann() throws IOException {
-        final Mapping<AudioBuffer> processor = new Mapping<AudioBuffer>(com.tagtraum.jipes.audio.AudioBufferFunctions.createMapFunction(WindowFunctions.HANN));
+        final Mapping<AudioBuffer> processor = new Mapping<AudioBuffer>(com.tagtraum.jipes.audio.AudioBufferFunctions.createMapFunction(WindowFunction.HANN));
         processor.connectTo(constSource);
         final float[] constFloats = constSource.read().getData();
         final float[] floats = processor.read().getData();
