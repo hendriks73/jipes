@@ -22,7 +22,7 @@ pre-defined types or support for raw arrays. Classes for both simple audio buffe
 can be found in the *audio* specific sub-package of the library, while many useful functions for processing data
 arrays are offered in the *math* sub-package.
 
-Even though Jipes is written in and for Java, an object-oriented language, it borrows some functional concepts.
+Even though Jipes is written in and for Java 6, an object-oriented language, it borrows some functional concepts.
 One of the key interfaces in Jipes is that of the [MapFunction](apidocs/com/tagtraum/jipes/math/MapFunction.html).
 It does what you might suspect - it maps some
 sort of data into other data of the same type. This principle is useful for example for a simple filter or mapping
