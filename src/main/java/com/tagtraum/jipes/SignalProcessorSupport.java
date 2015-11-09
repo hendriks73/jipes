@@ -12,9 +12,6 @@ import java.util.List;
 
 /**
  * Helper class for implementing {@link com.tagtraum.jipes.SignalProcessor}s.
- * <p/>
- * Date: Aug 27, 2010
- * Time: 6:46:57 PM
  *
  * @param <IO> type of the output values of the corresponding {@link SignalProcessor}
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>

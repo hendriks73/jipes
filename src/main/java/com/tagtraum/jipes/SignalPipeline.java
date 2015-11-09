@@ -23,8 +23,6 @@ import java.util.logging.Logger;
  * The structure of a pipeline is meant to be immutable, however, since you hand the processor chain
  * to it when constructing the pipeline, this is not enforced programmatically.
  * <p/>
- * Date: 3/21/11
- * Time: 9:55 PM
  *
  * @param <I> type of the input values
  * @param <O> type of the output values
