@@ -199,7 +199,13 @@ public final class Floats {
      */
     public static float[] sum(final List<float[]> arrays) {
         if (arrays.isEmpty()) return null;
-        final float[] result = new float[arrays.get(0).length];
+        // find longest array
+        int length = 0;
+        for (final float[] array : arrays) {
+            if (array.length > length) length = array.length;
+        }
+
+        final float[] result = new float[length];
         for (final float[] a : arrays) {
             for (int i=0; i<a.length; i++) {
                 result[i] += a[i];
@@ -619,7 +625,7 @@ public final class Floats {
      * Computes the city block norm (also known as 1-norm or Manhattan norm) for the given data.
      *
      * @param data data
-     * @see <a href="http://en.wikipedia.org/wiki/Taxicab_geometry">Wikipedia City Block Distance</a>
+     * @see <a href="https://en.wikipedia.org/wiki/Norm_(mathematics)#Taxicab_norm_or_Manhattan_norm">Wikipedia City Block Distance</a>
      * @return city block norm
      */
     public static double cityBlockNorm(final float[] data) {
