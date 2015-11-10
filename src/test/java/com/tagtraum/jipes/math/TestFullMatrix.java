@@ -11,7 +11,9 @@ import org.junit.Test;
 import java.io.*;
 import java.util.Random;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * TestFullMatrix.
@@ -19,6 +21,205 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
 public class TestFullMatrix {
+
+
+    @Test
+    public void testToString() {
+        final FullMatrix matrix = new FullMatrix(2, 2);
+        assertEquals("FullMatrix{rows=2, columns=2, zeroPadded=false}", matrix.toString());
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testGet() {
+        final FullMatrix matrix = new FullMatrix(2, 2);
+        matrix.setRow(0, new float[]{1, 1});
+        matrix.setRow(1, new float[]{2, 3});
+
+        assertEquals(3, matrix.get(1, 1), 0.00001f);
+        matrix.get(2, 1);
+    }
+
+    @Test
+    public void testGetColumn() {
+        final FullMatrix matrix = new FullMatrix(2, 2);
+        matrix.setRow(0, new float[]{1, 1});
+        matrix.setRow(1, new float[]{2, 3});
+
+        assertArrayEquals(new float[]{1, 2}, matrix.getColumn(0), 0.000001f);
+        assertArrayEquals(new float[]{1, 3}, matrix.getColumn(1), 0.000001f);
+    }
+
+    @Test
+    public void testGetRow() {
+        final FullMatrix matrix = new FullMatrix(2, 2);
+        matrix.setRow(0, new float[]{1, 1});
+        matrix.setRow(1, new float[]{2, 3});
+
+        assertArrayEquals(new float[]{1, 1}, matrix.getRow(0), 0.000001f);
+        assertArrayEquals(new float[]{2, 3}, matrix.getRow(1), 0.000001f);
+    }
+
+    @Test
+    public void testAdd() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final FullMatrix matrixB = new FullMatrix(2, 2);
+        matrixB.setRow(0, new float[]{1, -1});
+        matrixB.setRow(1, new float[]{3, 4});
+
+        final Matrix result = matrixA.add(matrixB);
+
+        assertArrayEquals(new float[] {2, 0}, result.getRow(0), 0.00001f);
+        assertArrayEquals(new float[] {5, 6}, result.getRow(1), 0.00001f);
+        assertEquals(2, result.getNumberOfColumns());
+        assertEquals(2, result.getNumberOfRows());
+    }
+
+    @Test
+    public void testSubtract() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final FullMatrix matrixB = new FullMatrix(2, 2);
+        matrixB.setRow(0, new float[]{1, -1});
+        matrixB.setRow(1, new float[]{3, 4});
+
+        final Matrix result = matrixA.subtract(matrixB);
+
+        assertArrayEquals(new float[] {0, 2}, result.getRow(0), 0.00001f);
+        assertArrayEquals(new float[] {-1, -2}, result.getRow(1), 0.00001f);
+        assertEquals(2, result.getNumberOfColumns());
+        assertEquals(2, result.getNumberOfRows());
+    }
+
+    @Test
+    public void testMultiply() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final FullMatrix matrixB = new FullMatrix(2, 2);
+        matrixB.setRow(0, new float[]{1, -1});
+        matrixB.setRow(1, new float[]{3, 4});
+
+        final Matrix result = matrixA.multiply(matrixB);
+
+        assertArrayEquals(new float[] {1*1 + 1*3, 1*-1 + 1*4}, result.getRow(0), 0.00001f);
+        assertArrayEquals(new float[] {2*1 + 2*3, 2*-1 + 2*4}, result.getRow(1), 0.00001f);
+        assertEquals(2, result.getNumberOfColumns());
+        assertEquals(2, result.getNumberOfRows());
+    }
+
+    @Test
+    public void testScalarMultiply() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final Matrix result = matrixA.multiply(2);
+
+        assertArrayEquals(new float[] {2, 2}, result.getRow(0), 0.00001f);
+        assertArrayEquals(new float[] {4, 4}, result.getRow(1), 0.00001f);
+        assertEquals(2, result.getNumberOfColumns());
+        assertEquals(2, result.getNumberOfRows());
+    }
+
+    @Test
+    public void testHadamardMultiply() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final FullMatrix matrixB = new FullMatrix(2, 2);
+        matrixB.setRow(0, new float[]{1, -1});
+        matrixB.setRow(1, new float[]{3, 4});
+
+        final Matrix result = matrixA.hadamardMultiply(matrixB);
+
+        assertArrayEquals(new float[] {1*1, 1*-1}, result.getRow(0), 0.00001f);
+        assertArrayEquals(new float[] {2*3, 2*4}, result.getRow(1), 0.00001f);
+        assertEquals(2, result.getNumberOfColumns());
+        assertEquals(2, result.getNumberOfRows());
+    }
+
+    @Test
+    public void testEnlarge() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final FullMatrix matrixB = new FullMatrix(3, 3);
+        matrixB.setRow(0, new float[]{1, -1, 5});
+        matrixB.setRow(1, new float[]{3, 4, 5});
+        matrixB.setRow(2, new float[]{5, 5, 5});
+
+        final Matrix result = matrixA.enlarge(matrixB);
+
+        assertArrayEquals(new float[] {1, 1, 5}, result.getRow(0), 0.00001f);
+        assertArrayEquals(new float[] {2, 2, 5}, result.getRow(1), 0.00001f);
+        assertArrayEquals(new float[] {5, 5, 5}, result.getRow(2), 0.00001f);
+        assertEquals(3, result.getNumberOfColumns());
+        assertEquals(3, result.getNumberOfRows());
+    }
+
+    @Test
+    public void testEquals0() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final FullMatrix matrixB = new FullMatrix(2, 2);
+        matrixB.setRow(0, new float[]{1, 1});
+        matrixB.setRow(1, new float[]{2, 2});
+
+        assertEquals(matrixA, matrixB);
+        assertEquals(matrixA.hashCode(), matrixB.hashCode());
+    }
+
+    @Test
+    public void testEquals1() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 3});
+
+        final FullMatrix matrixB = new FullMatrix(2, 2);
+        matrixB.setRow(0, new float[]{1, 1});
+        matrixB.setRow(1, new float[]{2, 2});
+
+        assertNotEquals(matrixA, matrixB);
+    }
+
+    @Test
+    public void testTranspose() {
+        final FullMatrix matrixA = new FullMatrix(2, 2);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final Matrix result = matrixA.transpose();
+
+        assertArrayEquals(result.getRow(0), new float[] {1, 2}, 0.00001f);
+        assertArrayEquals(result.getRow(1), new float[] {1, 2}, 0.00001f);
+    }
+
+    @Test
+    public void testTranslate() {
+        final FullMatrix matrixA = new FullMatrix(2, 2, true, true);
+        matrixA.setRow(0, new float[]{1, 1});
+        matrixA.setRow(1, new float[]{2, 2});
+
+        final Matrix result = matrixA.translate(1, 2);
+
+        assertEquals(3, result.getNumberOfRows());
+        assertEquals(4, result.getNumberOfColumns());
+
+        assertArrayEquals(result.getRow(0), new float[] {0, 0, 0, 0}, 0.00001f);
+        assertArrayEquals(result.getRow(1), new float[] {0, 0, 1, 1}, 0.00001f);
+        assertArrayEquals(result.getRow(2), new float[] {0, 0, 2, 2}, 0.00001f);
+    }
+
 
     @Test
     public void testWriteAndRead() {
