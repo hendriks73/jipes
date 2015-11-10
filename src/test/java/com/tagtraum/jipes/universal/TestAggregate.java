@@ -6,9 +6,12 @@
  */
 package com.tagtraum.jipes.universal;
 
+import com.tagtraum.jipes.audio.AudioBuffer;
+import com.tagtraum.jipes.audio.RealAudioBuffer;
 import com.tagtraum.jipes.math.AggregateFunction;
 import org.junit.Test;
 
+import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
@@ -117,4 +120,25 @@ public class TestAggregate {
         final Float result = mapping.processNext(new float[]{1f, 2f});
         assertEquals(1f, result.floatValue(), 0.00001f);
     }
+
+    @Test(expected = IOException.class)
+    public void testProcessAudioBuffer() throws IOException {
+        final AggregateFunction<AudioBuffer, Float> function = new AggregateFunction<AudioBuffer, Float>() {
+            @Override
+            public Float aggregate(final AudioBuffer collection) {
+                return 1f;
+            }
+        };
+        final Aggregate<AudioBuffer, Float> mapping = new Aggregate<AudioBuffer, Float>(function, "id1");
+        mapping.processNext(new RealAudioBuffer(0, new float[0], new AudioFormat(1, 1, 2, true, true)));
+        // we expect: java.io.IOException: Source must be mono.
+    }
+
+    @Test
+    public void testProcessDefaultFunction() throws IOException {
+        final Aggregate<AudioBuffer, Float> mapping = new Aggregate<AudioBuffer, Float>();
+        final Float result = mapping.processNext(new RealAudioBuffer(0, new float[0], new AudioFormat(1, 1, 1, true, true)));
+        assertNull(result);
+    }
+
 }

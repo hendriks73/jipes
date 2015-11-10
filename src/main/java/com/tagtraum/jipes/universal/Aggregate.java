@@ -16,11 +16,6 @@ import java.io.IOException;
  * <p>Applies an {@link com.tagtraum.jipes.math.AggregateFunction} like {@link com.tagtraum.jipes.math.AggregateFunctions#ARITHMETIC_MEAN}
  * to <em>each</em> provided collection (usually a {@link com.tagtraum.jipes.audio.RealAudioBuffer} or a float array).
  * </p>
- * <p>
- * To use an Aggregate on processors that only produce single float values per window
- * (e.g. {@link com.tagtraum.audiokern.audioprocessor.RoughnessProcessor}) use a
- * {@link com.tagtraum.audiokern.audioprocessor.FloatCollector} to create a list of values before aggregation.
- * </p>
  *
  * @param <C> collection of values
  * @param <E> the type of the aggregated values
