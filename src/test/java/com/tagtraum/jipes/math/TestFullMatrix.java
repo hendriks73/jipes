@@ -11,9 +11,7 @@ import org.junit.Test;
 import java.io.*;
 import java.util.Random;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 /**
  * TestFullMatrix.
@@ -130,6 +128,7 @@ public class TestFullMatrix {
         assertArrayEquals(new float[] {5, 6}, result.getRow(1), 0.00001f);
         assertEquals(2, result.getNumberOfColumns());
         assertEquals(2, result.getNumberOfRows());
+        assertFalse(result.isZeroPadded());
     }
 
     @Test
@@ -148,6 +147,7 @@ public class TestFullMatrix {
         assertArrayEquals(new float[] {-1, -2}, result.getRow(1), 0.00001f);
         assertEquals(2, result.getNumberOfColumns());
         assertEquals(2, result.getNumberOfRows());
+        assertFalse(result.isZeroPadded());
     }
 
     @Test
@@ -166,6 +166,7 @@ public class TestFullMatrix {
         assertArrayEquals(new float[] {2*1 + 2*3, 2*-1 + 2*4}, result.getRow(1), 0.00001f);
         assertEquals(2, result.getNumberOfColumns());
         assertEquals(2, result.getNumberOfRows());
+        assertFalse(result.isZeroPadded());
     }
 
     @Test
@@ -180,6 +181,7 @@ public class TestFullMatrix {
         assertArrayEquals(new float[] {4, 4}, result.getRow(1), 0.00001f);
         assertEquals(2, result.getNumberOfColumns());
         assertEquals(2, result.getNumberOfRows());
+        assertFalse(result.isZeroPadded());
     }
 
     @Test
@@ -198,6 +200,7 @@ public class TestFullMatrix {
         assertArrayEquals(new float[] {2*3, 2*4}, result.getRow(1), 0.00001f);
         assertEquals(2, result.getNumberOfColumns());
         assertEquals(2, result.getNumberOfRows());
+        assertFalse(result.isZeroPadded());
     }
 
     @Test
@@ -218,6 +221,7 @@ public class TestFullMatrix {
         assertArrayEquals(new float[] {5, 5, 5}, result.getRow(2), 0.00001f);
         assertEquals(3, result.getNumberOfColumns());
         assertEquals(3, result.getNumberOfRows());
+        assertFalse(result.isZeroPadded());
     }
 
     @Test
@@ -257,6 +261,7 @@ public class TestFullMatrix {
 
         assertArrayEquals(result.getRow(0), new float[] {1, 2}, 0.00001f);
         assertArrayEquals(result.getRow(1), new float[] {1, 2}, 0.00001f);
+        assertFalse(result.isZeroPadded());
     }
 
     @Test
@@ -273,6 +278,7 @@ public class TestFullMatrix {
         assertArrayEquals(result.getRow(0), new float[] {0, 0, 0, 0}, 0.00001f);
         assertArrayEquals(result.getRow(1), new float[] {0, 0, 1, 1}, 0.00001f);
         assertArrayEquals(result.getRow(2), new float[] {0, 0, 2, 2}, 0.00001f);
+        assertTrue(result.isZeroPadded());
     }
 
 

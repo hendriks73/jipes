@@ -10,8 +10,6 @@ import java.util.List;
 
 /**
  * Pre-defined aggregate functions.
- * <p/>
- * Date: 5/16/11
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see AggregateFunction

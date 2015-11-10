@@ -9,6 +9,7 @@ package com.tagtraum.jipes.math;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * TestDCTFactory.
@@ -41,6 +42,38 @@ public class TestDCTFactory {
         assertEquals(12.761234f, real[5], 0.0001f);
         assertEquals(1.979075f, real[6], 0.0001f);
         assertEquals(-34.630271f, real[7], 0.0001f);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testInverseDCT() {
+        final float[] realIn = new float[]{1, 3, 1, 9, -5, 3, 2, 8};
+        DCTFactory.getInstance().create(realIn.length).inverseTransform(realIn, new float[realIn.length]);
+    }
+
+    @Test
+    public void testEquals() {
+        final Transform transform0 = DCTFactory.getInstance().create(1024);
+        final Transform transform1 = DCTFactory.getInstance().create(1024);
+        final Transform transform2 = DCTFactory.getInstance().create(512);
+
+        assertEquals(transform0, transform1);
+        assertNotEquals(transform0, transform2);
+    }
+
+    @Test
+    public void testHashCode() {
+        final Transform transform0 = DCTFactory.getInstance().create(1024);
+        final Transform transform1 = DCTFactory.getInstance().create(1024);
+        final Transform transform2 = DCTFactory.getInstance().create(512);
+
+        assertEquals(transform0.hashCode(), transform1.hashCode());
+        assertNotEquals(transform0.hashCode(), transform2.hashCode());
+    }
+
+    @Test
+    public void testToString() {
+        final Transform transform = DCTFactory.getInstance().create(1024);
+        assertEquals("FFTBasedDCT{N=1024}", transform.toString());
     }
 
     @Test

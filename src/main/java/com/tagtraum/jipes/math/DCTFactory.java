@@ -14,14 +14,14 @@ import java.util.logging.Logger;
 import static java.lang.Math.*;
 
 /**
- * Factory for DC{@link com.tagtraum.jipes.math.Transform}s. Using the factory allows for sliding-in a faster, perhaps
+ * <p>Factory for DC{@link com.tagtraum.jipes.math.Transform}s. Using the factory allows for sliding-in a faster, perhaps
  * native implementation.
- * <p/>
- * In order to use a factory other than the default factory, you need to specify
+ * </p>
+ * <p>In order to use a factory other than the default factory, you need to specify
  * its classname with the system property <code>com.tagtraum.jipes.math.DCTFactory</code>.
  * I.e.
  * <xmp>-Dcom.tagtraum.jipes.math.DCTFactory=YOUR.CLASSNAME.HERE</xmp>
- * <p/>
+ * </p>
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
