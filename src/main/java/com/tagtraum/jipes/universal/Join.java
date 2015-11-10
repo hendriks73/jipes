@@ -18,9 +18,7 @@ import java.util.List;
  * Joins input data from <code>N</code> consecutive calls to {@link #process(Object)} using an {@link com.tagtraum.jipes.math.AggregateFunction}.
  * By adding this joiner to multiple {@link com.tagtraum.jipes.SignalProcessor}s, which are children of the same {@link com.tagtraum.jipes.SignalSplit},
  * one can rejoin multiple bands, e.g. by adding their values.
- * <p/>
- * Date: 2/9/11
- * Time: 8:33 PM
+ *
  * @param <I> type of the input values
  * @param <O> type of the output values
  *

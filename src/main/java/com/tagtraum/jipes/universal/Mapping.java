@@ -19,7 +19,6 @@ import java.io.IOException;
  * The function could be e.g. a {@link WindowFunction.Hamming} window or a
  * {@link com.tagtraum.jipes.math.Filters.FIRFilter}. Due to its universal nature, this is a central
  * {@link com.tagtraum.jipes.SignalProcessor} class.
- * <p/>
  *
  * @param <T> type to map data from <em>and</em> to
  *

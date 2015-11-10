@@ -9,15 +9,15 @@ package com.tagtraum.jipes.universal;
 import com.tagtraum.jipes.SignalSource;
 import com.tagtraum.jipes.audio.AudioBuffer;
 import com.tagtraum.jipes.audio.RealAudioBuffer;
-import com.tagtraum.jipes.math.Filters;
-import com.tagtraum.jipes.math.Floats;
-import com.tagtraum.jipes.math.WindowFunction;
+import com.tagtraum.jipes.math.*;
 import org.junit.Test;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * TestMapping.
@@ -57,6 +57,72 @@ public class TestMapping {
             );
         }
     };
+
+    @Test
+    public void testConstructor() {
+        final MapFunction<Integer> function = new MapFunction<Integer>() {
+            @Override
+            public Integer map(final Integer data) {
+                return data;
+            }
+        };
+        final Mapping<Integer> mapping = new Mapping<Integer>(function, "id");
+        assertEquals("id", mapping.getId());
+        assertEquals(function, mapping.getMapFunction());
+    }
+
+    @Test
+    public void testReset() {
+        final StatefulMapFunction<Integer> function = mock(StatefulMapFunction.class);
+        final Mapping<Integer> mapping = new Mapping<Integer>(function, "id");
+
+        mapping.reset();
+        verify(function).reset();
+    }
+
+    @Test
+    public void testHashCode() {
+        final MapFunction<Integer> function = new MapFunction<Integer>() {
+            @Override
+            public Integer map(final Integer data) {
+                return data;
+            }
+        };
+
+        final Mapping<Integer> mapping0 = new Mapping<Integer>(function, "id");
+        assertEquals(function.hashCode(), mapping0.hashCode());
+
+        final Mapping<Integer> mapping1 = new Mapping<Integer>(null, "id");
+        assertEquals(0, mapping1.hashCode());
+    }
+
+    @Test
+    public void testEquals0() {
+        final MapFunction<Integer> function = new MapFunction<Integer>() {
+            @Override
+            public Integer map(final Integer data) {
+                return data;
+            }
+        };
+        final Mapping<Integer> mapping0 = new Mapping<Integer>(function, "id1");
+        final Mapping<Integer> mapping1 = new Mapping<Integer>(function, "id2");
+        // even though ids are different!!
+        assertEquals(mapping0, mapping1);
+    }
+
+    @Test
+    public void testEquals1() {
+        final MapFunction<Integer> function = new MapFunction<Integer>() {
+            @Override
+            public Integer map(final Integer data) {
+                return data;
+            }
+        };
+        final Mapping<Integer> mapping0 = new Mapping<Integer>(function, "id1");
+        final Mapping<Integer> mapping1 = new Mapping<Integer>(null, "id2");
+        // even though ids are different!!
+        assertNotEquals(mapping0, mapping1);
+    }
 
     @Test
     public void testIIRLowPass() throws IOException {

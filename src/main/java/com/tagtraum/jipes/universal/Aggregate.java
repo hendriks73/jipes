@@ -13,15 +13,14 @@ import com.tagtraum.jipes.math.AggregateFunction;
 import java.io.IOException;
 
 /**
- * Applies an {@link com.tagtraum.jipes.math.AggregateFunction} like {@link com.tagtraum.jipes.math.AggregateFunctions#ARITHMETIC_MEAN}
+ * <p>Applies an {@link com.tagtraum.jipes.math.AggregateFunction} like {@link com.tagtraum.jipes.math.AggregateFunctions#ARITHMETIC_MEAN}
  * to <em>each</em> provided collection (usually a {@link com.tagtraum.jipes.audio.RealAudioBuffer} or a float array).
- * <br>
+ * </p>
+ * <p>
  * To use an Aggregate on processors that only produce single float values per window
  * (e.g. {@link com.tagtraum.audiokern.audioprocessor.RoughnessProcessor}) use a
  * {@link com.tagtraum.audiokern.audioprocessor.FloatCollector} to create a list of values before aggregation.
- * <p/>
- * Date: Jul 22, 2010
- * Time: 2:38:54 PM
+ * </p>
  *
  * @param <C> collection of values
  * @param <E> the type of the aggregated values
@@ -47,11 +46,11 @@ public class Aggregate<C, E> extends AbstractSignalProcessor<C, E> {
     }
 
     public Aggregate(final AggregateFunction<C, E> aggregateFunction) {
-        setAggregateFunction(aggregateFunction);
+        this(aggregateFunction, null);
     }
 
     public Aggregate(final AggregateFunction<C, E> aggregateFunction, final Object id) {
-        this.aggregateFunction = aggregateFunction;
+        setAggregateFunction(aggregateFunction);
         setId(id);
     }
 
