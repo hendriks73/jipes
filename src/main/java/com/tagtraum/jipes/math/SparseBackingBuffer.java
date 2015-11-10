@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class SparseBackingBuffer implements MatrixBackingBuffer {
+public class SparseBackingBuffer implements MatrixBackingBuffer, Cloneable {
 
     private Map<Integer, Float> buffer;
     private final float defaultValue;
@@ -64,6 +64,11 @@ public class SparseBackingBuffer implements MatrixBackingBuffer {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        final SparseBackingBuffer clone = (SparseBackingBuffer)super.clone();
+        if (this.isAllocated()) {
+            clone.allocate(0);
+            clone.buffer.putAll(this.buffer);
+        }
+        return clone;
     }
 }

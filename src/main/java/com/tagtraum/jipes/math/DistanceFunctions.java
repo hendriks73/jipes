@@ -11,8 +11,6 @@ import java.util.Map;
 
 /**
  * Common distance functions.
- * <p/>
- * Date: 5/16/11
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see DistanceFunction

@@ -15,7 +15,7 @@ import java.nio.IntBuffer;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class IntBackingBuffer implements MatrixBackingBuffer {
+public class IntBackingBuffer implements MatrixBackingBuffer, Cloneable {
 
     private final boolean direct;
     private IntBuffer buffer;

@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see SignedByteBackingBuffer
  */
-public class UnsignedByteBackingBuffer implements MatrixBackingBuffer {
+public class UnsignedByteBackingBuffer implements MatrixBackingBuffer, Cloneable {
 
     private final boolean direct;
     private ByteBuffer buffer;

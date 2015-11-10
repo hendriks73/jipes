@@ -9,6 +9,8 @@ package com.tagtraum.jipes.math;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TestUnsignedByteBackingBuffer.
@@ -56,6 +58,34 @@ public class TestUnsignedByteBackingBuffer {
         final UnsignedByteBackingBuffer buffer = new UnsignedByteBackingBuffer(false);
         buffer.allocate(1);
         buffer.set(0, 1.1f);
+    }
+
+    @Test
+    public void testDirectBuffer() throws CloneNotSupportedException {
+        final UnsignedByteBackingBuffer buffer = new UnsignedByteBackingBuffer(true);
+        assertFalse(buffer.isAllocated());
+        buffer.allocate(1024);
+        assertTrue(buffer.isAllocated());
+        buffer.set(0, 0f);
+        assertEquals(0f, buffer.get(0), 0.01f);
+        buffer.set(0, 0.1f);
+        assertEquals(0.1f, buffer.get(0), 0.01f);
+        final UnsignedByteBackingBuffer clone = (UnsignedByteBackingBuffer)buffer.clone();
+        assertEquals(0.1f, clone.get(0), 0.01f);
+    }
+
+    @Test
+    public void testArrayBuffer() throws CloneNotSupportedException {
+        final UnsignedByteBackingBuffer buffer = new UnsignedByteBackingBuffer(false);
+        assertFalse(buffer.isAllocated());
+        buffer.allocate(1024);
+        assertTrue(buffer.isAllocated());
+        buffer.set(0, 0f);
+        assertEquals(0f, buffer.get(0), 0.01f);
+        buffer.set(0, 0.1f);
+        assertEquals(0.1f, buffer.get(0), 0.01f);
+        final UnsignedByteBackingBuffer clone = (UnsignedByteBackingBuffer)buffer.clone();
+        assertEquals(0.1f, clone.get(0), 0.01f);
     }
 
 }
