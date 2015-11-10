@@ -22,6 +22,51 @@ import static org.junit.Assert.assertNotEquals;
  */
 public class TestFullMatrix {
 
+    @Test
+    public void testConstructor0() {
+        final FullMatrix matrix = new FullMatrix(2, 2, new float[]{1, 1, 2, 2});
+        assertArrayEquals(new float[]{1, 1}, matrix.getRow(0), 0.000001f);
+        assertArrayEquals(new float[]{2, 2}, matrix.getRow(1), 0.000001f);
+    }
+
+    @Test
+    public void testConstructor1() {
+        final FullMatrix matrix = new FullMatrix(2, 2, new FloatBackingBuffer(true), true);
+
+        matrix.set(0, 0, 1);
+        assertEquals(1, matrix.get(0, 0), 0.00001f);
+        assertEquals(0, matrix.get(1, 0), 0.00001f);
+
+        assertEquals(2, matrix.getNumberOfColumns());
+        assertEquals(2, matrix.getNumberOfRows());
+    }
+
+    @Test
+    public void testConstructor2() {
+        final FullMatrix matrixA = new FullMatrix(2, 2, new FloatBackingBuffer(true), true);
+        matrixA.fill(5);
+        final FullMatrix matrixB = new FullMatrix(matrixA, new FloatBackingBuffer(true), true);
+        assertArrayEquals(new float[]{5, 5}, matrixB.getRow(0), 0.000001f);
+        assertArrayEquals(new float[]{5, 5}, matrixB.getRow(1), 0.000001f);
+    }
+
+    @Test
+    public void testFill() {
+        final FullMatrix matrix = new FullMatrix(2, 2, new FloatBackingBuffer(true), true);
+        matrix.fill(5);
+        assertArrayEquals(new float[]{5, 5}, matrix.getRow(0), 0.000001f);
+        assertArrayEquals(new float[]{5, 5}, matrix.getRow(1), 0.000001f);
+    }
+
+    @Test
+    public void testCopyFromMatrix() {
+        final FullMatrix matrixA = new FullMatrix(2, 2, new FloatBackingBuffer(true), true);
+        final FullMatrix matrixB = new FullMatrix(2, 2, new FloatBackingBuffer(true), true);
+        matrixB.fill(5);
+        matrixA.copy(matrixB);
+        assertArrayEquals(new float[]{5, 5}, matrixA.getRow(0), 0.000001f);
+        assertArrayEquals(new float[]{5, 5}, matrixA.getRow(1), 0.000001f);
+    }
 
     @Test
     public void testToString() {
@@ -57,6 +102,16 @@ public class TestFullMatrix {
 
         assertArrayEquals(new float[]{1, 1}, matrix.getRow(0), 0.000001f);
         assertArrayEquals(new float[]{2, 3}, matrix.getRow(1), 0.000001f);
+    }
+
+    @Test
+    public void testSetColumn() {
+        final FullMatrix matrix = new FullMatrix(2, 2);
+        matrix.setColumn(0, new float[]{1, 1});
+        matrix.setColumn(1, new float[]{2, 3});
+
+        assertArrayEquals(new float[]{1, 2}, matrix.getRow(0), 0.000001f);
+        assertArrayEquals(new float[]{1, 3}, matrix.getRow(1), 0.000001f);
     }
 
     @Test
