@@ -88,10 +88,10 @@ public class TestAggregate {
                 return 1f;
             }
         };
-        final Aggregate<float[], Float> mapping0 = new Aggregate<float[], Float>(function, "id1");
-        final Aggregate<float[], Float> mapping1 = new Aggregate<float[], Float>(function, "id2");
+        final Aggregate<float[], Float> aggregate0 = new Aggregate<float[], Float>(function, "id1");
+        final Aggregate<float[], Float> aggregate1 = new Aggregate<float[], Float>(function, "id2");
         // even though ids are different!!
-        assertEquals(mapping0, mapping1);
+        assertEquals(aggregate0, aggregate1);
     }
 
     @Test
@@ -102,10 +102,10 @@ public class TestAggregate {
                 return 1f;
             }
         };
-        final Aggregate<float[], Float> mapping0 = new Aggregate<float[], Float>(function, "id1");
-        final Aggregate<float[], Float> mapping1 = new Aggregate<float[], Float>();
+        final Aggregate<float[], Float> aggregate0 = new Aggregate<float[], Float>(function, "id1");
+        final Aggregate<float[], Float> aggregate1 = new Aggregate<float[], Float>();
         // even though ids are different!!
-        assertNotEquals(mapping0, mapping1);
+        assertNotEquals(aggregate0, aggregate1);
     }
 
     @Test
@@ -116,8 +116,8 @@ public class TestAggregate {
                 return 1f;
             }
         };
-        final Aggregate<float[], Float> mapping = new Aggregate<float[], Float>(function, "id1");
-        final Float result = mapping.processNext(new float[]{1f, 2f});
+        final Aggregate<float[], Float> aggregate = new Aggregate<float[], Float>(function, "id1");
+        final Float result = aggregate.processNext(new float[]{1f, 2f});
         assertEquals(1f, result.floatValue(), 0.00001f);
     }
 
@@ -129,8 +129,8 @@ public class TestAggregate {
                 return 1f;
             }
         };
-        final Aggregate<AudioBuffer, Float> mapping = new Aggregate<AudioBuffer, Float>(function, "id1");
-        mapping.processNext(new RealAudioBuffer(0, new float[0], new AudioFormat(1, 1, 2, true, true)));
+        final Aggregate<AudioBuffer, Float> aggregate = new Aggregate<AudioBuffer, Float>(function, "id1");
+        aggregate.processNext(new RealAudioBuffer(0, new float[0], new AudioFormat(1, 1, 2, true, true)));
         // we expect: java.io.IOException: Source must be mono.
     }
 

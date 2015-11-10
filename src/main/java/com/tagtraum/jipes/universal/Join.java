@@ -40,12 +40,14 @@ public class Join<I, O> implements SignalProcessor<I, O> {
     }
 
     public Join(final int partsPerUnit, final AggregateFunction<List<I>, O> aggregateFunction, final Object id) {
+        if (aggregateFunction == null) throw new IllegalArgumentException("AggregateFunction must not be null.");
         this.aggregateFunction = aggregateFunction;
         setPartsPerUnit(partsPerUnit);
         setId(id);
     }
 
     private void setPartsPerUnit(final int partsPerUnit) {
+        if (partsPerUnit<1) throw new IllegalArgumentException("Parts per unit: " + partsPerUnit);
         this.partsPerUnit = partsPerUnit;
     }
 
