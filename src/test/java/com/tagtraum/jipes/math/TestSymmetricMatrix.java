@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -117,5 +118,24 @@ public class TestSymmetricMatrix {
     @Test(expected=IndexOutOfBoundsException.class)
     public void testIndexOutOfBoundsTooLargeColumn() {
         new SymmetricMatrix(5).get(0, 5);
+    }
+
+    @Test
+    public void testToString() {
+        final SymmetricMatrix matrix = new SymmetricMatrix(3, 5, new FloatBackingBuffer(false), true);
+        assertEquals("SymmetricMatrix{length=5, offset=3, zeroPad=true}", matrix.toString());
+    }
+
+    @Test
+    public void testConstructor() {
+        final MutableMatrix m = new SymmetricMatrix(3);
+        m.set(0, 0, 1);
+        m.set(1, 1, 2);
+        m.set(2, 2, 2);
+        m.set(1, 2, 4);
+        final SymmetricMatrix matrix = new SymmetricMatrix(m, new FloatBackingBuffer(false), true);
+        assertArrayEquals(m.getRow(0), matrix.getRow(0), 0.0001f);
+        assertArrayEquals(m.getRow(1), matrix.getRow(1), 0.0001f);
+        assertArrayEquals(m.getRow(2), matrix.getRow(2), 0.0001f);
     }
 }

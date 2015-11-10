@@ -55,6 +55,33 @@ public class TestFFTFactory {
     }
 
     @Test
+    public void testForwardFFTWithImag() {
+        final float[] realIn = new float[]{1, 2, 1, 0, -1, 0, -1, 3};
+        final float[][] result = FFTFactory.getInstance().create(realIn.length).transform(realIn, new float[realIn.length]);
+
+        final float[] real = result[0];
+        assertEquals(5f, real[0], 0.0001f);
+        assertEquals(5.53553f, real[1], 0.0001f);
+        assertEquals(0f, real[2], 0.0001f);
+        assertEquals(-1.53553f, real[3], 0.0001f);
+        assertEquals(-5f, real[4], 0.0001f);
+        assertEquals(-1.53553f, real[5], 0.0001f);
+        assertEquals(0f, real[6], 0.0001f);
+        assertEquals(5.53553f, real[7], 0.0001f);
+
+        final float[] imag = result[1];
+        assertEquals(0f, imag[0], 0.0001f);
+        assertEquals(-1.29289f, imag[1], 0.0001f);
+        assertEquals(1f, imag[2], 0.0001f);
+        assertEquals(2.70711f, imag[3], 0.0001f);
+        assertEquals(0f, imag[4], 0.0001f);
+        assertEquals(-2.70711f, imag[5], 0.0001f);
+        assertEquals(-1f, imag[6], 0.0001f);
+        assertEquals(1.29289f, imag[7], 0.0001f);
+
+    }
+
+    @Test
     public void testInverseFFT() {
         final float[] realIn = new float[]{5f, 5.53553f, 0f, -1.53553f, -5f, -1.53553f, 0f, 5.53553f};
         final float[] imagIn = new float[]{0f, -1.29289f, 1f, 2.70711f, 0f, -2.70711f, -1f, 1.29289f};
@@ -88,5 +115,21 @@ public class TestFFTFactory {
         }
     }
 
+    @Test
+    public void testToString() {
+        final Transform fft = FFTFactory.getInstance().create(256);
+        assertEquals("JavaFFT{N=256}", fft.toString());
+    }
+
+    @Test
+    public void testEquals() {
+        final Transform fft0 = FFTFactory.getInstance().create(256);
+        final Transform fft1 = FFTFactory.getInstance().create(256);
+        final Transform fft2 = FFTFactory.getInstance().create(512);
+        assertEquals(fft0, fft1);
+        assertEquals(fft0.hashCode(), fft1.hashCode());
+        assertNotEquals(fft0, fft2);
+        assertNotEquals(fft0.hashCode(), fft2.hashCode());
+    }
 
 }

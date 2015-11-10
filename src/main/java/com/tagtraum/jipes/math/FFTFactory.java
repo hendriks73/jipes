@@ -10,15 +10,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Factory for FF{@link Transform}s. Using the factory allows for sliding-in a faster, perhaps
+ * <p>Factory for FF{@link Transform}s. Using the factory allows for sliding-in a faster, perhaps
  * native implementation (like it's done in <a href="http://www.beatunes.com/">beaTunes</a>).
- * <p/>
- * In order to use a factory other than the default factory, you need to specify
+ * </p>
+ * <p>In order to use a factory other than the default factory, you need to specify
  * its classname with the system property <code>com.tagtraum.jipes.math.FFTFactory</code>.
  * I.e.
  * <xmp>-Dcom.tagtraum.jipes.math.FFTFactory=YOUR.CLASSNAME.HERE</xmp>
- * <p/>
- * Date: 5/16/11
+ * <p>
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */

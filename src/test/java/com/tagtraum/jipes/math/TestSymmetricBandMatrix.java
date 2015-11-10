@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -79,4 +80,32 @@ public class TestSymmetricBandMatrix {
     public void testIndexOutOfBoundsTooLargeColumn() {
         new SymmetricBandMatrix(5, 3, 0f).get(0, 5);
     }
+
+    @Test
+    public void testFill() {
+        final SymmetricBandMatrix matrix = new SymmetricBandMatrix(3, 3, 0f);
+        matrix.fill(5);
+        // works, because fill() also adjusts the default value
+        assertArrayEquals(new float[]{5, 5, 5}, matrix.getRow(0), 0.000001f);
+        assertArrayEquals(new float[]{5, 5, 5}, matrix.getRow(1), 0.000001f);
+        assertArrayEquals(new float[]{5, 5, 5}, matrix.getRow(2), 0.000001f);
+    }
+
+    @Test
+    public void testCopy() {
+        final SymmetricBandMatrix matrix = new SymmetricBandMatrix(3, 5, 0f);
+
+        matrix.copy(new float[]{5, 5, 5, 5, 5, 5, 5, 5, 5});
+
+        assertArrayEquals(new float[]{5, 5, 5}, matrix.getRow(0), 0.000001f);
+        assertArrayEquals(new float[]{5, 5, 5}, matrix.getRow(1), 0.000001f);
+        assertArrayEquals(new float[]{5, 5, 5}, matrix.getRow(2), 0.000001f);
+    }
+
+    @Test
+    public void testToString() {
+        final SymmetricBandMatrix matrix = new SymmetricBandMatrix(3, 5, 0f);
+        assertEquals("SymmetricBandMatrix{bandwidth=5, length=3, offset=0, zeroPad=false}", matrix.toString());
+    }
+
 }

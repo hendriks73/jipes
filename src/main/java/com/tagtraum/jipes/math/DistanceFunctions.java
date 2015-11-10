@@ -64,7 +64,7 @@ public final class DistanceFunctions {
      */
     public static final DistanceFunction<float[]> CITY_BLOCK_INCREASE_DISTANCE = new DistanceFunction<float[]>() {
         public float distance(final float[] last, final float[] now) {
-            return (float)Floats.cityBlockDistance(now, last, true);
+            return (float)Floats.cityBlockDistance(last, now, true);
         }
 
         @Override
