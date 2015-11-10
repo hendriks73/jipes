@@ -7,12 +7,13 @@
 package com.tagtraum.jipes;
 
 /**
- * {@link com.tagtraum.jipes.SignalProcessor} that splits the signal into multiple signals and as such has
+ * <p>{@link com.tagtraum.jipes.SignalProcessor} that splits the signal into multiple signals and as such has
  * multiple children - per channel.
  * This can be useful e.g. to split up a stereo signal into two distinct pipelines.
- * <p/>
- * In order to simply duplicate the signal, without actually splitting it into different parts,
+ * </p>
+ * <p>In order to simply duplicate the signal, without actually splitting it into different parts,
  * use {@link NoopSignalProcessor}.
+ * </p>
  *
  * @param <I> type of the input values
  * @param <O> type of the output values

@@ -9,7 +9,7 @@ package com.tagtraum.jipes;
 import java.io.IOException;
 
 /**
- * Lets you process data using a <em>push</em> approach, that is controlling the flow of data
+ * <p>Lets you process data using a <em>push</em> approach, that is controlling the flow of data
  * from the <em>beginning</em> of a pipeline (preferably with a {@link SignalPump}).
  * This means that you can push data into the {@link #process(Object)}
  * method without expecting a result as return value. Instead, a graph of registered SignalProcessors
@@ -17,7 +17,7 @@ import java.io.IOException;
  * final results have to be computed. Those results may be collected from the tree's leafs
  * with the leaf object's {@link #getOutput()} method.
  * <p/>
- * If you have a rather simple pipeline, that does not contain any forks, you might want to use the
+ * <p>If you have a rather simple pipeline, that does not contain any forks, you might want to use the
  * <em>pull</em> model, offered by {@link SignalPullProcessor}.
  * </p>
  *

@@ -9,15 +9,13 @@ package com.tagtraum.jipes;
 import java.io.IOException;
 
 /**
- * Convenience super class for both {@link com.tagtraum.jipes.SignalPullProcessor} and
+ * <p>Convenience super class for both {@link com.tagtraum.jipes.SignalPullProcessor} and
  * {@link com.tagtraum.jipes.SignalProcessor}.
  * <p/>
- * This class is a good starting point for processors that do not change the flow of data,
+ * <p>This class is a good starting point for processors that do not change the flow of data,
  * i.e. don't collect data before they forward it. In other words, each processing step
  * has one input and one output value.
  * <p/>
- * Date: Aug 30, 2010
- * Time: 11:44:10 AM
  *
  * @param <I> type of the input values
  * @param <O> type of the output values

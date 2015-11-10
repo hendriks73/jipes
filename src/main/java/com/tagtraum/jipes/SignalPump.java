@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Pumps a signal from a {@link SignalSource} through a graph of {@link com.tagtraum.jipes.SignalProcessor}s,
+ * <p>Pumps a signal from a {@link SignalSource} through a graph of {@link com.tagtraum.jipes.SignalProcessor}s,
  * also known as processing pipelines and lets you collect the results in a {@link Map}.
  * After being added to this pump, the pipelines are optimized to avoid
  * redundant processing, if at all possible.
+ * </p>
  * <p>
  * To use a pump, <ol>
  * <li>Set a {@link SignalSource}.</li>
@@ -21,7 +22,7 @@ import java.util.*;
  * <li>Call {@link #pump()}.</li>
  * <li>Collect the results in the form of an id/output map.</li>
  * </ol> 
- * <p/>
+ * </p>
  *
  * @param <I> type of the input values from the associated {@link SignalSource}
  *

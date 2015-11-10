@@ -20,8 +20,6 @@ package com.tagtraum.jipes;
  * <p>Every pull processor is also a source. To apply multiple processing steps (e.g. stereo to mono,
  * low pass filtering, downsampling), you can chain multiple processors.
  * </p>
- * Date: Jul 22, 2010
- * Time: 11:56:56 AM
  *
  * @param <I> type of the input values
  * @param <O> type of the output values

@@ -10,9 +10,6 @@ import java.io.IOException;
 
 /**
  * Signal source, for example for audio data.
- * <p/>
- * Date: Jul 22, 2010
- * Time: 3:59:34 PM
  *
  * @param <O> type of the provided values
  *

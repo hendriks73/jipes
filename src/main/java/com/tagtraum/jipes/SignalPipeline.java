@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * A signal pipeline is a <em>straight chain</em> (that is every chain element has exactly one child)
+ * <p>A signal pipeline is a <em>straight chain</em> (that is every chain element has exactly one child)
  * of multiple {@link com.tagtraum.jipes.SignalProcessor}s.
  * <p/>
- * It has a <em>head</em> and a <em>tail</em> and is created using these two processors.
+ * <p>It has a <em>head</em> and a <em>tail</em> and is created using these two processors.
  * Building pipelines is useful for creating blackbox building blocks that in turn can be used
  * for building more complex processing graphs.
  * <p/>
- * The structure of a pipeline is meant to be immutable, however, since you hand the processor chain
+ * <p>The structure of a pipeline is meant to be immutable, however, since you hand the processor chain
  * to it when constructing the pipeline, this is not enforced programmatically.
  * <p/>
  *
