@@ -61,7 +61,7 @@ public class TestMapFunctions {
         final float[] result = function.map(a);
         final float[] correlation = Floats.autoCorrelation(a);
         for (int i=0; i<correlation.length; i++) {
-            correlation[i] = correlation[i]/(a.length-1);
+            correlation[i] = correlation[i]/(a.length-i);
         }
         assertArrayEquals(correlation, result, 0.000001f);
         assertEquals("AUTO_CORRELATION_UNBIASED", function.toString());
