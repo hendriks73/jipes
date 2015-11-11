@@ -689,7 +689,7 @@ public final class Floats {
      *
      * @param a point a
      * @param b point b
-     * @param ignoreNegativeDiffs ignores negative differences, i.e. take only increases into account
+     * @param ignoreNegativeDiffs ignores negative differences, i.e. take only increases into account. If true, the distance is not symmetric.
      * @return distance
      * @see <a href="http://en.wikipedia.org/wiki/Euclidean_distance">Wikipedia Euclidean Distance</a>
      */
@@ -728,7 +728,7 @@ public final class Floats {
      *
      * @param a point a
      * @param b point b
-     * @param ignoreNegativeDiffs ignores negative differences, i.e. take only increases into account
+     * @param ignoreNegativeDiffs ignores negative differences, i.e. take only increases into account. If true, the distance is not symmetric.
      * @return distance
      * @see <a href="http://en.wikipedia.org/wiki/Taxicab_geometry">Wikipedia City Block Distance</a>
      */

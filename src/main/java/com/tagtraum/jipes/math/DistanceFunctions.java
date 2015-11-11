@@ -38,7 +38,7 @@ public final class DistanceFunctions {
      */
     public static final DistanceFunction<float[]> EUCLIDEAN_INCREASE_DISTANCE = new DistanceFunction<float[]>() {
         public float distance(final float[] last, final float[] now) {
-            return (float)Floats.euclideanDistance(now, last, true);
+            return (float)Floats.euclideanDistance(last, now, true);
         }
 
         @Override
@@ -100,10 +100,11 @@ public final class DistanceFunctions {
     };
 
     /**
-     * Creates a cosine distance function.
-     * <p/>
-     * Assuming the arrays to compare are fourier spectra, limiting the length and selecting an
+     * <p>Creates a cosine distance function.
+     * </p>
+     * <p>Assuming the arrays to compare are fourier spectra, limiting the length and selecting an
      * offset can implicitly band-pass filter the spectra  before computing the distance.
+     * </p>
      *
      * @param length length of the array to compare
      * @param offset offset into both arrays

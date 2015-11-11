@@ -8,7 +8,10 @@ package com.tagtraum.jipes.math;
 
 import org.junit.Test;
 
+import java.util.Random;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * TestConstantQTransformFactory.
@@ -76,7 +79,24 @@ public class TestConstantQTransformFactory {
 
         assertEquals(0.0055199f, transform[0][5], 0.0001f);
         assertEquals(-0.0063760392f, transform[1][5], 0.0001f);
+    }
 
+    @Test
+    public void testToString() {
+        final Transform constantQTransform = ConstantQTransformFactory.getInstance().create(440, 880, 6, 2000, 0.0054f);
+        assertEquals("JavaConstantQTransform{Q=8.165795, minFrequency=440.0, maxFrequency=880.0, binsPerOctave=6, sampleRate=2000.0, threshold=0.0054}", constantQTransform.toString());
+    }
+
+    @Test
+    public void testEquals() {
+        final ConstantQTransformFactory factory = ConstantQTransformFactory.getInstance();
+        final Transform constantQTransform0 = factory.create(440, 880, 6, 2000, 0.0054f);
+        final Transform constantQTransform1 = factory.create(440, 880 + new Random().nextInt(100), 6, 2000, 0.0054f);
+        final Transform constantQTransform2 = factory.create(440, 880, 6, 2000, 0.0054f);
+        assertEquals(constantQTransform0, constantQTransform2);
+        assertEquals(constantQTransform0.hashCode(), constantQTransform2.hashCode());
+        assertNotEquals(constantQTransform0, constantQTransform1);
+        assertNotEquals(constantQTransform0.hashCode(), constantQTransform1.hashCode());
     }
 
 }
