@@ -14,31 +14,7 @@ package com.tagtraum.jipes.math;
  */
 public final class MapFunctions {
 
-    private static final class ShortToOneNormalization extends FloatNormalization {
-
-        public double getDivisor(final float[] buffer) {
-            return Short.MAX_VALUE + 1;
-        }
-
-        @Override
-        public int hashCode() {
-            return 42;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            return obj instanceof ShortToOneNormalization;
-        }
-
-        @Override
-        public String toString() {
-            return "SHORT_TO_ONE_NORMALIZATION";
-        }
-
-    }
-
-    private MapFunctions() {
-    }
+    private MapFunctions() {}
 
     /**
      * @see <a href="http://www.mathworks.com/help/toolbox/signal/xcorr.html">Matlab&trade; function <code>xcorr</code></a>
@@ -211,13 +187,13 @@ public final class MapFunctions {
     }
 
     /**
-     * Maps consecutive samples to their centroid.
+     * Maps consecutive samples to their temporal centroid.
      * This can e.g. be used in a {@link com.tagtraum.jipes.universal.Mapping}.
      *
      * @return mean function
      */
-    public static StatefulMapFunction<Float> createCentroidFunction() {
-        return new CentroidFunction();
+    public static StatefulMapFunction<Float> createTemporalCentroidFunction() {
+        return new TemporalCentroidFunction();
     }
 
     /**
@@ -272,6 +248,11 @@ public final class MapFunctions {
                 count++;
                 if (x < threshold) below++;
                 return below / (float)count;
+            }
+
+            @Override
+            public String toString() {
+                return "FRACTION_BELOW_" + threshold;
             }
         };
     }
@@ -366,7 +347,7 @@ public final class MapFunctions {
         }
     }
 
-    private static class CentroidFunction implements StatefulMapFunction<Float> {
+    private static class TemporalCentroidFunction implements StatefulMapFunction<Float> {
 
         private double numerator;
         private double denominator;
@@ -388,7 +369,7 @@ public final class MapFunctions {
 
         @Override
         public String toString() {
-            return "CENTROID";
+            return "TEMPORAL_CENTROID";
         }
     }
 
@@ -559,4 +540,28 @@ public final class MapFunctions {
             return 42;
         }
     }
+
+    private static final class ShortToOneNormalization extends FloatNormalization {
+
+        public double getDivisor(final float[] buffer) {
+            return Short.MAX_VALUE + 1;
+        }
+
+        @Override
+        public int hashCode() {
+            return 42;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            return obj instanceof ShortToOneNormalization;
+        }
+
+        @Override
+        public String toString() {
+            return "SHORT_TO_ONE_NORMALIZATION";
+        }
+
+    }
+
 }

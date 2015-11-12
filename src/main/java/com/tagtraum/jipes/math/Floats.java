@@ -1090,19 +1090,39 @@ public final class Floats {
      * Linearly interpolates a given array by shifting its contents by the amount <code>shift</code>.
      *
      * @param data data to interpolate
-     * @param shift normalized shift amount, i.e. -1 - 1
+     * @param shift normalized shift amount, i.e. a value in {@code [-1, - 1]}
      * @param indicesPerOneShift indicates how may indices one full shift (+1 or -1) is equal to.
      * @return interpolated array
      */
     public static float[] interpolate(final float[] data, final float shift, final int indicesPerOneShift) {
-        final int binShift = (int)Math.floor(indicesPerOneShift * shift);
-        final float fractionShift  = indicesPerOneShift * shift - binShift;
-        final float[] shiftedReal = new float[data.length];
+        if (shift == 0 || indicesPerOneShift == 0) return data.clone();
+        if (indicesPerOneShift < 0) throw new IllegalArgumentException("Indices per shift must be positive: " + indicesPerOneShift);
+        if (shift > 1 || shift < -1) throw new IllegalArgumentException("Shift must be in [-1, 1]: " + shift);
 
-        for (int i = indicesPerOneShift-1; i < data.length - indicesPerOneShift; i++) {
-            shiftedReal[i] = data[i + binShift] * (1-fractionShift) + data[i+binShift+1] * fractionShift;
+        final int integerShift = (int)Math.floor(Math.abs(indicesPerOneShift * shift));
+        final float fractionShift  = shift > 0
+                ? indicesPerOneShift * shift - integerShift
+                : 1+(indicesPerOneShift * shift - integerShift);
+        final float[] zeroPadded = new float[data.length + indicesPerOneShift*2];
+        System.arraycopy(data, 0, zeroPadded, indicesPerOneShift, data.length);
+        final float[] shiftedPadded = new float[zeroPadded.length];
+
+        for (int i = 0; i < zeroPadded.length-1; i++) {
+            shiftedPadded[i] = zeroPadded[i + integerShift] * fractionShift + zeroPadded[i+integerShift+1] * (1-fractionShift);
         }
-        return shiftedReal;
+        final float[] shiftedResult = new float[data.length];
+        System.arraycopy(shiftedPadded, shift > 0 ? 0 : indicesPerOneShift, shiftedResult, 0, data.length);
+        return shiftedResult;
+    }
+
+    /**
+     * Round towards {@code 0}.
+     *
+     * @param f value
+     * @return rounded value towards {@code 0}.
+     */
+    private static int fix(final float f) {
+        return f < 0 ? (int) Math.ceil(f) : (int) Math.floor(f);
     }
 
 }

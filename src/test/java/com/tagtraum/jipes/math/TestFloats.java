@@ -339,5 +339,37 @@ public class TestFloats {
         assertEquals(2f/(a.length-1), zcr, 0.0001f);
     }
 
+    @Test
+    public void testInterpolatePositive() {
+        final float[] a = {1, 2, 1, 2};
+        final float[] interpolate = Floats.interpolate(a, 0.5f, 1);
+        System.out.println(Arrays.toString(interpolate));
+        assertArrayEquals(new float[]{0.5f, 1.5f, 1.5f, 1.5f}, interpolate, 0.0001f);
+    }
+
+    @Test
+    public void testInterpolateNegative() {
+        final float[] a = {1, 2, 1, 2};
+        final float[] interpolate = Floats.interpolate(a, -0.5f, 1);
+        System.out.println(Arrays.toString(interpolate));
+        assertArrayEquals(new float[]{1.5f, 1.5f, 1.5f, 1f}, interpolate, 0.0001f);
+    }
+
+    @Test
+    public void testInterpolateQuarterPositive() {
+        final float[] a = {1, 2, 1, 2};
+        final float[] interpolate = Floats.interpolate(a, 0.25f, 1);
+        System.out.println(Arrays.toString(interpolate));
+        assertArrayEquals(new float[]{0.75f, 1.75f, 1.25f, 1.75f}, interpolate, 0.0001f);
+    }
+
+    @Test
+    public void testInterpolateQuarterNegative() {
+        final float[] a = {1, 2, 1, 2};
+        final float[] interpolate = Floats.interpolate(a, -0.25f, 1);
+        System.out.println(Arrays.toString(interpolate));
+        assertArrayEquals(new float[]{1.25f, 1.75f, 1.25f, 1.5f}, interpolate, 0.0001f);
+    }
+
     // TODO: add more tests!!
 }
