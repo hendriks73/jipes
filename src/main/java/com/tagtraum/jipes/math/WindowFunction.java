@@ -12,10 +12,8 @@ import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 
 /**
- * Classic window functions like triangle, Hamming and Hann.
- * <p/>
- * <em>Note that some implementations may re-use their output buffer!</em>
- * <p/>
+ * <p>Classic window functions like triangle, Hamming and Hann.</p>
+ * <p><em>Note that some implementations may re-use their output buffer!</em></p>
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see <a href="http://en.wikipedia.org/wiki/Window_function">Window functions on Wikipedia</a>
@@ -52,7 +50,7 @@ public abstract class WindowFunction implements MapFunction<float[]> {
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof WindowFunction)) return false;
         final WindowFunction that = (WindowFunction) o;
         return Arrays.equals(coefficients, that.coefficients);
     }
@@ -60,6 +58,15 @@ public abstract class WindowFunction implements MapFunction<float[]> {
     @Override
     public int hashCode() {
         return coefficients != null ? Arrays.hashCode(coefficients) : 0;
+    }
+
+    /**
+     * Inverts this window function. I.e. each coefficient is replaced with {@code 1/x}.
+     *
+     * @return inverse window function
+     */
+    public WindowFunction invert() {
+        return new InverseWindowFunction(this);
     }
 
     /**
@@ -117,15 +124,6 @@ public abstract class WindowFunction implements MapFunction<float[]> {
             return "WELCH_WINDOW";
         }
     };
-
-    /**
-     * Inverts this window function. I.e. each coefficient is replaced with {@code 1/x}.
-     *
-     * @return inverse window function
-     */
-    public WindowFunction invert() {
-        return new InverseWindowFunction(this);
-    }
 
     /**
      * Helper class to invert (1/x) window functions.
@@ -290,9 +288,8 @@ public abstract class WindowFunction implements MapFunction<float[]> {
         private static float[] coefficients(final int length) {
             final float[] coefficients = new float[length];
             final float a = (length - 1f) / 2f;
-            final float b = (length + 1f) / 2f;
             for (int i=0; i<length; i++) {
-                final float c = (i - a) / b;
+                final float c = (i - a) / a;
                 coefficients[i] = (1-c*c);
             }
             return coefficients;

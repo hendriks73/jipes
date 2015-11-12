@@ -343,7 +343,6 @@ public class TestFloats {
     public void testInterpolatePositive() {
         final float[] a = {1, 2, 1, 2};
         final float[] interpolate = Floats.interpolate(a, 0.5f, 1);
-        System.out.println(Arrays.toString(interpolate));
         assertArrayEquals(new float[]{0.5f, 1.5f, 1.5f, 1.5f}, interpolate, 0.0001f);
     }
 
@@ -351,7 +350,6 @@ public class TestFloats {
     public void testInterpolateNegative() {
         final float[] a = {1, 2, 1, 2};
         final float[] interpolate = Floats.interpolate(a, -0.5f, 1);
-        System.out.println(Arrays.toString(interpolate));
         assertArrayEquals(new float[]{1.5f, 1.5f, 1.5f, 1f}, interpolate, 0.0001f);
     }
 
