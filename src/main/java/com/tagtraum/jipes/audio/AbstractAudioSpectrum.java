@@ -11,9 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Skeleton implementation of an {@link AudioSpectrum}.
- * <p/>
- * Date: 1/13/11
- * Time: 2:25 PM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
