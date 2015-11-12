@@ -6,6 +6,8 @@
  */
 package com.tagtraum.jipes.math;
 
+import java.util.Arrays;
+
 /**
  * Transform for signal estimation from modified short-time fourier
  * transform by Daniel W. Griffin and Jae and S. Lim.
@@ -16,23 +18,48 @@ package com.tagtraum.jipes.math;
 public class GriffinLim implements Transform {
 
     private final Transform transform;
-    private final int iterations;
+    private final int maxIterations;
+    private final float maxDistance;
     private float[] realEstimate;
     private float[] imaginaryEstimate;
 
     /**
-     * @param realStart first real estimate
-     * @param imaginaryStart first imaginary estimate (may be empty array)
-     * @param iterations number of iterations to perform
+     * @param realStart first real estimate for the signal
+     * @param imaginaryStart first imaginary estimate (may be zero-filled array or {@code null})
+     * @param maxIterations max number of iterations to perform
      */
-    public GriffinLim(final float[] realStart, final float[] imaginaryStart, final int iterations) {
+    public GriffinLim(final float[] realStart, final float[] imaginaryStart, final int maxIterations) {
+        this(realStart, imaginaryStart, maxIterations, 0);
+    }
+
+    /**
+     * @param realStart first real estimate for the signal
+     * @param imaginaryStart first imaginary estimate (may be zero-filled array or {@code null})
+     * @param maxIterations max number of iterations to perform
+     * @param maxDistance stop, if the distance (sum of squared differences)
+     *                    to the previous magnitude spectrum is less than this value.
+     */
+    public GriffinLim(final float[] realStart, final float[] imaginaryStart, final int maxIterations, final float maxDistance) {
         this.realEstimate = realStart;
-        this.imaginaryEstimate = imaginaryStart;
-        this.transform = FFTFactory.getInstance().create(realEstimate.length);
-        this.iterations = iterations;
+        this.imaginaryEstimate = imaginaryStart == null ? new float[realStart.length] : imaginaryStart;
+        this.transform = FFTFactory.getInstance().create(realStart.length);
+        this.maxIterations = maxIterations;
+        if (this.realEstimate.length != this.imaginaryEstimate.length) {
+            throw new IllegalArgumentException("Real and imaginary estimates must have same length: "
+                    + realEstimate.length + " != " + imaginaryEstimate.length);
+        }
+        this.maxDistance = maxDistance;
     }
 
     // the magnitude here is really only the first half of the symmetric FFT output
+
+    /**
+     * Transform the given magnitudes to a signal.
+     *
+     * @param magnitudes magnitudes (must not be symmetric)
+     * @return real array, imaginary array
+     * @throws UnsupportedOperationException
+     */
     @Override
     public float[][] transform(final float[] magnitudes) throws UnsupportedOperationException {
         if (magnitudes.length * 2 != this.realEstimate.length) throw new IllegalArgumentException("Magnitudes must not be symmetric, i.e. half the length of the output samples.");
@@ -48,7 +75,7 @@ public class GriffinLim implements Transform {
         }
         float[][] complexSignal;
         int it = 0;
-        double lastDistance = Double.MAX_VALUE;
+        double lastDistance;
         do {
             // Fourier transform of the estimated signal
             final float[][] transform = this.transform.transform(realEstimate, imaginaryEstimate);
@@ -73,6 +100,7 @@ public class GriffinLim implements Transform {
                     i[j] *= factor;
                 }
             }
+            System.out.println("Distance: " + distance);
             lastDistance = distance;
             // Perform inverse Fourier transform of the re-scaled frequency domain spectrum
             complexSignal = this.transform.inverseTransform(r, i);
@@ -86,17 +114,20 @@ public class GriffinLim implements Transform {
     }
 
     private boolean condition(final double distance, final int iteration) {
-        // for now we ignore distance
-        return iteration != this.iterations;
+        return iteration <= this.maxIterations && distance > maxDistance;
     }
 
     @Override
     public float[][] inverseTransform(final float[] real, final float[] imaginary) throws UnsupportedOperationException {
-        return transform(real);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public float[][] transform(final float[] real, final float[] imaginary) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        if (imaginary == null || Arrays.equals(imaginary, new float[imaginary.length])) {
+            return transform(real);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 }
