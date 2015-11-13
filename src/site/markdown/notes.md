@@ -2,6 +2,13 @@
 
 Notes
 -----
+
+* 0.9.12
+
+    * Improved test coverage
+    * Fixed Welch window
+    * Fixed equals()/hashCode() in LinearFrequencySpectrum
+
 * 0.9.11
 
     * Added OLA (overlap-add) processor
