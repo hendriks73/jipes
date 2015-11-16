@@ -6,13 +6,12 @@
  */
 package com.tagtraum.jipes.audio;
 
+import com.tagtraum.jipes.math.Floats;
+
 import javax.sound.sampled.AudioFormat;
 
 /**
  * Log frequency spectrum - possibly created by {@link ConstantQTransform}.
- * <p/>
- * Date: 1/12/11
- * Time: 6:07 PM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see ConstantQTransform
@@ -28,6 +27,9 @@ public class LogFrequencySpectrum extends AbstractAudioSpectrum implements Clone
         super(frameNumber, real, imag, audioFormat);
         this.q = q;
         this.frequencies = frequencies;
+        if (frequencies.length != real.length) {
+            throw new IllegalArgumentException("Length of frequencies must match length of data: f.length=" + frequencies.length + ", r.length=" + real.length);
+        }
     }
 
     public LogFrequencySpectrum(final LogFrequencySpectrum logFrequencySpectrum) {
@@ -46,7 +48,7 @@ public class LogFrequencySpectrum extends AbstractAudioSpectrum implements Clone
      * @see #getQ()
      */
     public float getBinsPerSemitone() {
-        return (float)(1.0/(12.0*log2(1.0 / getQ() + 1.0)));
+        return (float)(1.0/(12.0 * log2(1.0 / getQ() + 1.0)));
     }
 
     /**
@@ -78,8 +80,8 @@ public class LogFrequencySpectrum extends AbstractAudioSpectrum implements Clone
     public LogFrequencySpectrum derive(final float shift) {
         // interpolate bins
         final int binsPerOneShift = Math.round(this.getBinsPerSemitone());
-        final float[] shiftedReal = interpolate(getRealData(), shift, binsPerOneShift);
-        final float[] shiftedImag = interpolate(getImaginaryData(), shift, binsPerOneShift);
+        final float[] shiftedReal = Floats.interpolate(getRealData(), shift, binsPerOneShift);
+        final float[] shiftedImag = getImaginaryData() == null ? null : Floats.interpolate(getImaginaryData(), shift, binsPerOneShift);
         return derive(shiftedReal, shiftedImag);
     }
 
@@ -136,25 +138,6 @@ public class LogFrequencySpectrum extends AbstractAudioSpectrum implements Clone
             }
         }
         return bestBin;
-    }
-
-    /**
-     * Linearly interpolates a given array by shifting its contents by the amount <code>shift</code>.
-     *
-     * @param data data to interpolate
-     * @param shift normalized shift amount, i.e. -1 - 1
-     * @param indicesPerOneShift indicates how may indices one full shift (+1 or -1) is equal to.
-     * @return interpolated array
-     */
-    private static float[] interpolate(final float[] data, final float shift, final int indicesPerOneShift) {
-        final int binShift = (int)Math.floor(indicesPerOneShift * shift);
-        final float fractionShift  = indicesPerOneShift * shift - binShift;
-        final float[] shiftedReal = new float[data.length];
-
-        for (int i = indicesPerOneShift-1; i < data.length - indicesPerOneShift; i++) {
-            shiftedReal[i] = data[i + binShift] * (1-fractionShift) + data[i+binShift+1] * fractionShift;
-        }
-        return shiftedReal;
     }
 
     /**

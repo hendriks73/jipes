@@ -14,9 +14,6 @@ import java.io.IOException;
 
 /**
  * TestMultiBand.
- * <p/>
- * Date: Jul 23, 2010
- * Time: 4:04:36 PM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */

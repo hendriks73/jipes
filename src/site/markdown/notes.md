@@ -8,6 +8,9 @@ Notes
     * Improved test coverage
     * Fixed Welch window
     * Fixed equals()/hashCode() in LinearFrequencySpectrum
+    * Fixed bug in MultiBandSpectrum.createMidiBands()
+    * Fixed bugs in Floats.interpolate()
+
 
 * 0.9.11
 

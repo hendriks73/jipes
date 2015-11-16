@@ -28,6 +28,9 @@ public abstract class AbstractAudioSpectrum implements AudioSpectrum, Cloneable 
         this.imaginaryData = imaginaryData;
         this.realData = realData;
         this.frameNumber = frameNumber;
+        if (imaginaryData != null && realData.length != imaginaryData.length) {
+            throw new IllegalArgumentException("If imaginary data is given, it must have the same length as the real data: r.length=" + realData.length + ", i.length=" + imaginaryData.length);
+        }
     }
 
     /**

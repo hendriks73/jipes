@@ -1095,23 +1095,40 @@ public final class Floats {
      * @return interpolated array
      */
     public static float[] interpolate(final float[] data, final float shift, final int indicesPerOneShift) {
-        if (shift == 0 || indicesPerOneShift == 0) return data.clone();
         if (indicesPerOneShift < 0) throw new IllegalArgumentException("Indices per shift must be positive: " + indicesPerOneShift);
         if (shift > 1 || shift < -1) throw new IllegalArgumentException("Shift must be in [-1, 1]: " + shift);
+
+        final int l = (int) (shift * indicesPerOneShift);
+        // special cases, effective shift by integer
+        if (shift == 0 || indicesPerOneShift == 0) {
+            return data.clone();
+        } else if (shift*indicesPerOneShift == l) {
+            final float[] result = new float[data.length];
+            if (shift > 0) {
+                System.arraycopy(data, 0, result, l, data.length - l);
+            } else {
+                System.arraycopy(data, -l, result, 0, data.length + l);
+            }
+            return result;
+        }
 
         final int integerShift = (int)Math.floor(Math.abs(indicesPerOneShift * shift));
         final float fractionShift  = shift > 0
                 ? indicesPerOneShift * shift - integerShift
                 : 1+(indicesPerOneShift * shift - integerShift);
+        // expand to the max: 2*indicesPerOneShift
         final float[] zeroPadded = new float[data.length + indicesPerOneShift*2];
+        // copy existing data in the middle
         System.arraycopy(data, 0, zeroPadded, indicesPerOneShift, data.length);
         final float[] shiftedPadded = new float[zeroPadded.length];
-
-        for (int i = 0; i < zeroPadded.length-1; i++) {
-            shiftedPadded[i] = zeroPadded[i + integerShift] * fractionShift + zeroPadded[i+integerShift+1] * (1-fractionShift);
+        // iterate over data
+        for (int i = 0; i < zeroPadded.length-integerShift-1; i++) {
+            final float left = zeroPadded[i + integerShift] * fractionShift;
+            final float right = zeroPadded[i + integerShift + 1] * (1 - fractionShift);
+            shiftedPadded[i] = left + right;
         }
         final float[] shiftedResult = new float[data.length];
-        System.arraycopy(shiftedPadded, shift > 0 ? 0 : indicesPerOneShift, shiftedResult, 0, data.length);
+        System.arraycopy(shiftedPadded, shift > 0 ? indicesPerOneShift-1 : indicesPerOneShift, shiftedResult, 0, data.length);
         return shiftedResult;
     }
 

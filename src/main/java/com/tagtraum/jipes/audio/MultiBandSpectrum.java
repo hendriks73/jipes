@@ -20,9 +20,6 @@ import java.util.Arrays;
  * memory consumption. As a consequence you must <em>never</em> modify any
  * of those arrays returned to you.</p>
  *
- * Date: Aug 25, 2010
- * Time: 7:48:04 PM
- *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
 public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneable {
@@ -159,7 +156,7 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
                 bands[i*binsPerSemitone+bin] = midiToFrequency(lowMidi+i, cents);
             }
         }
-        bands[bands.length-1] = midiToFrequency(highMidi, 50.0);
+        bands[bands.length-1] = midiToFrequency(highMidi-1, 50.0);
         return bands;
     }
 
