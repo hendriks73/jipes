@@ -9,7 +9,11 @@ package com.tagtraum.jipes.audio;
 import com.tagtraum.jipes.math.Floats;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import javax.sound.sampled.AudioFormat;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.*;
 
 /**
  * TestMultiBandSpectrum.
@@ -17,6 +21,121 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
 public class TestMultiBandSpectrum {
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadNumberOfBands() {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6};
+        final float[] boundaries = {2, 3, 4, 5, 9, 10};
+        final AudioFormat audioFormat = new AudioFormat(10, 16, 2, true, false);
+        new MultiBandSpectrum(frameNumber, realData, null, audioFormat, boundaries);
+    }
+
+    @Test
+    public void testBasics() {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6};
+        final float[] imaginaryData = {2, 3, 4, 5, 6, 7};
+        final float[] boundaries = {2, 3, 4, 5, 9, 10, 11};
+        final AudioFormat audioFormat = new AudioFormat(10, 16, 2, true, false);
+        final MultiBandSpectrum spectrum = new MultiBandSpectrum(frameNumber, realData, imaginaryData, audioFormat, boundaries);
+        assertEquals(frameNumber, spectrum.getFrameNumber());
+        assertEquals(realData.length, spectrum.getNumberOfSamples());
+        assertArrayEquals(realData, spectrum.getRealData(), 0.000001f);
+        assertArrayEquals(imaginaryData, spectrum.getImaginaryData(), 0.000001f);
+        assertEquals(audioFormat, spectrum.getAudioFormat());
+        assertEquals(boundaries.length-1, spectrum.getNumberOfBands());
+        assertArrayEquals(boundaries, spectrum.getBandBoundaries(), 0.0001f);
+        assertEquals((long)(frameNumber*1000L/audioFormat.getSampleRate()), spectrum.getTimestamp());
+        assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), spectrum.getTimestamp(TimeUnit.MICROSECONDS));
+
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), spectrum.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toPowers(realData, imaginaryData), spectrum.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), spectrum.getData(), 0.000001f);
+
+        assertEquals(4.5f, spectrum.getFrequency(2), 0.000001f);
+    }
+
+    @Test
+    public void testNullImaginary() {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6};
+        final float[] imaginaryData = null;
+        final float[] boundaries = {2, 3, 4, 5, 9, 10, 11};
+        final AudioFormat audioFormat = new AudioFormat(10, 16, 2, true, false);
+        final MultiBandSpectrum spectrum = new MultiBandSpectrum(frameNumber, realData, imaginaryData, audioFormat, boundaries);
+        assertEquals(frameNumber, spectrum.getFrameNumber());
+        assertEquals(realData.length, spectrum.getNumberOfSamples());
+        assertArrayEquals(realData, spectrum.getRealData(), 0.000001f);
+        assertArrayEquals(imaginaryData, spectrum.getImaginaryData(), 0.000001f);
+        assertEquals(audioFormat, spectrum.getAudioFormat());
+        assertEquals(boundaries.length-1, spectrum.getNumberOfBands());
+        assertArrayEquals(boundaries, spectrum.getBandBoundaries(), 0.0001f);
+        assertEquals((long)(frameNumber*1000L/audioFormat.getSampleRate()), spectrum.getTimestamp());
+        assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), spectrum.getTimestamp(TimeUnit.MICROSECONDS));
+
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), spectrum.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toPowers(realData, imaginaryData), spectrum.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), spectrum.getData(), 0.000001f);
+
+        assertEquals(4.5f, spectrum.getFrequency(2), 0.000001f);
+    }
+
+    @Test
+    public void testCopyConstructor() {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6};
+        final float[] imaginaryData = {2, 3, 4, 5, 6, 7};
+        final float[] boundaries = {2, 3, 4, 5, 9, 10, 11};
+        final AudioFormat audioFormat = new AudioFormat(10, 16, 2, true, false);
+        final MultiBandSpectrum spectrum = new MultiBandSpectrum(frameNumber, realData, imaginaryData, audioFormat, boundaries);
+
+        final MultiBandSpectrum copy = new MultiBandSpectrum(spectrum);
+
+        assertEquals(frameNumber, copy.getFrameNumber());
+        assertEquals(realData.length, copy.getNumberOfSamples());
+        assertArrayEquals(realData, copy.getRealData(), 0.000001f);
+        assertArrayEquals(imaginaryData, copy.getImaginaryData(), 0.000001f);
+        assertEquals(audioFormat, copy.getAudioFormat());
+        assertEquals(boundaries.length-1, copy.getNumberOfBands());
+        assertArrayEquals(boundaries, copy.getBandBoundaries(), 0.0001f);
+        assertEquals((long)(frameNumber*1000L/audioFormat.getSampleRate()), copy.getTimestamp());
+        assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), copy.getTimestamp(TimeUnit.MICROSECONDS));
+
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), copy.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toPowers(realData, imaginaryData), copy.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), copy.getData(), 0.000001f);
+
+        assertEquals(4.5f, copy.getFrequency(2), 0.000001f);
+    }
+
+    @Test
+    public void testClone() throws CloneNotSupportedException {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6};
+        final float[] imaginaryData = {2, 3, 4, 5, 6, 7};
+        final float[] boundaries = {2, 3, 4, 5, 9, 10, 11};
+        final AudioFormat audioFormat = new AudioFormat(10, 16, 2, true, false);
+        final MultiBandSpectrum spectrum = new MultiBandSpectrum(frameNumber, realData, imaginaryData, audioFormat, boundaries);
+
+        final MultiBandSpectrum clone = (MultiBandSpectrum)spectrum.clone();
+
+        assertEquals(frameNumber, clone.getFrameNumber());
+        assertEquals(realData.length, clone.getNumberOfSamples());
+        assertArrayEquals(realData, clone.getRealData(), 0.000001f);
+        assertArrayEquals(imaginaryData, clone.getImaginaryData(), 0.000001f);
+        assertEquals(audioFormat, clone.getAudioFormat());
+        assertEquals(boundaries.length-1, clone.getNumberOfBands());
+        assertArrayEquals(boundaries, clone.getBandBoundaries(), 0.0001f);
+        assertEquals((long)(frameNumber*1000L/audioFormat.getSampleRate()), clone.getTimestamp());
+        assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), clone.getTimestamp(TimeUnit.MICROSECONDS));
+
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), clone.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toPowers(realData, imaginaryData), clone.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), clone.getData(), 0.000001f);
+
+        assertEquals(4.5f, clone.getFrequency(2), 0.000001f);
+    }
 
     @Test
     public void testCreateMidiBands() {
@@ -28,8 +147,54 @@ public class TestMultiBandSpectrum {
         }
     }
 
+    @Test
+    public void testToString() {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6};
+        final float[] imaginaryData = {2, 3, 4, 5, 6, 7};
+        final float[] boundaries = {2, 3, 4, 5, 9, 10, 11};
+        final AudioFormat audioFormat = new AudioFormat(10, 16, 2, true, false);
+        final MultiBandSpectrum spectrum = new MultiBandSpectrum(frameNumber, realData, imaginaryData, audioFormat, boundaries);
+        assertTrue(Pattern.matches("MultiBandSpectrum\\{timestamp=300, frameNumber=3, bandBoundariesInHz=\\[.+, numberOfBands=6}", spectrum.toString()));
+    }
+
+    @Test
+    public void testHashCodeEquals() {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6};
+        final float[] imaginaryData = {2, 3, 4, 5, 6, 7};
+        final float[] boundaries = {2, 3, 4, 5, 9, 10, 11};
+        final AudioFormat audioFormat = new AudioFormat(10, 16, 2, true, false);
+        final MultiBandSpectrum spectrum0 = new MultiBandSpectrum(frameNumber, realData, imaginaryData, audioFormat, boundaries);
+        final MultiBandSpectrum spectrum1 = new MultiBandSpectrum(frameNumber, realData, imaginaryData, audioFormat, boundaries);
+        final MultiBandSpectrum spectrum2 = new MultiBandSpectrum(frameNumber+1, realData, imaginaryData, audioFormat, boundaries);
+
+        assertEquals(spectrum0, spectrum1);
+        assertEquals(spectrum0.hashCode(), spectrum1.hashCode());
+        assertNotEquals(spectrum0, spectrum2);
+        assertNotEquals(spectrum0.hashCode(), spectrum2.hashCode());
+    }
+
     private static float frequencyToMidi(final float frequency) {
         return (float) (69 + 12.0 * Floats.log2(frequency / 440.0f));
+    }
+
+    private static float[] toMagnitudes(final float[] real, final float[] imaginary) {
+        final float[] magnitudes = new float[real.length];
+        for (int i=0; i<magnitudes.length; i++) {
+            final float v = imaginary == null ? 0 : imaginary[i];
+            magnitudes[i] = (float)Math.sqrt(real[i] * real[i] + v * v);
+        }
+        return magnitudes;
+    }
+
+    private static float[] toPowers(final float[] real, final float[] imaginary) {
+        final float[] powers = new float[real.length];
+        for (int i=0; i<powers.length; i++) {
+            final float v = imaginary == null ? 0 : imaginary[i];
+            powers[i] = real[i] * real[i] + v * v;
+        }
+        return powers;
     }
 
 }

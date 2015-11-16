@@ -63,6 +63,9 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
      */
     public MultiBandSpectrum(int frameNumber, final float[] real, final float[] imaginary, final AudioFormat audioFormat, final float[] bandBoundariesInHz) {
         super(frameNumber, null, null, audioFormat);
+        if (bandBoundariesInHz.length != real.length+1) {
+            throw new IllegalArgumentException("Must provide samples+1 band boundaries: r.length=" + real.length + ", b.length=" + bandBoundariesInHz.length);
+        }
         this.realData = real;
         this.imaginaryData = imaginary;
         this.magnitudes = new float[real.length];
@@ -258,6 +261,7 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
 
         MultiBandSpectrum that = (MultiBandSpectrum) o;
 
+        if (this.frameNumber != that.frameNumber) return false;
         if (!Arrays.equals(bandBoundariesInHz, that.bandBoundariesInHz)) return false;
         if (!Arrays.equals(imaginaryData, that.imaginaryData)) return false;
         if (!Arrays.equals(realData, that.realData)) return false;
@@ -270,6 +274,7 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
         int result = realData != null ? Arrays.hashCode(realData) : 0;
         result = 31 * result + (imaginaryData != null ? Arrays.hashCode(imaginaryData) : 0);
         result = 31 * result + (bandBoundariesInHz != null ? Arrays.hashCode(bandBoundariesInHz) : 0);
+        result = 31 * result + frameNumber;
         return result;
     }
 
