@@ -36,9 +36,7 @@ public class TimestampLimitedSignalSource<T extends AudioBuffer> implements Sign
      * @param maxTimestampInMS max timestamp up to which to read in ms
      */
     public TimestampLimitedSignalSource(final SignalSource<T> signalSource, final long maxTimestampInMS) {
-        this.signalSource = signalSource;
-        this.maxTimestamp = maxTimestampInMS;
-        this.timeUnit = TimeUnit.MILLISECONDS;
+        this(signalSource, maxTimestampInMS, TimeUnit.MILLISECONDS);
     }
 
     /**
