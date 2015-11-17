@@ -82,7 +82,6 @@ public class RealAudioMatrix implements AudioMatrix {
 
     @Override
     public float[] getPowers() {
-        if (realData == null) return null;
         final float[] array = new float[realData.getNumberOfColumns()];
         for (int i = 0; i < array.length; i++) {
             final float v = realData.get(0, i);
@@ -93,7 +92,6 @@ public class RealAudioMatrix implements AudioMatrix {
 
     @Override
     public float[] getMagnitudes() {
-        if (realData == null) return null;
         final float[] array = new float[realData.getNumberOfColumns()];
         for (int i = 0; i < array.length; i++) {
             array[i] = Math.abs(realData.get(0, i));
@@ -133,10 +131,9 @@ public class RealAudioMatrix implements AudioMatrix {
 
         final RealAudioMatrix that = (RealAudioMatrix) o;
 
-        if (!realData.equals(that.realData)) return false;
-
         if (frameNumber != that.frameNumber) return false;
         if (audioFormat != null ? !audioFormat.equals(that.audioFormat) : that.audioFormat != null) return false;
+        if (!realData.equals(that.realData)) return false;
 
         return true;
     }
@@ -151,7 +148,7 @@ public class RealAudioMatrix implements AudioMatrix {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        throw new CloneNotSupportedException();
     }
 
     @Override
