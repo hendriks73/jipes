@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class TestLinearFrequencySpectrum {
+public class TestLinearFrequencySpectrum extends TestAudioBuffer {
 
     @Test
     public void testBasics() {
@@ -36,9 +36,9 @@ public class TestLinearFrequencySpectrum {
         assertEquals((long)(frameNumber*1000L/audioFormat.getSampleRate()), spectrum.getTimestamp());
         assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), spectrum.getTimestamp(TimeUnit.MICROSECONDS));
 
-        assertArrayEquals(toMagnitudes(realData, imaginaryData), spectrum.getMagnitudes(), 0.000001f);
-        assertArrayEquals(toPowers(realData, imaginaryData), spectrum.getPowers(), 0.000001f);
-        assertArrayEquals(toMagnitudes(realData, imaginaryData), spectrum.getData(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData, realData.length/2), spectrum.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toPowers(realData, imaginaryData, realData.length/2), spectrum.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData, realData.length/2), spectrum.getData(), 0.000001f);
 
         assertEquals(3.3333335f, spectrum.getFrequency(2), 0.000001f);
         assertEquals(audioFormat.getSampleRate()/realData.length, spectrum.getBandwidth(), 0.000001f);
@@ -108,9 +108,9 @@ public class TestLinearFrequencySpectrum {
         assertEquals((long)(frameNumber*1000L/audioFormat.getSampleRate()), clone.getTimestamp());
         assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), clone.getTimestamp(TimeUnit.MICROSECONDS));
 
-        assertArrayEquals(toMagnitudes(realData, imaginaryData), clone.getMagnitudes(), 0.000001f);
-        assertArrayEquals(toPowers(realData, imaginaryData), clone.getPowers(), 0.000001f);
-        assertArrayEquals(toMagnitudes(realData, imaginaryData), clone.getData(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData, realData.length/2), clone.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toPowers(realData, imaginaryData, realData.length/2), clone.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData, realData.length/2), clone.getData(), 0.000001f);
 
         assertEquals(3.3333335f, clone.getFrequency(2), 0.000001f);
         assertEquals(audioFormat.getSampleRate()/realData.length, clone.getBandwidth(), 0.000001f);
@@ -133,9 +133,9 @@ public class TestLinearFrequencySpectrum {
         assertEquals((long)(frameNumber*1000L/audioFormat.getSampleRate()), copy.getTimestamp());
         assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), copy.getTimestamp(TimeUnit.MICROSECONDS));
 
-        assertArrayEquals(toMagnitudes(realData, imaginaryData), copy.getMagnitudes(), 0.000001f);
-        assertArrayEquals(toPowers(realData, imaginaryData), copy.getPowers(), 0.000001f);
-        assertArrayEquals(toMagnitudes(realData, imaginaryData), copy.getData(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData, realData.length/2), copy.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toPowers(realData, imaginaryData, realData.length/2), copy.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData, realData.length/2), copy.getData(), 0.000001f);
 
         assertEquals(3.3333335f, copy.getFrequency(2), 0.000001f);
         assertEquals(audioFormat.getSampleRate()/realData.length, copy.getBandwidth(), 0.000001f);
@@ -166,21 +166,4 @@ public class TestLinearFrequencySpectrum {
         assertEquals(0, deviationsInCents[deviationsInCents.length/4]);
     }
 
-    private static float[] toMagnitudes(final float[] real, final float[] imaginary) {
-        final float[] magnitudes = new float[real.length/2];
-        for (int i=0; i<magnitudes.length; i++) {
-            final float v = imaginary == null ? 0 : imaginary[i];
-            magnitudes[i] = (float)Math.sqrt(real[i] * real[i] + v * v);
-        }
-        return magnitudes;
-    }
-
-    private static float[] toPowers(final float[] real, final float[] imaginary) {
-        final float[] powers = new float[real.length/2];
-        for (int i=0; i<powers.length; i++) {
-            final float v = imaginary == null ? 0 : imaginary[i];
-            powers[i] = real[i] * real[i] + v * v;
-        }
-        return powers;
-    }
 }

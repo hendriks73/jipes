@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class TestComplexAudioBuffer {
+public class TestComplexAudioBuffer extends TestAudioBuffer {
 
     @Test
     public void testBasics() {
@@ -121,21 +121,4 @@ public class TestComplexAudioBuffer {
         assertNotEquals(buffer0, buffer4);
     }
 
-    private static float[] toMagnitudes(final float[] real, final float[] imaginary) {
-        final float[] magnitudes = new float[real.length];
-        for (int i=0; i<real.length; i++) {
-            final float v = imaginary == null ? 0 : imaginary[i];
-            magnitudes[i] = (float)Math.sqrt(real[i] * real[i] + v * v);
-        }
-        return magnitudes;
-    }
-
-    private static float[] toPowers(final float[] real, final float[] imaginary) {
-        final float[] powers = new float[real.length];
-        for (int i=0; i<real.length; i++) {
-            final float v = imaginary == null ? 0 : imaginary[i];
-            powers[i] = real[i] * real[i] + v * v;
-        }
-        return powers;
-    }
 }
