@@ -225,15 +225,6 @@ public class MelSpectrum extends AbstractAudioSpectrum implements Cloneable {
         return -1;
     }
 
-    /**
-     * Array with center frequency values in Hz corresponding to the bin numbers.<br/>
-     * Note that these values are simply the means of the upper and lower boundaries for each bin.
-     * Due to the logarithmic nature of the <a href="http://en.wikipedia.org/wiki/Equal_temperament">equal temperament</a>,
-     * if one bin spans from 440hz to 880Hz, i.e. an octave, the mean frequency is not the same as the center semitone.
-     *
-     * @return array of length numberOfSamples/2 due to symmetry
-     * @see #getFrequency(int)
-     */
     public float[] getFrequencies() {
         final float[] frequencies = new float[channelBoundariesInHz.length-2];
         System.arraycopy(channelBoundariesInHz, 1, frequencies, 0, frequencies.length);
@@ -247,6 +238,7 @@ public class MelSpectrum extends AbstractAudioSpectrum implements Cloneable {
 
         MelSpectrum that = (MelSpectrum) o;
 
+        if (this.frameNumber != that.frameNumber) return false;
         if (!Arrays.equals(channelBoundariesInHz, that.channelBoundariesInHz)) return false;
         if (!Arrays.equals(imaginaryData, that.imaginaryData)) return false;
         if (!Arrays.equals(realData, that.realData)) return false;
@@ -260,6 +252,7 @@ public class MelSpectrum extends AbstractAudioSpectrum implements Cloneable {
         int result = realData != null ? Arrays.hashCode(realData) : 0;
         result = 31 * result + (imaginaryData != null ? Arrays.hashCode(imaginaryData) : 0);
         result = 31 * result + (channelBoundariesInHz != null ? Arrays.hashCode(channelBoundariesInHz) : 0);
+        result = 31 * result + frameNumber;
         return result;
     }
 
@@ -274,6 +267,9 @@ public class MelSpectrum extends AbstractAudioSpectrum implements Cloneable {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        final MelSpectrum clone = (MelSpectrum)super.clone();
+        clone.channelBoundariesInHz = this.channelBoundariesInHz.clone();
+        clone.filterBank = this.filterBank.clone();
+        return clone;
     }
 }
