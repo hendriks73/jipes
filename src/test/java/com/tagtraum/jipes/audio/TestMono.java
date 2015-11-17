@@ -7,20 +7,20 @@
 package com.tagtraum.jipes.audio;
 
 import com.tagtraum.jipes.SignalSource;
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 /**
  * TestMono.
- * <p/>
- * Date: Jul 23, 2010
- * Time: 9:58:37 AM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class TestMono extends TestCase {
+public class TestMono {
 
     private SignalSource<AudioBuffer> monoSource = new SignalSource<AudioBuffer>() {
 
@@ -54,6 +54,7 @@ public class TestMono extends TestCase {
     };
 
 
+    @Test
     public void testMonoGenerator() throws IOException {
         final Mono mono = new Mono();
         mono.connectTo(monoSource);
@@ -65,6 +66,7 @@ public class TestMono extends TestCase {
         }
     }
 
+    @Test
     public void testStereoGenerator() throws IOException {
         final Mono mono = new Mono();
         mono.connectTo(stereoSource);
@@ -77,6 +79,7 @@ public class TestMono extends TestCase {
         }
     }
 
+    @Test
     public void testNullGenerator() throws IOException {
         final Mono processor = new Mono();
         processor.connectTo(new NullAudioBufferSource());
