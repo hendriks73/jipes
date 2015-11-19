@@ -17,22 +17,24 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Encapsulates an {@link AudioInputStream} to serve as a {@link SignalSource} for
+ * <p>Encapsulates an {@link AudioInputStream} to serve as a {@link SignalSource} for
  * a {@link com.tagtraum.jipes.SignalPump} or a {@link com.tagtraum.jipes.SignalPullProcessor}.
- * <p/>
+ * </p>
+ * <p>
  * The provided stream/file is converted to <code>float[]</code> based {@link RealAudioBuffer}s.
  * This also implies a normalization to values between -1 and 1 (signed) or 0 and 1 (unsigned).
  * Normalization can be turned off via {@link #setNormalize(boolean)}.
- * <p/>
+ * </p>
+ * <p>
  * If the signal contains multiple channels, these channel signals are still in their original
  * (potentially interleaved) layout.
- * <p/>
+ * </p>
+ * <p>
  * As of Java 6, mp3 is unfortunately not supported out of the box by Java. You might need
  * to install the free codec <a href="http://www.javazoom.net/javalayer/javalayer.html">JLayer</a>.
  * Platform dependent alternatives are <a href="http://www.tagtraum.com/casampledsp/">CASampledSP</a>
  * and <a href="http://www.tagtraum.com/mfsampledsp/">MFSampledSP</a>/
- * <p/>
- * Date: 5/15/11
+ * </p>
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see javax.sound.sampled.AudioSystem#getAudioInputStream(java.io.File)
@@ -65,7 +67,7 @@ public class AudioSignalSource implements SignalSource<AudioBuffer>, Closeable {
     private boolean normalize = true;
 
     /**
-     * Standard constructor.
+     * Creates a normalized (see {@link #isNormalize()}) {@link SignalSource} from the given stream.
      *
      * @param in audio input stream with an associated AudioFormat that has at least <code>sampleSizeInBits</code>, <code>channels</code>, and <code>frameSize</code> set
      * @param bufferSize buffer this must be a multiple of the audio format's framesize
@@ -86,7 +88,8 @@ public class AudioSignalSource implements SignalSource<AudioBuffer>, Closeable {
     }
 
     /**
-     * Standard constructor with 16kb internal buffer.
+     * Creates a normalized (see {@link #isNormalize()}) {@link SignalSource} from the given stream,
+     * using a 16kb internal buffer.
      *
      * @param in audio input stream
      * @throws IllegalArgumentException if the audio format is not specific enough
@@ -96,8 +99,8 @@ public class AudioSignalSource implements SignalSource<AudioBuffer>, Closeable {
     }
 
     /**
-     * Convenience constructor, calls {@link AudioSystem#getAudioInputStream(java.io.File)} for the
-     * provided file.
+     * Creates a normalized (see {@link #isNormalize()}) {@link SignalSource} from the given file,
+     * using a 16kb internal buffer.
      *
      * @param file audio file
      * @throws UnsupportedAudioFileException if the file is not supported by {@link AudioSystem}.
