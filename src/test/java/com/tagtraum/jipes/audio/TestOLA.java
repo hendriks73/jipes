@@ -8,7 +8,8 @@ package com.tagtraum.jipes.audio;
 
 import com.tagtraum.jipes.AbstractSignalProcessor;
 import com.tagtraum.jipes.SignalSource;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
@@ -16,20 +17,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 /**
  * TestOLA.
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class TestOLA extends TestCase {
+public class TestOLA {
 
     private SignalSource<AudioBuffer> smallBufferSource4;
     private SignalSource<AudioBuffer> smallBufferSource8;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         smallBufferSource4 = new SignalSource<AudioBuffer>() {
 
             private int count;
@@ -61,8 +62,10 @@ public class TestOLA extends TestCase {
                 }
                 return null;
             }
-        };    }
+        };
+    }
 
+    @Test
     public void testSmallWindowPull() throws IOException {
         final OLA processor = new OLA(6, 2);
         processor.connectTo(smallBufferSource4);
@@ -71,6 +74,7 @@ public class TestOLA extends TestCase {
         buffer = processor.read();
         System.out.println(Arrays.toString(buffer.getData()));
         assertEquals(processor.getSliceLengthInFrames(), buffer.getData().length);
+        assertEquals(processor.getHopSizeInFrames(), 2);
         assertArrayEquals(new float[]{1, 1, 2, 2, 2, 2}, buffer.getData(), 0.00001f);
 
         buffer = processor.read();
@@ -80,6 +84,7 @@ public class TestOLA extends TestCase {
 
     }
 
+    @Test
     public void testSmallWindowPush1() throws IOException {
         final OLA processor = new OLA(6, 2);
         final DataCollector dataCollector = new DataCollector();
@@ -103,12 +108,13 @@ public class TestOLA extends TestCase {
                 measuredSum+=f;
             }
         }
-        assertEquals(sum, measuredSum);
+        assertEquals(sum, measuredSum, 0.0001f);
         assertFalse(results.isEmpty());
         assertArrayEquals(new float[]{1, 1, 2, 2, 2, 2}, results.get(0), 0.00001f);
         assertArrayEquals(new float[]{2, 2, 1, 1, 0, 0}, results.get(1), 0.00001f);
     }
 
+    @Test
     public void testSmallWindowPush2() throws IOException {
         final OLA processor = new OLA(8, 2);
         final DataCollector dataCollector = new DataCollector();
@@ -132,19 +138,37 @@ public class TestOLA extends TestCase {
                 measuredSum+=f;
             }
         }
-        assertEquals(sum, measuredSum);
+        assertEquals(sum, measuredSum, 0.0001f);
         assertFalse(results.isEmpty());
         assertArrayEquals(new float[]{1, 1, 2, 2, 3, 3, 4, 4}, results.get(0), 0.00001f);
         assertArrayEquals(new float[]{4, 4, 4, 4, 4, 4, 4, 4}, results.get(1), 0.00001f);
         assertArrayEquals(new float[]{3, 3, 2, 2, 1, 1, 0, 0}, results.get(2), 0.00001f);
     }
 
+    @Test
     public void testNullGenerator() throws IOException {
         final OLA processor = new OLA();
         processor.connectTo(new NullAudioBufferSource());
         assertNull(processor.read());
     }
 
+    @Test
+    public void testToString() {
+        final OLA processor = new OLA(100, 50);
+        assertEquals("OLA{window=100, hop=50}", processor.toString());
+    }
+
+    @Test
+    public void testEqualsHashCode() {
+        final OLA processor0 = new OLA(2);
+        final OLA processor1 = new OLA(2);
+        final OLA processor2 = new OLA(3);
+
+        assertEquals(processor0, processor1);
+        assertEquals(processor0.hashCode(), processor1.hashCode());
+        assertNotEquals(processor0, processor2);
+        assertNotEquals(processor0.hashCode(), processor2.hashCode());
+    }
 
     private static class DataCollector extends AbstractSignalProcessor<AudioBuffer, List<float[]>> {
         private final List<float[]> results = new ArrayList<float[]>();
