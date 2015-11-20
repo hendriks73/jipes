@@ -15,9 +15,6 @@ import java.util.Arrays;
  * Adds zero samples (zero stuffing) in order to upsample the data. Note that proper upsampling (i.e. interpolating)
  * has to be followed by the application of a suitable low pass filter (see {@link com.tagtraum.jipes.math.Filters}
  * and {@link com.tagtraum.jipes.universal.Mapping}) to avoid aliasing.
- * <p/>
- * Date: Jul 22, 2010
- * Time: 2:38:54 PM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
