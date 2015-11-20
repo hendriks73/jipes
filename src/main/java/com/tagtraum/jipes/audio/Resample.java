@@ -14,9 +14,7 @@ import java.io.IOException;
 
 /**
  * Resamples mono audio data.
- * Note that not all conversion are supported.
- * <p/>
- * Date: Oct 2011
+ * Note that not all conversions are supported.
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see MultirateFilters.Resampler
