@@ -8,29 +8,29 @@ package com.tagtraum.jipes.audio;
 
 import com.tagtraum.jipes.AbstractSignalProcessor;
 import com.tagtraum.jipes.SignalSource;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.*;
+
 /**
  * TestSlidingWindow.
- * <p/>
- * Date: Jul 23, 2010
- * Time: 10:12:40 AM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class TestSlidingWindow extends TestCase {
+public class TestSlidingWindow {
 
 
     private SignalSource<AudioBuffer> largeBufferSource;
     private SignalSource<AudioBuffer> smallBufferSource;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         largeBufferSource = new SignalSource<AudioBuffer>() {
             private float[] buf;
             {
@@ -69,6 +69,7 @@ public class TestSlidingWindow extends TestCase {
         };
     }
 
+    @Test
     public void testSmallWindowPull() throws IOException {
         final SlidingWindow processor = new SlidingWindow(6, 2);
         processor.connectTo(largeBufferSource);
@@ -80,8 +81,20 @@ public class TestSlidingWindow extends TestCase {
             assertEquals(processor.getSliceLengthInFrames(), floats.length);
             firstValue += processor.getHopSizeInFrames();
         }
+
+        // test reset
+        processor.reset();
+        // do again
+        firstValue = 0;
+        while ((buffer = processor.read()) != null) {
+            final float[] floats = buffer.getData();
+            assertEquals(firstValue, floats[0], 0.00001);
+            assertEquals(processor.getSliceLengthInFrames(), floats.length);
+            firstValue += processor.getHopSizeInFrames();
+        }
     }
 
+    @Test
     public void testSmallWindowPush() throws IOException {
         final SlidingWindow processor = new SlidingWindow(6, 2);
         float firstValue = 0;
@@ -101,6 +114,7 @@ public class TestSlidingWindow extends TestCase {
         }
     }
 
+    @Test
     public void testLargeWindowPush() throws IOException {
         final SlidingWindow processor = new SlidingWindow(13, 11);
         float firstValue = 0;
@@ -120,6 +134,7 @@ public class TestSlidingWindow extends TestCase {
         }
     }
 
+    @Test
     public void testFlushPush() throws IOException {
         final SlidingWindow processor = new SlidingWindow(7, 3);
         float firstValue = 0;
@@ -148,20 +163,33 @@ public class TestSlidingWindow extends TestCase {
             firstValue += processor.getHopSizeInFrames();
         }
         final float[] lastResult = results.get(results.size() - 1);
-        assertEquals(126f, lastResult[0]);
-        assertEquals(127f, lastResult[1]);
-        assertEquals(128f, lastResult[2]);
-        assertEquals(0f, lastResult[3]);
-        assertEquals(0f, lastResult[4]);
-        assertEquals(0f, lastResult[5]);
-        assertEquals(0f, lastResult[6]);
+        assertEquals(126f, lastResult[0], 0.0001f);
+        assertEquals(127f, lastResult[1], 0.0001f);
+        assertEquals(128f, lastResult[2], 0.0001f);
+        assertEquals(0f, lastResult[3], 0.0001f);
+        assertEquals(0f, lastResult[4], 0.0001f);
+        assertEquals(0f, lastResult[5], 0.0001f);
+        assertEquals(0f, lastResult[6], 0.0001f);
     }
 
 
+    @Test
     public void testNullGenerator() throws IOException {
         final SlidingWindow processor = new SlidingWindow();
         processor.connectTo(new NullAudioBufferSource());
         assertNull(processor.read());
+    }
+
+    @Test
+    public void testEqualsHashCode() {
+        final SlidingWindow slidingWindow0 = new SlidingWindow(12, 34);
+        final SlidingWindow slidingWindow1 = new SlidingWindow(12, 34);
+        final SlidingWindow slidingWindow2 = new SlidingWindow(12, 36);
+
+        assertEquals(slidingWindow0.hashCode(), slidingWindow1.hashCode());
+        assertNotEquals(slidingWindow0.hashCode(), slidingWindow2.hashCode());
+        assertEquals(slidingWindow0, slidingWindow1);
+        assertNotEquals(slidingWindow0, slidingWindow2);
     }
 
 
