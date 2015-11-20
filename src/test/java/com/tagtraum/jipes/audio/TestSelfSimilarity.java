@@ -6,12 +6,15 @@
  */
 package com.tagtraum.jipes.audio;
 
+import com.tagtraum.jipes.SignalProcessor;
+import com.tagtraum.jipes.math.DistanceFunction;
 import org.junit.Test;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * TestSelfSimilarity.
@@ -21,8 +24,23 @@ import static org.junit.Assert.assertEquals;
 public class TestSelfSimilarity {
 
     @Test
+    public void testBasics() {
+        final String id = "some id";
+        final SelfSimilarity<AudioBuffer> selfSimilarity = new SelfSimilarity<AudioBuffer>(id);
+        assertEquals(id, selfSimilarity.getId());
+        final String other = "other";
+        selfSimilarity.setId(other);
+        assertEquals(other, selfSimilarity.getId());
+
+        assertFalse(selfSimilarity.isCopyOnMatrixEnlargement());
+        selfSimilarity.setCopyOnMatrixEnlargement(true);
+        assertTrue(selfSimilarity.isCopyOnMatrixEnlargement());
+    }
+
+    @Test
     public void testSelfSimilarity() throws IOException {
         final SelfSimilarity<AudioBuffer> selfSimilarity = new SelfSimilarity<AudioBuffer>();
+        selfSimilarity.setCopyOnMatrixEnlargement(true);
         final AudioFormat bogusAudioFormat = new AudioFormat(10f, 8, 1, true, true);
         for (int i=0; i<10; i++) {
             selfSimilarity.process(new RealAudioBuffer(2 * i, new float[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, bogusAudioFormat));
@@ -72,6 +90,22 @@ public class TestSelfSimilarity {
                 //System.out.println();
             }
         }
+    }
+
+    @Test
+    public void testConnections() {
+        final SignalProcessor<AudioBuffer, AudioMatrix> processor = new SelfSimilarity<AudioBuffer>("", 5, new DistanceFunction<AudioBuffer>() {
+            @Override
+            public float distance(final AudioBuffer a, final AudioBuffer b) {
+                return 0;
+            }
+        });
+        assertArrayEquals(new SignalProcessor[0], processor.getConnectedProcessors());
+        final SignalProcessor mock = mock(SignalProcessor.class);
+        processor.connectTo(mock);
+        assertArrayEquals(new SignalProcessor[]{mock}, processor.getConnectedProcessors());
+        processor.disconnectFrom(mock);
+        assertArrayEquals(new SignalProcessor[0], processor.getConnectedProcessors());
     }
 
 }

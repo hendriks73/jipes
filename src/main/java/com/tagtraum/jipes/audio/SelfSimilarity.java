@@ -26,6 +26,7 @@ import static com.tagtraum.jipes.audio.AudioBufferFunctions.createDistanceFuncti
  */
 public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I, AudioMatrix> {
 
+    public static final int FULL_MATRIX = -1;
     private SignalProcessorSupport<AudioMatrix> signalProcessorSupport = new SignalProcessorSupport<AudioMatrix>();
     private LinkedList<I> spectra = new LinkedList<I>();
     private AudioFormat audioFormat;
@@ -35,7 +36,7 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
     private int firstFrame = -1;
     private int secondFrame = -1;
     private Object id;
-    private int bandwidth = -1;
+    private int bandwidth = FULL_MATRIX;
     private MutableMatrix similarityMatrix;
     private int chunkOffset = 0;
     private int spectraOffset;
@@ -43,7 +44,7 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
 
 
     /**
-     * Self similarity processor.
+     * Self similarity processor with a limited bandwidth around the main diagonal.
      *
      * @param bandwidth bandwidth
      */
@@ -52,7 +53,7 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
     }
 
     /**
-     * Self similarity processor.
+     * Self similarity processor with a limited bandwidth around the main diagonal.
      *
      * @param id               id
      * @param distanceFunction distance function
@@ -64,16 +65,16 @@ public class SelfSimilarity<I extends AudioBuffer> implements SignalProcessor<I,
     }
 
     /**
-     * Self similarity processor.
+     * Self similarity processor using a full matrix (i.e. {@link #getBandwidth()} {@code == } {@link #FULL_MATRIX}).
      *
-     * @param id               id
+     * @param id id
      */
     public SelfSimilarity(final Object id) {
-        setId(id);
+        this(id, FULL_MATRIX, null);
     }
 
     /**
-     * Self similarity processor.
+     * Self similarity processor using a full matrix (i.e. {@link #getBandwidth()} {@code == } {@link #FULL_MATRIX}).
      */
     public SelfSimilarity() {
         this("SelfSimilarity");
