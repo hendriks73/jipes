@@ -104,14 +104,10 @@ public class Interpolate extends AbstractSignalProcessor<AudioBuffer, AudioBuffe
     @Override
     protected AudioBuffer processNext(final AudioBuffer buffer) throws IOException {
         if (interpolator == null) {
-            final float sourceSampleRate = buffer.getAudioFormat().getSampleRate();
-            final float floatFactor = targetSampleRate / sourceSampleRate;
-            final int intFactor = Math.round(floatFactor);
-            if (Math.abs(floatFactor - intFactor) > 0.001f) throw new IOException("Interpolation factor " + floatFactor + " from " + sourceSampleRate + "Hz to " + targetSampleRate + "Hz is not supported");
             try {
-                setFactor(intFactor);
+                verifyTargetSampleRate(buffer.getAudioFormat().getSampleRate());
             } catch (IllegalArgumentException e) {
-                throw new IOException("Interpolation factor " + intFactor + " is not supported", e);
+                throw new IOException(e.getMessage(), e);
             }
         }
         if (buffer.getAudioFormat().getChannels() != 1) throw new IOException("Interpolate only supports single channel buffers. Actual audio format: " + buffer.getAudioFormat());
@@ -125,6 +121,13 @@ public class Interpolate extends AbstractSignalProcessor<AudioBuffer, AudioBuffe
         return realAudioBuffer;
     }
 
+    private void verifyTargetSampleRate(final float sourceSampleRate) throws IllegalArgumentException {
+        final float floatFactor = targetSampleRate / sourceSampleRate;
+        final int intFactor = Math.round(floatFactor);
+        if (Math.abs(floatFactor - intFactor) > 0.001f) throw new IllegalArgumentException("Interpolation factor " + floatFactor + " from " + sourceSampleRate + "Hz to " + targetSampleRate + "Hz is not supported");
+        setFactor(intFactor);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -135,7 +138,9 @@ public class Interpolate extends AbstractSignalProcessor<AudioBuffer, AudioBuffe
         if (targetSampleRate != 0f) {
             if (Float.compare(interpolate.targetSampleRate, targetSampleRate) != 0) return false;
         } else {
-            if (interpolator != null ? !interpolator.equals(interpolate.interpolator) : interpolate.interpolator != null) return false;
+            if (interpolator != null
+                    ? !interpolator.equals(interpolate.interpolator)
+                    : interpolate.getFactor() != this.getFactor()) return false;
         }
         return true;
     }

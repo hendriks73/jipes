@@ -99,6 +99,25 @@ public final class MultirateFilters {
         }
 
         @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+
+            final Decimator decimator = (Decimator) o;
+
+            if (factor != decimator.factor) return false;
+            return Arrays.equals(getCoefficients(), decimator.getCoefficients());
+        }
+
+        @Override
+        public int hashCode() {
+            int result = super.hashCode();
+            result = 31 * result + factor;
+            return result;
+        }
+
+        @Override
         public String toString() {
             return "Decimator{" +
                     "factor=" + factor +
@@ -205,6 +224,25 @@ public final class MultirateFilters {
                 }
             }
             return out;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final Interpolator that = (Interpolator) o;
+
+            if (factor != that.factor) return false;
+            return Arrays.equals(originalCoefficients, that.originalCoefficients);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = factor;
+            result = 31 * result + (originalCoefficients != null ? Arrays.hashCode(originalCoefficients) : 0);
+            return result;
         }
 
         @Override
