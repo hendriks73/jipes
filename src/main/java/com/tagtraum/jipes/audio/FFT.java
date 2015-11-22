@@ -62,7 +62,7 @@ public class FFT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
     }
 
     public FFT() {
-        this(0, 0);
+        this(0);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class FFT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
         } else if (requiredResolutionInHz > 0) {
             return "FFT{" +
                     "requiredResolutionInHz=" + requiredResolutionInHz +
-                    '}';
+                    "Hz}";
         } else {
             return "FFT{" +
                     "length=equal to first input" +

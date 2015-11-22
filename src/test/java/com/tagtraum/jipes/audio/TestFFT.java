@@ -7,20 +7,20 @@
 package com.tagtraum.jipes.audio;
 
 import com.tagtraum.jipes.SignalSource;
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 /**
- * TestFFT.
- * <p/>
- * Date: Jul 22, 2010
- * Time: 11:43:40 PM
+ * TestFFT
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
-public class TestFFT extends TestCase {
+public class TestFFT {
 
     private SignalSource<AudioBuffer> monoSource = new SignalSource<AudioBuffer>() {
         public AudioFormat getProcessedAudioFormat() {
@@ -37,6 +37,7 @@ public class TestFFT extends TestCase {
         }
     };
 
+    @Test
     public void testSimpleFFT() throws IOException {
         final FFT fft = new FFT();
         fft.connectTo(monoSource);
@@ -49,10 +50,33 @@ public class TestFFT extends TestCase {
         assertEquals(0.0, realData[3], 0.0001);
     }
 
+    @Test
     public void testNullGenerator() throws IOException {
         final FFT fft = new FFT();
         fft.connectTo(new NullAudioBufferSource());
         assertNull(fft.read());
+    }
+
+    @Test
+    public void testToString() {
+        final FFT fft1024 = new FFT(1024);
+        assertEquals("FFT{length=1024}", fft1024.toString());
+        final FFT fft40Hz = new FFT(40f);
+        assertEquals("FFT{requiredResolutionInHz=40.0Hz}", fft40Hz.toString());
+        final FFT fftFirstInput = new FFT(0);
+        assertEquals("FFT{length=equal to first input}", fftFirstInput.toString());
+    }
+
+    @Test
+    public void testHashCode() {
+        final FFT fft = new FFT();
+        assertEquals(0, fft.hashCode());
+    }
+
+    @Test(expected = IOException.class)
+    public void testMono() throws IOException {
+        final FFT fft = new FFT();
+        fft.processNext(new RealAudioBuffer(1, new float[1024], new AudioFormat(10000, 8, 2, true, true)));
     }
 
 }
