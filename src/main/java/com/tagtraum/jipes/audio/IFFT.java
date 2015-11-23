@@ -65,7 +65,25 @@ public class IFFT extends AbstractSignalProcessor<LinearFrequencySpectrum, Audio
     }
 
     public IFFT() {
-        this(0, 0);
+        this(0);
+    }
+
+    /**
+     * FFT length.
+     *
+     * @return values &lt= 0, if the length is still unknown.
+     */
+    public int getLength() {
+        return length;
+    }
+
+    /**
+     * Desired resolution in Hz.
+     *
+     * @return values &lt= 0, if the required resolution was not set.
+     */
+    public float getRequiredResolutionInHz() {
+        return requiredResolutionInHz;
     }
 
     @Override
@@ -96,8 +114,19 @@ public class IFFT extends AbstractSignalProcessor<LinearFrequencySpectrum, Audio
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        // if it's the same class, it's equal
-        return true;
+
+        final IFFT that = (IFFT) o;
+        if (this.length > 0 && that.length > 0
+                && this.length == that.length) return true;
+
+        // This is kind of tricky, as it can result in two objects not being equal anymore,
+        // once the actual length has been determined.
+        if (this.requiredResolutionInHz > 0 && that.requiredResolutionInHz > 0
+                && this.requiredResolutionInHz == that.requiredResolutionInHz) return true;
+        if (this.length <= 0 && that.length <= 0
+                && this.requiredResolutionInHz <=0 && that.requiredResolutionInHz <=0) return true;
+
+        return false;
     }
 
     @Override
@@ -114,7 +143,7 @@ public class IFFT extends AbstractSignalProcessor<LinearFrequencySpectrum, Audio
         } else if (requiredResolutionInHz > 0) {
             return "IFFT{" +
                     "requiredResolutionInHz=" + requiredResolutionInHz +
-                    '}';
+                    "Hz}";
         } else {
             return "IFFT{" +
                     "length=equal to first input" +
