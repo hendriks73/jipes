@@ -13,6 +13,7 @@ import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 /**
@@ -23,16 +24,13 @@ import static org.junit.Assert.assertNull;
 public class TestFFT {
 
     private SignalSource<AudioBuffer> monoSource = new SignalSource<AudioBuffer>() {
-        public AudioFormat getProcessedAudioFormat() {
-            return new AudioFormat(10000, 32, 1, true, true);
-        }
 
         public void reset() {
         }
 
         public AudioBuffer read() throws IOException {
             return new RealAudioBuffer(
-                    0, new float[] { 1, 2, 1, 2, 1, 2, 1, 2 }, new AudioFormat(10000, 32, 1, true, true)
+                    0, new float[]{1, 2, 1, 2, 1, 2, 1, 2}, new AudioFormat(10000, 32, 1, true, true)
             );
         }
     };
@@ -40,6 +38,8 @@ public class TestFFT {
     @Test
     public void testSimpleFFT() throws IOException {
         final FFT fft = new FFT();
+        assertEquals(0, fft.getLength());
+        assertEquals(0, fft.getRequiredResolutionInHz(), 0.0001f);
         fft.connectTo(monoSource);
         final LinearFrequencySpectrum spectrum = fft.read();
         float[] realData = spectrum.getRealData();
@@ -79,4 +79,34 @@ public class TestFFT {
         fft.processNext(new RealAudioBuffer(1, new float[1024], new AudioFormat(10000, 8, 2, true, true)));
     }
 
+    @Test
+    public void testEquals() {
+        final FFT fft0 = new FFT(1024);
+        final FFT fft1 = new FFT(1024);
+        final FFT fft2 = new FFT(1024 * 2);
+        final FFT fft3 = new FFT(40f);
+        final FFT fft4 = new FFT(40f);
+        final FFT fft5 = new FFT(50f);
+        final FFT fft6 = new FFT();
+        final FFT fft7 = new FFT();
+
+        assertEquals(fft0, fft1);
+        assertNotEquals(fft0, fft2);
+        assertNotEquals(fft0, fft3);
+
+        assertEquals(fft3, fft4);
+        assertNotEquals(fft3, fft5);
+        assertNotEquals(fft3, fft0);
+
+        assertEquals(fft6, fft7);
+        assertNotEquals(fft6, fft0);
+        assertNotEquals(fft6, fft3);
+    }
+
+    @Test
+    public void testTargetResolution() throws IOException {
+        final FFT fft = new FFT(40f);
+        fft.processNext(new RealAudioBuffer(0, new float[1024], new AudioFormat(10000, 8, 1, true, true)));
+        fft.processNext(new RealAudioBuffer(1, new float[1024], new AudioFormat(10000, 8, 1, true, true)));
+    }
 }
