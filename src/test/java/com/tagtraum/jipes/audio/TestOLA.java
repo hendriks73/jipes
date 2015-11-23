@@ -148,7 +148,7 @@ public class TestOLA {
     @Test
     public void testNullGenerator() throws IOException {
         final OLA processor = new OLA();
-        processor.connectTo(new NullAudioBufferSource());
+        processor.connectTo(new NullAudioBufferSource<AudioBuffer>());
         assertNull(processor.read());
     }
 

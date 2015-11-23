@@ -82,7 +82,7 @@ public class TestMono {
     @Test
     public void testNullGenerator() throws IOException {
         final Mono processor = new Mono();
-        processor.connectTo(new NullAudioBufferSource());
+        processor.connectTo(new NullAudioBufferSource<AudioBuffer>());
         assertNull(processor.read());
     }
 

@@ -96,7 +96,7 @@ public class TestChannel {
     @Test
     public void testNullGenerator() throws IOException {
         final Channel processor = new Channel(0);
-        processor.connectTo(new NullAudioBufferSource());
+        processor.connectTo(new NullAudioBufferSource<AudioBuffer>());
         assertNull(processor.read());
     }
 

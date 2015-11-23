@@ -15,12 +15,12 @@ import java.io.IOException;
 *
 * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
 */
-class NullAudioBufferSource implements SignalSource<AudioBuffer> {
+class NullAudioBufferSource<T> implements SignalSource<T> {
 
     public void reset() {
     }
 
-    public AudioBuffer read() throws IOException {
+    public T read() throws IOException {
         return null;
     }
 }

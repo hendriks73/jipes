@@ -176,7 +176,7 @@ public class TestSlidingWindow {
     @Test
     public void testNullGenerator() throws IOException {
         final SlidingWindow processor = new SlidingWindow();
-        processor.connectTo(new NullAudioBufferSource());
+        processor.connectTo(new NullAudioBufferSource<AudioBuffer>());
         assertNull(processor.read());
     }
 

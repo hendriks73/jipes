@@ -53,7 +53,7 @@ public class TestFFT {
     @Test
     public void testNullGenerator() throws IOException {
         final FFT fft = new FFT();
-        fft.connectTo(new NullAudioBufferSource());
+        fft.connectTo(new NullAudioBufferSource<AudioBuffer>());
         assertNull(fft.read());
     }
 

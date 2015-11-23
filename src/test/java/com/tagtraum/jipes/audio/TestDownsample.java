@@ -47,7 +47,7 @@ public class TestDownsample {
 
     };
 
-    private SignalSource<AudioBuffer> nullSource = new NullAudioBufferSource();
+    private SignalSource<AudioBuffer> nullSource = new NullAudioBufferSource<AudioBuffer>();
 
     @Test
     public void testDownsample2Mono() throws IOException {
