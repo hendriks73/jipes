@@ -14,13 +14,10 @@ import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 
 /**
- * Splits {@link AudioBuffer}s containing interleaved signals (for example LRLRLR) for multiple channels into
+ * Splits {@link AudioBuffer}s containing interleaved signals (for example {@code LRLRLR}) for multiple channels into
  * separate buffers containing the signal for one channel each.
  * To further process signals for a specific channel, use the method
  * {@link com.tagtraum.jipes.SignalSplit#connectTo(int, com.tagtraum.jipes.SignalProcessor)}.
- * <p/>
- * Date: 2/8/11
- * Time: 9:13 PM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see Mono
