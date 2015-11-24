@@ -10,6 +10,7 @@ Notes
     * Fixed equals()/hashCode() in LinearFrequencySpectrum
     * Fixed bug in MultiBandSpectrum.createMidiBands()
     * Fixed bugs in Floats.interpolate()
+    * Fixed FrameNumberFilter.read()
 
 
 * 0.9.11

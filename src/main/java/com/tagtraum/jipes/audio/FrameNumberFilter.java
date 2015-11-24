@@ -11,14 +11,13 @@ import com.tagtraum.jipes.AbstractSignalProcessor;
 import java.io.IOException;
 
 /**
- * Allows to ignore {@link AudioBuffer}s, if their <em>first</em> frame number as returned by
+ * <p>Allows to ignore {@link AudioBuffer}s, if their <em>first</em> frame number as returned by
  * {@link com.tagtraum.jipes.audio.AudioBuffer#getFrameNumber()} does not fall into a specified
  * range. Note, that the max frame number is exclusive.
- * <p>
+ * </p><p>
  * If the end of the buffer is higher than max frames, it is still let through, if
  * the beginning is lower.
- * <p/>
- * Date: 2/4/11
+ * </p>
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
@@ -34,8 +33,8 @@ public class FrameNumberFilter extends AbstractSignalProcessor<AudioBuffer, Audi
      * @param maxFrameNumber if a buffer's first frame number is equal or greater, the whole buffer will be ignored
      */
     public FrameNumberFilter(final int minFrameNumber, final int maxFrameNumber) {
-        this.minFrameNumber = minFrameNumber;
-        this.maxFrameNumber = maxFrameNumber;
+        setMinFrameNumber(minFrameNumber);
+        setMaxFrameNumber(maxFrameNumber);
     }
 
     public int getMinFrameNumber() {
@@ -43,6 +42,7 @@ public class FrameNumberFilter extends AbstractSignalProcessor<AudioBuffer, Audi
     }
 
     public void setMinFrameNumber(final int minFrameNumber) {
+        if (minFrameNumber > this.maxFrameNumber) throw new IllegalArgumentException("Min frame number cannot be greater than max frame number.");
         this.minFrameNumber = minFrameNumber;
     }
 
@@ -51,6 +51,7 @@ public class FrameNumberFilter extends AbstractSignalProcessor<AudioBuffer, Audi
     }
 
     public void setMaxFrameNumber(final int maxFrameNumber) {
+        if (maxFrameNumber < this.minFrameNumber) throw new IllegalArgumentException("Min frame number cannot be greater than max frame number.");
         this.maxFrameNumber = maxFrameNumber;
     }
 
@@ -62,10 +63,8 @@ public class FrameNumberFilter extends AbstractSignalProcessor<AudioBuffer, Audi
     @Override
     public AudioBuffer read() throws IOException {
         AudioBuffer buffer;
-        while ((buffer = getConnectedSource().read()) != null) {
-            if (isValidBuffer(buffer)) {
-                return buffer;
-            }
+        if ((buffer = getConnectedSource().read()) != null && isValidBuffer(buffer)) {
+            return buffer;
         }
         return null;
     }
