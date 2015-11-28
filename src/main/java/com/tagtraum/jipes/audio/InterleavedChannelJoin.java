@@ -13,9 +13,7 @@ import javax.sound.sampled.AudioFormat;
 import java.util.List;
 
 /**
- * Joins multichannel audio data in an interleaved format (LRLRLR...).
- * <p/>
- * Date: 10/2/11
+ * Joins multichannel audio data in an interleaved format ({@code LRLRLR...}).
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see InterleavedChannelSplit
@@ -23,7 +21,7 @@ import java.util.List;
 public class InterleavedChannelJoin extends Join<AudioBuffer, AudioBuffer> {
 
     public InterleavedChannelJoin(final int channels) {
-        super(channels, new InterleavedChannelAggregateFunction());
+        this(channels, null);
     }
 
     public InterleavedChannelJoin(final int channels, final Object id) {
@@ -61,4 +59,11 @@ public class InterleavedChannelJoin extends Join<AudioBuffer, AudioBuffer> {
         }
 
     }
+
+    @Override
+    public String toString() {
+        return "InterleavedChannelJoin{" +
+                "parts=" + getPartsPerUnit() + "}";
+    }
+
 }
