@@ -69,8 +69,15 @@ public class DCT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        // if it's the same class, it's equal
-        return true;
+        final DCT that = (DCT) o;
+        if (this.length > 0 && that.length > 0
+                && this.length == that.length) return true;
+
+        // This is kind of tricky, as it can result in two objects not being equal anymore,
+        // once the actual length has been determined.
+        if (this.length <= 0 && that.length <= 0) return true;
+
+        return false;
     }
 
     @Override
