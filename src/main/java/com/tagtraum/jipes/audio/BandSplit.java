@@ -16,11 +16,8 @@ import java.io.IOException;
 /**
  * Takes the real values of a sequence of input spectra and creates new buffers for each frequency bin.
  * These new buffers are then passed on to band-specific children. In other words, a number of real values
- * with the index 0 are collected in one buffer and then sent to the child processor for band/channel 0. The same
- * happens with magnitudes at index 1 and so on.
- * <p/>
- * Date: 2/8/11
- * Time: 9:13 PM
+ * with the index {@code 0} are collected in one buffer and then sent to the child processor for band/channel 0.
+ * The same happens with magnitudes at index {@code 1} and so on.
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
