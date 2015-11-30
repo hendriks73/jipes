@@ -40,7 +40,9 @@ public class MultiBand<T extends AudioSpectrum> extends AbstractSignalProcessor<
     }
 
     protected MultiBandSpectrum processNext(final T audioSpectrum) throws IOException {
-        if (bandBoundaries == null) throw new IllegalStateException("No boundaries set.");
+        if (bandBoundaries == null) {
+            throw new IllegalStateException("No boundaries set.");
+        }
         if (audioSpectrum.getAudioFormat() != null && audioSpectrum.getAudioFormat().getChannels() != 1) {
             throw new IOException("Source must be mono.");
         }
@@ -51,9 +53,7 @@ public class MultiBand<T extends AudioSpectrum> extends AbstractSignalProcessor<
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        MultiBand that = (MultiBand) o;
-
+        final MultiBand that = (MultiBand) o;
         if (!Arrays.equals(bandBoundaries, that.bandBoundaries)) return false;
 
         return true;
@@ -61,7 +61,7 @@ public class MultiBand<T extends AudioSpectrum> extends AbstractSignalProcessor<
 
     @Override
     public int hashCode() {
-        return bandBoundaries != null ? Arrays.hashCode(bandBoundaries) : 0;
+        return Arrays.hashCode(bandBoundaries);
     }
 
     @Override
