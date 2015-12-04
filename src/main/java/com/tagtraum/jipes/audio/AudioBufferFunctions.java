@@ -153,7 +153,7 @@ public final class AudioBufferFunctions {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            AudioBufferMapFunction that = (AudioBufferMapFunction) o;
+            AudioBufferMagnitudeMapFunction that = (AudioBufferMagnitudeMapFunction) o;
 
             if (function != null ? !function.equals(that.function) : that.function != null) return false;
 
@@ -208,7 +208,7 @@ public final class AudioBufferFunctions {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            AudioBufferMapFunction that = (AudioBufferMapFunction) o;
+            AudioBufferPowerMapFunction that = (AudioBufferPowerMapFunction) o;
 
             if (function != null ? !function.equals(that.function) : that.function != null) return false;
 
@@ -415,7 +415,7 @@ public final class AudioBufferFunctions {
     }
 
 
-    private static interface FloatArrayAccessor<T> {
+    private interface FloatArrayAccessor<T> {
         float[] getFloatArray(T t);
     }
 
