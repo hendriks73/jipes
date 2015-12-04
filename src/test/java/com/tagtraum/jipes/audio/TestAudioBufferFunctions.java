@@ -83,7 +83,6 @@ public class TestAudioBufferFunctions {
 
         assertEquals(function0, function1);
         assertEquals(function0.hashCode(), function1.hashCode());
-        System.out.println(function0);
         assertTrue(function0.toString().matches("<AudioBuffer>\\{.*\\(data\\)\\}"));
     }
 

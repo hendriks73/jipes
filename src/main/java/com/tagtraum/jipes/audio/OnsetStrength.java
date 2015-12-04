@@ -87,7 +87,7 @@ public class OnsetStrength implements SignalProcessor<AudioSpectrum, AudioBuffer
      * of the first processed spectrum and an incFactor of <code>1f</code>.
      */
     public OnsetStrength() {
-        this(null, 0, Integer.MAX_VALUE, -1, 1f);
+        this(0, Integer.MAX_VALUE, -1);
     }
 
     @Override
@@ -180,8 +180,10 @@ public class OnsetStrength implements SignalProcessor<AudioSpectrum, AudioBuffer
             real[i] = this.onsetValues.get(i);
         }
         final float max = Floats.max(real);
-        for (int i=0; i<real.length; i++) {
-            real[i] /= max;
+        if (max != 0) {
+            for (int i = 0; i < real.length; i++) {
+                real[i] /= max;
+            }
         }
 
         return new RealAudioBuffer(0, real, audioFormat);
@@ -240,8 +242,8 @@ public class OnsetStrength implements SignalProcessor<AudioSpectrum, AudioBuffer
     public String toString() {
         return "OnsetStrength{" +
                 "low=" + low +
-                ", high=" + high +
-                ", hop=" + hopSize +
+                "Hz, high=" + high +
+                "Hz, hop=" + hopSize +
                 ", effectiveHop=" + effectiveHopSize +
                 ", incFactor=" + incFactor +
                 '}';
