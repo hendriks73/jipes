@@ -9,14 +9,15 @@ package com.tagtraum.jipes.math;
 import java.util.Arrays;
 
 /**
+ * <p>
  * Offers methods to create a number of useful filters, including MIDI filterbanks.
  * Furthermore, you can create your own filters using the {@link IIRFilter} and {@link FIRFilter} classes.
- * <p/>
+ * </p>
+ * <p>
  * Filters are {@link StatefulMapFunction}s and as such can be used in {@link com.tagtraum.jipes.universal.Mapping} to
  * be part of a {@link com.tagtraum.jipes.SignalPipeline}. To filter an {@link com.tagtraum.jipes.audio.AudioBuffer} create a Mapping like this:
  * <xmp>new Mapping<AudioBuffer>(AudioBufferFunctions.createMapFunction(Filters.createFir1_16thOrderLowpassCutoff(4)))</xmp>
- * <p/>
- * Date: 5/17/11
+ * </p>
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see com.tagtraum.jipes.audio.Downsample
@@ -28,7 +29,7 @@ public final class Filters {
     }
 
     /**
-     * FIR (finite impulse response) filter.
+     * <p>FIR (finite impulse response) filter.</p>
      * <p>
      * To compute the coefficients you might want to use Matlab or the free package
      * <a href="http://www.gnu.org/software/octave/">Octave</a> (with additional Octave-Forge packages needed for signals).
@@ -36,9 +37,6 @@ public final class Filters {
      * <xmp>
      * b = fir1(16,0.125)
      * </xmp>
-     * <p/>
-     * Date: Jul 24, 2010
-     * Time: 9:49:15 AM
      *
      * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
      * @see <a href="http://en.wikipedia.org/wiki/Finite_impulse_response">Wikipedia on FIR</a>
@@ -57,7 +55,7 @@ public final class Filters {
         private double[] coefficients;
 
         public FIRFilter() {
-            this(new double[0]);
+            this(new double[]{1.0});
         }
 
         public FIRFilter(double[] coefficients) {
@@ -65,6 +63,7 @@ public final class Filters {
         }
 
         private void setCoefficients(final double[] coefs) {
+            if (coefs.length < 1) throw new IllegalArgumentException("At least one coefficient is required.");
             this.coefficients = coefs.clone();
             this.length = coefs.length;
             this.impulseResponse = coefs.clone();
@@ -193,21 +192,6 @@ public final class Filters {
         public IIRFilter(final double[] inputCoefficients, final double[] outputCoefficients) {
             setInputCoefficients(inputCoefficients);
             setOutputCoefficients(outputCoefficients);
-        }
-
-        public IIRFilter() {
-            //filter fc = 2hz, fs = 10hz
-            this(new double[]{
-                    0.098531160923927,
-                    0.295593482771781,
-                    0.295593482771781,
-                    0.098531160923927
-            }, new double[]{
-                    1.0,
-                    -0.577240524806303,
-                    0.421787048689562,
-                    -0.0562972364918427
-            });
         }
 
         public void reset() {
@@ -584,6 +568,7 @@ public final class Filters {
     }
 
     private static IIRFilter[] createMidiFilterBank(final int minMidiPitch, final int maxMidiPitch, final double[][][] coefficients) {
+        if (maxMidiPitch<minMidiPitch) throw new IllegalArgumentException("maxMidiPitch must not be less than minMidiPitch");
         final IIRFilter[] filterBank = new IIRFilter[maxMidiPitch - minMidiPitch + 1];
         for (int p = minMidiPitch; p <= maxMidiPitch; p++) {
             filterBank[p - minMidiPitch] = new IIRFilter(
