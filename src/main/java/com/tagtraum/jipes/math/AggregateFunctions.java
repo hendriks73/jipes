@@ -176,6 +176,11 @@ public final class AggregateFunctions {
             }
             return (float)(-entropy / Math.log(data.length));
         }
+
+        @Override
+        public String toString() {
+            return "RELATIVE_ENTROPY";
+        }
     };
 
 }

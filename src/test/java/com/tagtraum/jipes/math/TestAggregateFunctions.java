@@ -123,4 +123,15 @@ public class TestAggregateFunctions {
         assertEquals(Floats.percentageBelowAverage(array), percentageBelowAverage, 0.000001f);
         assertEquals("PERCENTAGE_BELOW_AVERAGE", function.toString());
     }
+
+    @Test
+    public void testRelativeEntropy() {
+        final AggregateFunction<float[], Float> function = AggregateFunctions.RELATIVE_ENTROPY;
+        final float[] array = {1, -1, 3};
+        final float relativeEntropy = function.aggregate(array);
+        final float sum = array[0] + array[2];
+        final double entropy = -(1f / sum * Math.log(1f / sum) + 3f / sum * Math.log(3f / sum)) / Math.log(array.length);
+        assertEquals(entropy, relativeEntropy, 0.00001f);
+        assertEquals("RELATIVE_ENTROPY", function.toString());
+    }
 }
