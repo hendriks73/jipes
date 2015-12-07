@@ -40,6 +40,17 @@ public class TestFrameNumberFilter {
         }
     };
 
+    @Test(expected = RuntimeException.class)
+    public void testUnsupportedMethod() throws IOException {
+        final FrameNumberFilter filter = new FrameNumberFilter(10, 20) {
+            @Override
+            public AudioBuffer processNext(final AudioBuffer buffer) throws IOException {
+                return super.processNext(buffer);
+            }
+        };
+        filter.processNext(null);
+    }
+
     @Test
     public void testProcess() throws IOException {
         final FrameNumberFilter processor = new FrameNumberFilter(0, 5);
