@@ -91,6 +91,32 @@ public class TestComplexAudioBuffer extends TestAudioBuffer {
     }
 
     @Test
+    public void testDerive() throws CloneNotSupportedException {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4};
+        final float[] imaginaryData = {3, 2, 1, 4};
+        final AudioFormat audioFormat = new AudioFormat(10, 8, 2, true, false);
+        final ComplexAudioBuffer buffer = new ComplexAudioBuffer(frameNumber, realData, imaginaryData, audioFormat);
+
+        final float[] derivedReal = {2, 3, 4, 5};
+        final float[] derivedImaginary = {5, 6, 7, 8};
+        final ComplexAudioBuffer derived = buffer.derive(derivedReal, derivedImaginary);
+
+        assertEquals(frameNumber, derived.getFrameNumber());
+        assertEquals(derivedReal.length, derived.getNumberOfSamples());
+        assertArrayEquals(derivedReal, derived.getRealData(), 0.000001f);
+        assertSame(derivedReal, derived.getRealData());
+        assertArrayEquals(derivedImaginary, derived.getImaginaryData(), 0.000001f);
+        assertEquals(audioFormat, derived.getAudioFormat());
+        assertEquals((long) (frameNumber * 1000L / audioFormat.getSampleRate()), derived.getTimestamp());
+        assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), derived.getTimestamp(TimeUnit.MICROSECONDS));
+
+        assertArrayEquals(toPowers(derivedReal, derivedImaginary), derived.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(derivedReal, derivedImaginary), derived.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toMagnitudes(derivedReal, derivedImaginary), derived.getData(), 0.000001f);
+    }
+
+    @Test
     public void testToString() {
         final int frameNumber = 3;
         final float[] realData = {1, 2, 3, 4};
