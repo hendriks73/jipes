@@ -14,6 +14,8 @@ import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * TestMel.
@@ -80,6 +82,35 @@ public class TestMel {
         assertEquals(1, spectrum.getBin(2999));
         assertEquals(-1, spectrum.getBin(3000));
         assertEquals(-1, spectrum.getBin(3001));
+
+        assertNotNull(processor.getFilterBank());
     }
 
+    @Test(expected = IOException.class)
+    public void testMono() throws IOException {
+        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
+        processor.process(new LinearFrequencySpectrum(0, new float[0], new float[0], new AudioFormat(10, 16, 2, true, true)));
+    }
+
+    @Test
+    public void testToString() {
+        final Mel<LinearFrequencySpectrum> mel = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
+        assertEquals("Mel{bandBoundaries=1000.0,1503.0948,2155.0745,3000.0}", mel.toString());
+    }
+
+    @Test
+    public void testEqualsHashCode() {
+        final Mel<LinearFrequencySpectrum> mel0 = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
+        final Mel<LinearFrequencySpectrum> mel1 = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
+        final Mel<LinearFrequencySpectrum> mel2 = new Mel<LinearFrequencySpectrum>(1000, 3001, 2);
+        final Mel<LinearFrequencySpectrum> mel3 = new Mel<LinearFrequencySpectrum>(1000, 3000, 1);
+
+        assertEquals(mel0, mel1);
+        assertNotEquals(mel0, mel2);
+        assertNotEquals(mel0, mel3);
+
+        assertEquals(mel0.hashCode(), mel1.hashCode());
+        assertNotEquals(mel0.hashCode(), mel2.hashCode());
+        assertNotEquals(mel0.hashCode(), mel3.hashCode());
+    }
 }
