@@ -118,6 +118,34 @@ public class TestLinearFrequencySpectrum extends TestAudioBuffer {
     }
 
     @Test
+    public void testDerive() throws CloneNotSupportedException {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6};
+        final float[] imaginaryData = {2, 3, 4, 5, 6, 7};
+        final AudioFormat audioFormat = new AudioFormat(10, 16, 2, true, false);
+        final LinearFrequencySpectrum spectrum = new LinearFrequencySpectrum(frameNumber, realData, imaginaryData, audioFormat);
+
+        final float[] derivedReal = {3, 4, 5, 6, 7, 8};
+        final float[] derivedImaginary = {1, 3, 5, 7, 1, 2};
+        final LinearFrequencySpectrum derived = spectrum.derive(derivedReal, derivedImaginary);
+        assertEquals(frameNumber, derived.getFrameNumber());
+        assertEquals(derivedReal.length, derived.getNumberOfSamples());
+        assertArrayEquals(derivedReal, derived.getRealData(), 0.000001f);
+        assertArrayEquals(derivedImaginary, derived.getImaginaryData(), 0.000001f);
+        assertEquals(audioFormat, derived.getAudioFormat());
+        assertEquals((long)(frameNumber*1000L/audioFormat.getSampleRate()), derived.getTimestamp());
+        assertEquals((long) (frameNumber * 1000L * 1000L / audioFormat.getSampleRate()), derived.getTimestamp(TimeUnit.MICROSECONDS));
+
+        assertArrayEquals(toPowers(derivedReal, derivedImaginary, derivedReal.length/2), derived.getPowers(), 0.000001f);
+        assertArrayEquals(toMagnitudes(derivedReal, derivedImaginary, derivedReal.length/2), derived.getMagnitudes(), 0.000001f);
+        assertArrayEquals(toMagnitudes(derivedReal, derivedImaginary, derivedReal.length/2), derived.getData(), 0.000001f);
+
+        assertEquals(3.3333335f, derived.getFrequency(2), 0.000001f);
+        assertEquals(audioFormat.getSampleRate()/realData.length, derived.getBandwidth(), 0.000001f);
+        assertEquals(derived.getFrequency(1), derived.getBandwidth(), 0.000001f);
+    }
+
+    @Test
     public void testCopyConstructor() {
         final int frameNumber = 3;
         final float[] realData = {1, 2, 3, 4, 5, 6};
