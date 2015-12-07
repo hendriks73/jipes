@@ -61,6 +61,12 @@ public class TestDecimate {
         decimate.processNext(new RealAudioBuffer(0, new float[1], new AudioFormat(999f, 8, 2, true, true)));
     }
 
+    @Test(expected = IOException.class)
+    public void testUnsupportedTargetSampleRate2() throws IOException {
+        final Decimate decimate = new Decimate(1000f/6f);
+        decimate.processNext(new RealAudioBuffer(0, new float[1], new AudioFormat(1000f, 8, 2, true, true)));
+    }
+
     @Test
     public void testProcess() throws IOException {
         final Decimate decimate = new Decimate(500f);
