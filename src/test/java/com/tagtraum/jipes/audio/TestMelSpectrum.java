@@ -11,6 +11,7 @@ import org.junit.Test;
 import javax.sound.sampled.AudioFormat;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -55,6 +56,9 @@ public class TestMelSpectrum extends TestAudioBuffer {
         final float[][] filterBank = MelSpectrum.createFilterBank(frequencies, boundariesInHz);
         final MelSpectrum spectrum = new MelSpectrum(frameNumber, realData, imaginaryData, audioFormat, filterBank, boundariesInHz);
 
+        assertArrayEquals(toPowers(realData, imaginaryData), spectrum.getPowers(), 0.0001f);
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), spectrum.getMagnitudes(), 0.0001f);
+
         assertEquals(frameNumber, spectrum.getFrameNumber());
         assertEquals(realData.length, spectrum.getNumberOfSamples());
         assertEquals(audioFormat, spectrum.getAudioFormat());
@@ -64,6 +68,23 @@ public class TestMelSpectrum extends TestAudioBuffer {
         assertEquals(boundariesInHz.length-2, spectrum.getFrequencies().length);
 
         // TODO: this is not a full test. Complete!
+    }
+
+    @Test
+    public void testNullImaginary() {
+        final int frameNumber = 3;
+        final float[] realData = {1, 2, 3, 4, 5, 6, 7, 8};
+        final float[] imaginaryData = null;
+        final AudioFormat audioFormat = new AudioFormat(44100, 16, 2, true, false);
+
+        // these boundaries follow the pattern: L C C C C R, for 4 channels
+        final float[] boundariesInHz = {3000, 3500, 4000, 4500, 5000, 5500};
+        final float[] frequencies = {3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500};
+        final float[][] filterBank = MelSpectrum.createFilterBank(frequencies, boundariesInHz);
+        final MelSpectrum spectrum = new MelSpectrum(frameNumber, realData, imaginaryData, audioFormat, filterBank, boundariesInHz);
+
+        assertArrayEquals(toMagnitudes(realData, imaginaryData), spectrum.getMagnitudes(), 0.0001f);
+        assertArrayEquals(toPowers(realData, imaginaryData), spectrum.getPowers(), 0.0001f);
     }
 
     @Test
