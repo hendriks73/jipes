@@ -98,7 +98,7 @@ public class Novelty<I extends AudioBuffer> extends AbstractSignalProcessor<I, A
      * Default processor with a 64 frames normalized Gaussian kernel and no padding.
      */
     public Novelty() {
-        this(null, com.tagtraum.jipes.audio.AudioBufferFunctions.<I>createDistanceFunction(DistanceFunctions.COSINE_DISTANCE), false);
+        this(null);
     }
 
     /**
@@ -294,7 +294,7 @@ public class Novelty<I extends AudioBuffer> extends AbstractSignalProcessor<I, A
 
     @Override
     public String toString() {
-        return "NoveltyProcessor{" +
+        return "Novelty{" +
                 "kernel=" + kernel +
                 ", distanceFunction=" + distanceFunction +
                 ", padSimilarityMatrixWithZeros=" + padSimilarityMatrixWithZeros +
