@@ -16,11 +16,10 @@ import java.io.IOException;
  * Processes input using a transform created by {@link com.tagtraum.jipes.math.ConstantQTransformFactory}.
  * Since constant Q transforms are often initialized with arguments from the {@link javax.sound.sampled.AudioFormat}
  * the transform is created at runtime with the first input {@link AudioBuffer} using a {@link ConstantQTransformFactory}.
- * <p/>
- * Date: 1/12/11
- * Time: 8:20 PM
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
+ * @see ConstantQTransformFactory
+ * @see Transform
  */
 public class ConstantQTransform extends AbstractSignalProcessor<AudioBuffer, LogFrequencySpectrum> {
 
@@ -56,6 +55,9 @@ public class ConstantQTransform extends AbstractSignalProcessor<AudioBuffer, Log
     }
 
     protected LogFrequencySpectrum processNext(final AudioBuffer buffer) throws IOException {
+        if (buffer.getAudioFormat().getChannels() != 1) {
+            throw new IOException("ConstantQTransform only supports single channel buffers. Actual audio format: " + buffer.getAudioFormat());
+        }
         if (constantQTransform == null) {
             constantQTransform = ConstantQTransformFactory.getInstance().create(minFrequency, maxFrequency, binsPerOctave, buffer.getAudioFormat().getSampleRate(), threshold);
         }
@@ -101,8 +103,8 @@ public class ConstantQTransform extends AbstractSignalProcessor<AudioBuffer, Log
     public String toString() {
         return "ConstantQTransform{" +
                 "minFrequency=" + minFrequency +
-                ", maxFrequency=" + maxFrequency +
-                ", binsPerOctave=" + binsPerOctave +
+                "Hz, maxFrequency=" + maxFrequency +
+                "Hz, binsPerOctave=" + binsPerOctave +
                 ", threshold=" + threshold +
                 '}';
     }
