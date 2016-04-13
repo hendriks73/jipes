@@ -11,6 +11,7 @@ Notes
     * Fixed bug in MultiBandSpectrum.createMidiBands()
     * Fixed bugs in Floats.interpolate()
     * Fixed FrameNumberFilter.read()
+    * Updated Maven plugins
 
 
 * 0.9.11
