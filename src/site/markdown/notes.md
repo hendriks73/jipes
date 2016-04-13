@@ -3,6 +3,11 @@
 Notes
 -----
 
+* 0.9.13
+
+    * Downgraded maven site plugin back to version 3.3
+
+
 * 0.9.12
 
     * Improved test coverage
