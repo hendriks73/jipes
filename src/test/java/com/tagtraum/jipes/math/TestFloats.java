@@ -479,5 +479,17 @@ public class TestFloats {
         assertEquals(22f, result[2], 0.00001f);
     }
 
+    @Test
+    public void testTrivialAutoCorrelationNaive() {
+        final float[] floats = {1, 2, 3, 4, 1, 2, 3, 4};
+        final float[] r = Floats.autoCorrelationNaive(floats, 2, 5);
+        assertEquals(4, r.length);
+        // compute for lag = 2
+        final float refR2 = 1f*3f + 2f*4f + 3f*1f + 4f*2f + 1f*3f + 2f*4f;
+        assertEquals(refR2, r[0], 0.00001f);
+    }
+
+
+
     // TODO: add more tests!!
 }
