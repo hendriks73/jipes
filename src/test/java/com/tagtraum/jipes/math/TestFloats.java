@@ -419,5 +419,65 @@ public class TestFloats {
         assertArrayEquals(new float[]{1.25f, 1.75f, 1.25f, 1.5f}, interpolate, 0.0001f);
     }
 
+    @Test
+    public void testConvolve() {
+        final float[] result = Floats.convolve(new float[]{1, 2, 3, 4}, new float[]{0, 3, 0});
+        assertEquals(6, result.length);
+        assertEquals(0f, result[0], 0.00001f);
+        assertEquals(3f, result[1], 0.00001f);
+        assertEquals(6f, result[2], 0.00001f);
+        assertEquals(9f, result[3], 0.00001f);
+        assertEquals(12f, result[4], 0.00001f);
+        assertEquals(0f, result[5], 0.00001f);
+    }
+
+    @Test
+    public void testConvolveSame1() {
+        final float[] result = Floats.convolveSame(new float[]{1, 2, 3, 4}, new float[]{0, 3, 0, 4});
+        assertEquals(4, result.length);
+        assertEquals(6f, result[0], 0.00001f);
+        assertEquals(13f, result[1], 0.00001f);
+        assertEquals(20f, result[2], 0.00001f);
+        assertEquals(12f, result[3], 0.00001f);
+    }
+
+    @Test
+    public void testConvolveSame2() {
+        final float[] result = Floats.convolveSame(new float[]{1, 2, 3, 4}, new float[]{0, 3, 0, 4, 5});
+        assertEquals(4, result.length);
+        assertEquals(6f, result[0], 0.00001f);
+        assertEquals(13f, result[1], 0.00001f);
+        assertEquals(25f, result[2], 0.00001f);
+        assertEquals(22f, result[3], 0.00001f);
+    }
+
+    @Test
+    public void testConvolveSame3() {
+        final float[] result = Floats.convolveSame(new float[]{1, 2, 3}, new float[]{0, 3, 0, 4, 5});
+        assertEquals(3, result.length);
+        assertEquals(6f, result[0], 0.00001f);
+        assertEquals(13f, result[1], 0.00001f);
+        assertEquals(13f, result[2], 0.00001f);
+    }
+
+    @Test
+    public void testConvolveValid1() {
+        final float[] result = Floats.convolveValid(new float[]{1, 2, 3, 4, 5}, new float[]{1, 2});
+        assertEquals(4, result.length);
+        assertEquals(4f, result[0], 0.00001f);
+        assertEquals(7f, result[1], 0.00001f);
+        assertEquals(10f, result[2], 0.00001f);
+        assertEquals(13f, result[3], 0.00001f);
+    }
+
+    @Test
+    public void testConvolveValid2() {
+        final float[] result = Floats.convolveValid(new float[]{1, 2, 3, 4, 5}, new float[]{1, 2, 3});
+        assertEquals(3, result.length);
+        assertEquals(10f, result[0], 0.00001f);
+        assertEquals(16f, result[1], 0.00001f);
+        assertEquals(22f, result[2], 0.00001f);
+    }
+
     // TODO: add more tests!!
 }
