@@ -240,6 +240,34 @@ public final class Floats {
     public static float arithmeticMean(final float[] array) {
         return arithmeticMean(array, 0, array.length);
     }
+
+    /**
+     * Computes the geometric mean of a portion of an array.
+     *
+     * @param array array
+     *
+     * @param offset offset
+     * @param length length
+     * @return geometric mean
+     */
+    public static float geometricMean(final float[] array, final int offset, final int length) {
+        final double exponent = 1.0 / length;
+        double product = Math.pow(array[offset], exponent);
+        for (int i=offset+1; i<offset+length; i++) {
+            product *= Math.pow(array[i], exponent);
+        }
+        return (float)product;
+    }
+
+    /**
+     * Computes the geometric mean of the array.
+     *
+     * @param array array
+     * @return geometric mean
+     */
+    public static float geometricMean(final float[] array) {
+        return geometricMean(array, 0, array.length);
+    }
     
     /**
      * Changes all values to their absolute values.

@@ -140,6 +140,20 @@ public class TestFloats {
     }
 
     @Test
+    public void testGeometricMean() {
+        final float[] array = {4f, 1f, 1/32f};
+        final float result = Floats.geometricMean(array);
+        assertEquals(0.5f, result, 0.000001f);
+    }
+
+    @Test
+    public void testGeometricMeanWithOffset() {
+        final float[] array = {1000f, 4f, 1f, 1/32f, 6f};
+        final float result = Floats.geometricMean(array, 1, 3);
+        assertEquals(0.5f, result, 0.000001f);
+    }
+
+    @Test
     public void testAbs() {
         final float[] array = {-1f, 2f, -3f, 4f, -5f, 6f};
         Floats.abs(array);
