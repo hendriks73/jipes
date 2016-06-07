@@ -215,6 +215,29 @@ public final class Floats {
     }
 
     /**
+     * Sums the corresponding values of all arrays in the array.
+     *
+     * @param arrays array of float arrays
+     * @return array with the sums
+     */
+    public static float[] sum(final float[]... arrays) {
+        if (arrays == null || arrays.length == 0) return null;
+        // find longest array
+        int length = 0;
+        for (final float[] array : arrays) {
+            if (array.length > length) length = array.length;
+        }
+
+        final float[] result = new float[length];
+        for (final float[] a : arrays) {
+            for (int i=0; i<a.length; i++) {
+                result[i] += a[i];
+            }
+        }
+        return result;
+    }
+
+    /**
      * Computes the arithmetic mean of a portion of an array.
      *
      * @param array array
@@ -349,6 +372,27 @@ public final class Floats {
      */
     public static float max(final float[] array) {
         return max(array, 0, array.length);
+    }
+
+    /**
+     * Calculates the index of the min value of a given array.
+     *
+     * @param array float array
+     * @param offset offset into the array
+     * @param length length
+     * @return min
+     */
+    public static int minIndex(final float[] array, final int offset, final int length) {
+        float min = Float.POSITIVE_INFINITY;
+        int index = -1;
+        for (int i=offset; i<offset+length; i++) {
+            final float v = array[i];
+            if (v < min) {
+                min = v;
+                index = i;
+            }
+        }
+        return index;
     }
 
     /**
@@ -519,6 +563,15 @@ public final class Floats {
         return p;
     }
 
+    /**
+     * Calculates the index of the min value of a given array.
+     *
+     * @param array float array
+     * @return min
+     */
+    public static int minIndex(final float... array) {
+        return minIndex(array, 0, array.length);
+    }
 
     /**
      * Calculates the index of the max value of a given array.
@@ -526,7 +579,7 @@ public final class Floats {
      * @param array float array
      * @return max
      */
-    public static int maxIndex(final float[] array) {
+    public static int maxIndex(final float... array) {
         return maxIndex(array, 0, array.length);
     }
 
@@ -536,7 +589,7 @@ public final class Floats {
      * @param array data
      * @return variance
      */
-    public static float variance(final float[] array) {
+    public static float variance(final float... array) {
         return variance(array, 0, array.length);
     }
 
@@ -546,7 +599,7 @@ public final class Floats {
      * @param array data
      * @return median
      */
-    public static float median(final float[] array) {
+    public static float median(final float... array) {
         return median(array, 0, array.length);
     }
 

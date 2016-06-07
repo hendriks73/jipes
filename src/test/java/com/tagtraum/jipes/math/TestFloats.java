@@ -203,6 +203,13 @@ public class TestFloats {
     }
 
     @Test
+    public void testMinIndex() {
+        final float[] array = {1f, 2f, 3f, 4f, 5f, 6f};
+        final int minIndex = Floats.minIndex(array);
+        assertEquals(0, minIndex);
+    }
+
+    @Test
     public void testMultiply() {
         final float[] array = {1f, 2f, 3f, 4f, 5f, 6f};
         Floats.multiply(array, 2f);
@@ -273,6 +280,15 @@ public class TestFloats {
         final float[] b = {5f, 3f, 4f};
 
         final float[] sums = Floats.sum(Arrays.asList(a, b));
+        assertArrayEquals(new float[]{8f, 5f, 4f}, sums, 0.00001f);
+    }
+
+    @Test
+    public void testSumArrayOfFloats() {
+        final float[] a = {3f, 2f};
+        final float[] b = {5f, 3f, 4f};
+
+        final float[] sums = Floats.sum(a, b);
         assertArrayEquals(new float[]{8f, 5f, 4f}, sums, 0.00001f);
     }
 
