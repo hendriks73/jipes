@@ -49,9 +49,29 @@ public class TestFloats {
     }
 
     @Test
+    public void testStandardDeviation() {
+        final float[] floats = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        final float standardDeviation = Floats.standardDeviation(floats);
+        assertEquals(Math.sqrt(Floats.variance(floats)), standardDeviation, 0.000001f);
+    }
+
+    @Test
+    public void testCorrectedStandardDeviation() {
+        final float[] floats = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        final float correctedStandardDeviation = Floats.correctedStandardDeviation(floats);
+        assertEquals(Math.sqrt(Floats.unbiasedVariance(floats)), correctedStandardDeviation, 0.000001f);
+    }
+
+    @Test
     public void testVariance() {
-        final float variance = Floats.variance(new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9});
+        final float variance = Floats.variance(1, 2, 3, 4, 5, 6, 7, 8, 9);
         assertEquals(6.6666666666667f, variance, 0.000001f);
+    }
+
+    @Test
+    public void testUnbiasedVariance() {
+        final float unbiasedVariance = Floats.unbiasedVariance(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        assertEquals(7.5f, unbiasedVariance, 0.000001f);
     }
 
     @Test

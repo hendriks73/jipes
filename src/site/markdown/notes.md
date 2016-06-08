@@ -6,7 +6,7 @@ Notes
 * 0.9.13
 
     * Downgraded maven site plugin back to version 3.3
-    * More tests for Floats, additional methods.
+    * More tests for Floats, additional methods (unbiased variance, corrected stddev, ...).
 
 
 * 0.9.12

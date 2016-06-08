@@ -584,13 +584,25 @@ public final class Floats {
     }
 
     /**
-     * Variance of the provided data.
+     * Biased sample variance of the provided data without
+     * <a href="https://en.wikipedia.org/wiki/Bessel%27s_correction">Bessel's correction</a>.
      *
      * @param array data
-     * @return variance
+     * @return (biased sample) variance
      */
     public static float variance(final float... array) {
         return variance(array, 0, array.length);
+    }
+
+    /**
+     * Unbiased sample variance of the provided data using
+     * <a href="https://en.wikipedia.org/wiki/Bessel%27s_correction">Bessel's correction</a>.
+     *
+     * @param array data
+     * @return unbiased sample variance
+     */
+    public static float unbiasedVariance(final float... array) {
+        return unbiasedVariance(array, 0, array.length);
     }
 
     /**
@@ -651,12 +663,14 @@ public final class Floats {
     }
 
     /**
-     * Variance of the provided data.
+     * Biased sample variance of the provided data without
+     * <a href="https://en.wikipedia.org/wiki/Bessel%27s_correction">Bessel's correction</a>.
      *
      * @param array data
      * @param offset offset
      * @param length length
-     * @return variance
+     * @return (biased sample) variance
+     * @see #unbiasedVariance(float[], int, int) )
      */
     public static float variance(final float[] array, final int offset, final int length) {
         final float mean = arithmeticMean(array, offset, length);
@@ -668,8 +682,45 @@ public final class Floats {
         return (float)sum;
     }
 
-    public static float standardDeviation(final float[] data) {
+    /**
+     * Unbiased sample variance of the provided data using
+     * <a href="https://en.wikipedia.org/wiki/Bessel%27s_correction">Bessel's correction</a>.
+     *
+     * @param array data
+     * @param offset offset
+     * @param length length
+     * @return unbiased sample variance
+     */
+    public static float unbiasedVariance(final float[] array, final int offset, final int length) {
+        if (length < 2) throw new IllegalArgumentException("Length must be greater than 1: " + length);
+        final float mean = arithmeticMean(array, offset, length);
+        double sum = 0;
+        for (int i=offset; i<offset+length; i++) {
+            final float diff = array[i] - mean;
+            sum += (diff * diff);
+        }
+        return (float) (sum / (length-1));
+    }
+
+    /**
+     * Uncorrected sample standard deviation.
+     *
+     * @param data data
+     * @return uncorrected sample standard deviation.
+     * @see #correctedStandardDeviation(float...)
+     */
+    public static float standardDeviation(final float... data) {
         return (float)Math.sqrt(variance(data));
+    }
+
+    /**
+     * Corrected standard deviation using {@link #unbiasedVariance(float...)}.
+     *
+     * @param data data
+     * @return corrected sample standard deviation
+     */
+    public static float correctedStandardDeviation(final float... data) {
+        return (float)Math.sqrt(unbiasedVariance(data));
     }
 
     /**
