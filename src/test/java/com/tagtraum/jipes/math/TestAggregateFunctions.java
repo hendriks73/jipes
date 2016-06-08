@@ -85,6 +85,24 @@ public class TestAggregateFunctions {
     }
 
     @Test
+    public void testCorrectedStandardDeviation() {
+        final AggregateFunction<float[], Float> function = AggregateFunctions.CORRECTED_STANDARD_DEVIATION;
+        final float[] array = {1, 2, 3, 4, 5};
+        final float standardDeviation = function.aggregate(array);
+        assertEquals(Floats.correctedStandardDeviation(array), standardDeviation, 0.000001f);
+        assertEquals("CORRECTED_STANDARD_DEVIATION", function.toString());
+    }
+
+    @Test
+    public void testUnbiasedVariance() {
+        final AggregateFunction<float[], Float> function = AggregateFunctions.UNBIASED_VARIANCE;
+        final float[] array = {1, 2, 3, 4, 5};
+        final float variance = function.aggregate(array);
+        assertEquals(Floats.unbiasedVariance(array), variance, 0.000001f);
+        assertEquals("UNBIASED_VARIANCE", function.toString());
+    }
+
+    @Test
     public void testElementWiseSum() {
         final AggregateFunction<List<float[]>, float[]> function = AggregateFunctions.ELEMENT_WISE_SUM;
         List<float[]> list = Arrays.asList(

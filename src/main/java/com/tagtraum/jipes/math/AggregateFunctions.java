@@ -85,6 +85,17 @@ public final class AggregateFunctions {
         }
     };
 
+    public static final AggregateFunction<float[], Float> CORRECTED_STANDARD_DEVIATION = new AggregateFunction<float[], Float>() {
+        public Float aggregate(final float[] collection) {
+            return Floats.correctedStandardDeviation(collection);
+        }
+
+        @Override
+        public String toString() {
+            return "CORRECTED_STANDARD_DEVIATION";
+        }
+    };
+
     public static final AggregateFunction<float[], Float> STANDARD_DEVIATION = new AggregateFunction<float[], Float>() {
         public Float aggregate(final float[] collection) {
             return Floats.standardDeviation(collection);
@@ -104,6 +115,17 @@ public final class AggregateFunctions {
         @Override
         public String toString() {
             return "VARIANCE";
+        }
+    };
+
+    public static final AggregateFunction<float[], Float> UNBIASED_VARIANCE = new AggregateFunction<float[], Float>() {
+        public Float aggregate(final float[] collection) {
+            return Floats.unbiasedVariance(collection);
+        }
+
+        @Override
+        public String toString() {
+            return "UNBIASED_VARIANCE";
         }
     };
 
