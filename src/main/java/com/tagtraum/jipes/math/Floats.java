@@ -759,6 +759,37 @@ public final class Floats {
     }
 
     /**
+     * Compute deltas for a point {@code t} that takes {@code ±n} points around {@code t}
+     * into account. This is suitable for computing
+     * <a href="http://dsp.stackexchange.com/questions/13978/mfcc-deltas-delta-deltas">Delta MFCCs</a>.
+     * The array is padded with the first and last value respectively.
+     *
+     * @param data data
+     * @param n size of surrounding
+     * @return deltas
+     */
+    public static float[] deltas(final float[] data, final int n) {
+        if (n < 1) throw new IllegalArgumentException("n must be greater than zero: " + n);
+        final float[] result = new float[data.length];
+        final float[] paddedArray = new float[data.length + 2 * n];
+        System.arraycopy(data, 0, paddedArray, n, data.length);
+        for (int i=0; i<n; i++) {
+            paddedArray[i] = data[0];
+            paddedArray[paddedArray.length-i-1] = data[data.length-1];
+        }
+        for (int i=n; i<n+data.length; i++) {
+            float nom = 0;
+            float denom = 0;
+            for (int j=1; j<=n; j++) {
+                nom += j*(paddedArray[i+j] - paddedArray[i-j]);
+                denom += j*j;
+            }
+            result[i-n] = nom / (2*denom);
+        }
+        return result;
+    }
+
+    /**
      * Computes the Euclidean norm (root sum of the squared data points, also known as 2-norm) for the given data.
      *
      * @param data data

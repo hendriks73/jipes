@@ -539,5 +539,16 @@ public class TestFloats {
         assertEquals(skewness, Floats.skewness(data), 0.0001);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeltasBadN() {
+        Floats.deltas(new float[0], 0);
+    }
+
+    @Test
+    public void testDeltas() {
+        final float[] deltas = Floats.deltas(new float[]{1, 2}, 1);
+        assertArrayEquals(new float[]{0.5f, 0.5f}, deltas, 0.0001f);
+    }
+
     // TODO: add more tests!!
 }

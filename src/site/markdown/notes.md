@@ -5,7 +5,7 @@ Notes
 
 * 0.9.15
 
-    * Added methods to Floats (skewness).
+    * Added methods to Floats (skewness, deltas).
 
 
 * 0.9.14
