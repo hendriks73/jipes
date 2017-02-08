@@ -663,7 +663,7 @@ public final class Floats {
     }
 
     /**
-     * Biased sample variance of the provided data without
+     * Biased sample variance of the provided data <em>without</em>
      * <a href="https://en.wikipedia.org/wiki/Bessel%27s_correction">Bessel's correction</a>.
      *
      * @param array data
@@ -721,6 +721,41 @@ public final class Floats {
      */
     public static float correctedStandardDeviation(final float... data) {
         return (float)Math.sqrt(unbiasedVariance(data));
+    }
+
+    /**
+     * Skewness as defined in <a href="https://en.wikipedia.org/wiki/Skewness">Wikipedia</a>
+     * (third standardized <a href="https://en.wikipedia.org/wiki/Standardized_moment">moment</a>).
+     *
+     * @param array data
+     * @param offset offset
+     * @param length length
+     * @return skewness
+     */
+    public static float skewness(final float[] array, int offset, int length) {
+        final float mean = arithmeticMean(array, offset, length);
+        double sumSecond = 0;
+        double sumThird = 0;
+        for (int i=0; i<length; i++) {
+            final float diff = array[i+offset] - mean;
+            final float square = diff * diff;
+            sumSecond += square;
+            sumThird += (square * diff);
+        }
+        final double a = Math.sqrt(sumSecond / length);
+        return (float) (
+            (sumThird / length) / (a*a*a));
+    }
+
+    /**
+     * Skewness as defined in <a href="https://en.wikipedia.org/wiki/Skewness">Wikipedia</a>
+     * (third standardized <a href="https://en.wikipedia.org/wiki/Standardized_moment">moment</a>).
+     *
+     * @param array data
+     * @return skewness
+     */
+    public static float skewness(final float... array) {
+        return skewness(array, 0, array.length);
     }
 
     /**

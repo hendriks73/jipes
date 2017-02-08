@@ -525,7 +525,19 @@ public class TestFloats {
         assertEquals(refR2, r[0], 0.00001f);
     }
 
-
+    @Test
+    public void testSkewness() {
+        final float[] data = {1,2,3,4,1,2,5,1,2};
+        final float mean = Floats.arithmeticMean(data);
+        double sum = 0;
+        for (final float f : data) {
+            final float diff = f - mean;
+            sum += diff * diff * diff;
+        }
+        final float std = Floats.standardDeviation(data);
+        final float skewness = (float) (sum / data.length) / (std*std*std);
+        assertEquals(skewness, Floats.skewness(data), 0.0001);
+    }
 
     // TODO: add more tests!!
 }

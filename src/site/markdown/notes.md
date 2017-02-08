@@ -3,9 +3,14 @@
 Notes
 -----
 
+* 0.9.15
+
+    * Added methods to Floats (skewness).
+
+
 * 0.9.14
 
-    * Added methods to Floats  (unbiased variance, corrected stddev, ...).
+    * Added methods to Floats (unbiased variance, corrected stddev, ...).
 
 
 * 0.9.13
