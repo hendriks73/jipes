@@ -742,6 +742,8 @@ public final class Floats {
             sumSecond += square;
             sumThird += (square * diff);
         }
+        // avoid division by zero
+        if (sumSecond == 0) return 0;
         final double a = Math.sqrt(sumSecond / length);
         return (float) (
             (sumThird / length) / (a*a*a));
