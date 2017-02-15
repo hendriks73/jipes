@@ -6,7 +6,7 @@ Notes
 * 0.9.15
 
     * Added methods to Floats (skewness, deltas).
-
+    * Added support for not-power-of-two DCT.
 
 * 0.9.14
 

@@ -51,7 +51,7 @@ public abstract class DCTFactory {
             }
             if (instance == null) {
                 // fall back to built-in factory
-                instance = new FFTBasedDCTFactory();
+                instance = new BasicDCTFactory();
             }
         }
         return instance;
@@ -70,17 +70,106 @@ public abstract class DCTFactory {
     /**
      * Default implementation for a DCT factory.
      */
-    private static class FFTBasedDCTFactory extends DCTFactory {
+    private static class BasicDCTFactory extends DCTFactory {
 
-        private FFTBasedDCT last;
+        private Transform last;
+        private int lastNumberOfSamples;
 
         @Override
         public synchronized Transform create(final int numberOfSamples) {
-            if (last != null && last.numberOfSamples == numberOfSamples) return last;
-            last = new FFTBasedDCT(numberOfSamples);
+            if (last != null && lastNumberOfSamples == numberOfSamples) return last;
+            if (DCTFactory.isPowerOfTwo(numberOfSamples)) {
+                last = new FFTBasedDCT(numberOfSamples);
+            } else {
+                last = new MatrixBasedDCT(numberOfSamples);
+            }
+            lastNumberOfSamples = numberOfSamples;
             return last;
         }
     }
+
+    private static boolean isPowerOfTwo(final int number) {
+        return (number & (number - 1)) == 0;
+    }
+
+    private static class MatrixBasedDCT implements Transform {
+
+        private final int numberOfSamples;
+        private final float[] matrix;
+
+        public MatrixBasedDCT(final int numberOfSamples) {
+            if (numberOfSamples <=0) throw new IllegalArgumentException("N must be greater than 0");
+            this.numberOfSamples = numberOfSamples;
+            this.matrix = createMatrix(numberOfSamples);
+        }
+
+        private float[] createMatrix(final int length) {
+            final double k = Math.PI/length;
+            final double w1 = 1; //1/Math.sqrt(2);
+            final double w2 = 1; //Math.sqrt(2f/length);
+            final float[] matrix = new float[length*length];
+
+            for (int i=0; i<length; i++){
+                for (int j=0; j<length; j++) {
+                    final int idx = i + (j*length);
+                    // we scale with factor 2, so that the results are identical to the ones of FFTBasedDCT
+                    matrix[idx] = (float) (w1 * Math.cos(k * i * (j+0.5))) * 2;
+                    /*
+                    if (i == 0) {
+                        matrix[idx] = (float) (w1 * Math.cos(k * (i+1) * (j+0.5)));
+                    } else {
+                        matrix[idx] = (float) (w2 * Math.cos(k * (i+1) * (j+0.5)));
+                    }
+                    */
+                }
+            }
+            return matrix;
+        }
+
+        @Override
+        public float[][] transform(final float[] real) throws UnsupportedOperationException {
+            final float[] result = new float[numberOfSamples];
+            for (int k=0; k<numberOfSamples; k++) {
+                float v = 0;
+                for (int n=0; n<numberOfSamples; n++) {
+                    final int idx = k + (n*numberOfSamples);
+                    v += (matrix[idx] * real[n]);
+                }
+                result[k] = v;
+            }
+            return new float[][] {result};
+        }
+
+        @Override
+        public float[][] transform(final float[] real, final float[] imaginary) throws UnsupportedOperationException {
+            return transform(real);
+        }
+
+        @Override
+        public float[][] inverseTransform(final float[] real, final float[] imaginary) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final MatrixBasedDCT matrixBasedDCT = (MatrixBasedDCT) o;
+            if (numberOfSamples != matrixBasedDCT.numberOfSamples) return false;
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return numberOfSamples;
+        }
+
+        @Override
+        public String toString() {
+            return "MatrixBasedDCT{" +
+                "N=" + numberOfSamples +
+                '}';
+        }    }
 
     /**
      * Default implementation for a FFT based DCT using
@@ -167,16 +256,12 @@ public abstract class DCTFactory {
             return transform(real);
         }
 
-        private static boolean isPowerOfTwo(final int number) {
-            return (number & (number - 1)) == 0;
-        }
-
         @Override
         public boolean equals(final Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            final FFTBasedDCT FFTBasedDCT = (FFTBasedDCT) o;
-            if (numberOfSamples != FFTBasedDCT.numberOfSamples) return false;
+            final FFTBasedDCT fftBasedDCT = (FFTBasedDCT) o;
+            if (numberOfSamples != fftBasedDCT.numberOfSamples) return false;
             return true;
         }
 

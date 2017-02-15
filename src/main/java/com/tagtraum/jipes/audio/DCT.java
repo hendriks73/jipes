@@ -50,7 +50,7 @@ public class DCT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
         if (buffer.getAudioFormat() != null && buffer.getAudioFormat().getChannels() != 1) {
             throw new IOException("Source must be mono.");
         }
-        final float[] floats = Floats.zeroPadAtEnd(length, buffer.getData());
+        final float[] floats = length != 0 ? Floats.zeroPadAtEnd(length, buffer.getData()) : buffer.getData();
         if (dct == null) {
             this.dct = DCTFactory.getInstance().create(floats.length);
             if (length == 0) length = floats.length;
