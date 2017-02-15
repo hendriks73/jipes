@@ -17,24 +17,28 @@ import static com.tagtraum.jipes.audio.MelSpectrum.createFilterBank;
 /**
  * Assumes that the input is linear spectral data produced by some {@link com.tagtraum.jipes.math.Transform}
  * and sums up the powers into bins, which are spaced according to the
- * provided frequency boundaries. Magnitudes are computed as square roots of the powers,
- * the sum of the powers stays constant.
+ * provided frequency boundaries.
+ * <br>
+ * You may choose between applying the internally created filterbank on the magnitudes or the
+ * powers of the linear spectrum.
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see MultiBandSpectrum#createLogarithmicBands(float, float, int)
  */
 public class Mel<T extends LinearFrequencySpectrum> extends AbstractSignalProcessor<T, MelSpectrum> {
 
+    private boolean filterPowers;
     private float[] channelBoundariesInHz;
     private float[][] filterBank;
 
-    public Mel(final float lowerFrequency, final float upperFrequency, final int channels) {
-        this(null, channelBoundaries(lowerFrequency, upperFrequency, channels+2));
+    public Mel(final float lowerFrequency, final float upperFrequency, final int channels, final boolean filterPowers) {
+        this(null, channelBoundaries(lowerFrequency, upperFrequency, channels+2), filterPowers);
     }
 
-    protected Mel(final float[][] filterBank, final float[] channelBoundariesInHz) {
+    protected Mel(final float[][] filterBank, final float[] channelBoundariesInHz, final boolean filterPowers) {
         this.channelBoundariesInHz = channelBoundariesInHz;
         this.filterBank = filterBank;
+        this.filterPowers = filterPowers;
     }
 
     protected Mel() {
@@ -64,7 +68,7 @@ public class Mel<T extends LinearFrequencySpectrum> extends AbstractSignalProces
         if (audioSpectrum.getAudioFormat() != null && audioSpectrum.getAudioFormat().getChannels() != 1) {
             throw new IOException("Source must be mono.");
         }
-        return new MelSpectrum(audioSpectrum.getFrameNumber(), audioSpectrum, filterBank, channelBoundariesInHz);
+        return new MelSpectrum(audioSpectrum.getFrameNumber(), audioSpectrum, filterBank, channelBoundariesInHz, filterPowers);
     }
 
     @Override

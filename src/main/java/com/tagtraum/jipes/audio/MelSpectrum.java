@@ -15,13 +15,16 @@ import static java.lang.Math.pow;
 /**
  * Mel spectrum typically constructed from a {@link com.tagtraum.jipes.audio.LinearFrequencySpectrum} created
  * by {@link FFT}.
- * Each mel channel is computed by applying a triangular filter to the <em>magnitudes</em> of the input spectrum and adding up
+ * Each mel channel is computed by applying a triangular filter to the <em>magnitudes or powers</em> of the input spectrum and adding up
  * the result. The filters for consecutive channels overlap by 0.5 of their length.
  * <br>
  * Computing the mel spectrum from the magnitudes happens similar to the specification in
  * European Telecommunications Standards Institute (2003),
  * <a href="http://www.etsi.org/deliver/etsi_es/201100_201199/201108/01.01.03_60/es_201108v010103p.pdf">Speech Processing, Transmission and Quality Aspects (STQ); Distributed speech recognition; Front-end feature extraction algorithm; Compression algorithms</a>.
- * Technical standard ES 201 108, v1.1.3. Note that other implementations/specifications work with powers instead.
+ * Technical standard ES 201 108, v1.1.3.
+ * <br>
+ * The <em>European Telecommunications Standards Institute</em> requires the filtering of the <em>magnitudes</em>.
+ * However, this implementation lets you choose between magnitude and power filtering.
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  */
@@ -41,11 +44,12 @@ public class MelSpectrum extends AbstractAudioSpectrum implements Cloneable {
      * @param lowerFrequency lower frequency boundary for the lowest triangular filter in Hz
      * @param upperFrequency upper frequency boundary for the highest triangular filter in Hz
      * @param channels number of mel channels
+     * @param filterPowers if true, the power spectrum is filtered, if false, the magnitude spectrum is filtered
      */
-    public MelSpectrum(int frameNumber, final LinearFrequencySpectrum audioSpectrum, final float lowerFrequency, final float upperFrequency, final int channels) {
+    public MelSpectrum(int frameNumber, final LinearFrequencySpectrum audioSpectrum, final float lowerFrequency, final float upperFrequency, final int channels, final boolean filterPowers) {
         this(frameNumber, audioSpectrum,
                 createFilterBank(audioSpectrum.getFrequencies(), channelBoundaries(lowerFrequency, upperFrequency, channels + 2)),
-                channelBoundaries(lowerFrequency, upperFrequency, channels + 2));
+                channelBoundaries(lowerFrequency, upperFrequency, channels + 2), filterPowers);
     }
 
     /**
@@ -55,20 +59,31 @@ public class MelSpectrum extends AbstractAudioSpectrum implements Cloneable {
      * @param audioSpectrum audio spectrum to copy data from
      * @param filterBank filterbank with coefficients for each channel
      * @param channelBoundariesInHz channel boundaries in Hz
+     * @param filterPowers if true, the power spectrum is filtered, if false, the magnitude spectrum is filtered
      * @see #createFilterBank(float[], float[])
      * @see #channelBoundaries(float, float, int)
      */
-    public MelSpectrum(int frameNumber, final LinearFrequencySpectrum audioSpectrum, final float[][] filterBank, final float[] channelBoundariesInHz) {
+    public MelSpectrum(int frameNumber, final LinearFrequencySpectrum audioSpectrum, final float[][] filterBank, final float[] channelBoundariesInHz, final boolean filterPowers) {
         super(frameNumber, null, null, audioSpectrum.getAudioFormat());
         this.channelBoundariesInHz = channelBoundariesInHz;
         this.filterBank = filterBank;
-        this.magnitudes = computeBins(filterBank, audioSpectrum.getMagnitudes());
-        this.realData = magnitudes.clone();
-        this.imaginaryData = new float[magnitudes.length];
-        this.powers = new float[magnitudes.length];
-        for (int i=0; i<magnitudes.length; i++) {
-            final float m = magnitudes[i];
-            this.powers[i] = m * m;
+        if (filterPowers) {
+            this.powers = computeBins(filterBank, audioSpectrum.getPowers());
+            this.magnitudes = new float[powers.length];
+            for (int i=0; i<powers.length; i++) {
+                this.magnitudes[i] = (float)Math.sqrt(powers[i]);
+            }
+            this.realData = magnitudes.clone();
+            this.imaginaryData = new float[magnitudes.length];
+        } else {
+            this.magnitudes = computeBins(filterBank, audioSpectrum.getMagnitudes());
+            this.realData = magnitudes.clone();
+            this.imaginaryData = new float[magnitudes.length];
+            this.powers = new float[magnitudes.length];
+            for (int i=0; i<magnitudes.length; i++) {
+                final float m = magnitudes[i];
+                this.powers[i] = m * m;
+            }
         }
     }
 

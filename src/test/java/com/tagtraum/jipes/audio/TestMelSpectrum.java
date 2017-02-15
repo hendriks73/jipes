@@ -30,7 +30,7 @@ public class TestMelSpectrum extends TestAudioBuffer {
         final AudioFormat audioFormat = new AudioFormat(44100, 16, 2, true, false);
         final LinearFrequencySpectrum linearFrequencySpectrum = new LinearFrequencySpectrum(frameNumber, realData, imaginaryData, audioFormat);
         final int channels = 5;
-        final MelSpectrum spectrum = new MelSpectrum(frameNumber, linearFrequencySpectrum, 3000, 6000, channels);
+        final MelSpectrum spectrum = new MelSpectrum(frameNumber, linearFrequencySpectrum, 3000, 6000, channels, false);
 
         assertEquals(frameNumber, spectrum.getFrameNumber());
         assertEquals(channels, spectrum.getNumberOfSamples());

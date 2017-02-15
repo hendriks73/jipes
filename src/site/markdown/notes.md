@@ -7,6 +7,8 @@ Notes
 
     * Added methods to Floats (skewness, deltas).
     * Added support for not-power-of-two DCT.
+    * Allow building Mel spectra from powers (not just magnitudes).
+
 
 * 0.9.14
 

@@ -46,7 +46,7 @@ public class TestMel {
     @Test
     @Ignore
     public void testOneBand() throws IOException {
-        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 1);
+        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 1, false);
         processor.connectTo(constSource);
         MelSpectrum melSpectrum = processor.read();
         final float[] real = melSpectrum.getRealData();
@@ -60,7 +60,7 @@ public class TestMel {
     @Test
     @Ignore
     public void testThreeBands() throws IOException {
-        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 3);
+        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 3, false);
         processor.connectTo(constSource);
         final float[] powers = processor.read().getPowers();
         assertEquals(3, powers.length);
@@ -71,7 +71,7 @@ public class TestMel {
 
     @Test
     public void testGetBin() throws IOException {
-        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
+        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 2, false);
         final float[] bandBoundaries = processor.getBandBoundaries();
         processor.connectTo(constSource);
         final MelSpectrum spectrum = processor.read();
@@ -88,22 +88,22 @@ public class TestMel {
 
     @Test(expected = IOException.class)
     public void testMono() throws IOException {
-        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
+        final Mel<LinearFrequencySpectrum> processor = new Mel<LinearFrequencySpectrum>(1000, 3000, 2, false);
         processor.process(new LinearFrequencySpectrum(0, new float[0], new float[0], new AudioFormat(10, 16, 2, true, true)));
     }
 
     @Test
     public void testToString() {
-        final Mel<LinearFrequencySpectrum> mel = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
+        final Mel<LinearFrequencySpectrum> mel = new Mel<LinearFrequencySpectrum>(1000, 3000, 2, false);
         assertEquals("Mel{bandBoundaries=1000.0,1503.0948,2155.0745,3000.0}", mel.toString());
     }
 
     @Test
     public void testEqualsHashCode() {
-        final Mel<LinearFrequencySpectrum> mel0 = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
-        final Mel<LinearFrequencySpectrum> mel1 = new Mel<LinearFrequencySpectrum>(1000, 3000, 2);
-        final Mel<LinearFrequencySpectrum> mel2 = new Mel<LinearFrequencySpectrum>(1000, 3001, 2);
-        final Mel<LinearFrequencySpectrum> mel3 = new Mel<LinearFrequencySpectrum>(1000, 3000, 1);
+        final Mel<LinearFrequencySpectrum> mel0 = new Mel<LinearFrequencySpectrum>(1000, 3000, 2, false);
+        final Mel<LinearFrequencySpectrum> mel1 = new Mel<LinearFrequencySpectrum>(1000, 3000, 2, false);
+        final Mel<LinearFrequencySpectrum> mel2 = new Mel<LinearFrequencySpectrum>(1000, 3001, 2, false);
+        final Mel<LinearFrequencySpectrum> mel3 = new Mel<LinearFrequencySpectrum>(1000, 3000, 1, false);
 
         assertEquals(mel0, mel1);
         assertNotEquals(mel0, mel2);
