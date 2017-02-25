@@ -178,4 +178,47 @@ public class TestMultiBandSpectrum extends TestAudioBuffer {
     private static float frequencyToMidi(final float frequency) {
         return (float) (69 + 12.0 * Floats.log2(frequency / 440.0f));
     }
+
+    @Test
+    public void testOneBinPerBand() {
+        final float[] realData = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        final float[] imaginaryData = new float[realData.length];
+        final AudioFormat audioFormat = new AudioFormat(200, 16, 1, true, false);
+        final LinearFrequencySpectrum linearSpectrum = new LinearFrequencySpectrum(0, realData, imaginaryData, audioFormat);
+        final float[] boundaries = {0, 10, 20, 30, 40, 50, 60};
+        final MultiBandSpectrum spectrum = new MultiBandSpectrum(0, linearSpectrum, boundaries);
+        assertArrayEquals(new float[]{1, 2, 3, 4, 5, 6}, spectrum.getData(), 0.0001f);
+    }
+
+    @Test
+    public void testTwoBandsPerBin() {
+        final float[] realData = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        final float[] imaginaryData = new float[realData.length];
+        final AudioFormat audioFormat = new AudioFormat(400, 16, 1, true, false);
+        final LinearFrequencySpectrum linearSpectrum = new LinearFrequencySpectrum(0, realData, imaginaryData, audioFormat);
+        final float[] boundaries = {0, 10, 20, 30, 40, 50, 60};
+        final MultiBandSpectrum spectrum = new MultiBandSpectrum(0, linearSpectrum, boundaries);
+
+        // TODO: This is not ideal. The power should be spread over multiple bands instead of poured into the first one that matches.
+
+        assertArrayEquals(new float[]{1, 0, 2, 0, 3, 0}, spectrum.getData(), 0.0001f);
+    }
+
+    @Test
+    public void testTwoBinsPerBand() {
+        final float[] realData = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        final float[] imaginaryData = new float[realData.length];
+        final AudioFormat audioFormat = new AudioFormat(100, 16, 1, true, false);
+        final LinearFrequencySpectrum linearSpectrum = new LinearFrequencySpectrum(0, realData, imaginaryData, audioFormat);
+        final float[] boundaries = {0, 10, 20, 30, 40, 50, 60};
+        final MultiBandSpectrum spectrum = new MultiBandSpectrum(0, linearSpectrum, boundaries);
+        assertArrayEquals(new float[]{
+            (float)Math.sqrt(1*1 + 2*2),
+            (float)Math.sqrt(3*3 + 4*4),
+            (float)Math.sqrt(5*5 + 6*6),
+            (float)Math.sqrt(7*7 + 8*8),
+            (float)Math.sqrt(9*9 + 10*10),
+            0
+        }, spectrum.getData(), 0.0001f);
+    }
 }
