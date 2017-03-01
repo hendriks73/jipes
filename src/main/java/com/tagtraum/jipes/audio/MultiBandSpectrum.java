@@ -141,11 +141,11 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
 
     /**
      * Creates an array of frequency boundaries by dividing each note into the given number of bins
-     * and allowing for a different then the standard 440Hz tuning specified in cents.
+     * and allowing for a different than the standard 440Hz tuning specified in cents.
      *
      * @param binsPerSemitone bins/semitone
-     * @param lowMidi low MIDI note
-     * @param highMidi high MIDI note
+     * @param lowMidi low MIDI note (incl.)
+     * @param highMidi high MIDI note (excl.)
      * @param centDeviation deviation in cent from concert pitch (A4=440Hz)
      * @return frequency boundaries
      */
@@ -159,7 +159,7 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
                 bands[i*binsPerSemitone+bin] = midiToFrequency(lowMidi+i, cents);
             }
         }
-        bands[bands.length-1] = midiToFrequency(highMidi-1, 50.0);
+        bands[bands.length-1] = midiToFrequency(highMidi-1, 50.0 + centDeviation);
         return bands;
     }
 

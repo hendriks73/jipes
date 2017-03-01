@@ -148,6 +148,28 @@ public class TestMultiBandSpectrum extends TestAudioBuffer {
     }
 
     @Test
+    public void testCreateMidiBandsWithCentDeviation() {
+        final float[] midiBands = MultiBandSpectrum.createMidiBands(40, 41, 1, 10);
+        assertEquals(2, midiBands.length);
+        for (int i=0; i<midiBands.length-1; i++) {
+            final float midi0 = frequencyToMidi(midiBands[i]);
+            final float midi1 = frequencyToMidi(midiBands[i+1]);
+            assertEquals("Index/band " + i + " is not the same", midi0, midi1-1, 0.0001);
+        }
+    }
+
+    @Test
+    public void testCreateMidiBandsWith3BinsAndCentDeviation() {
+        final float[] midiBands = MultiBandSpectrum.createMidiBands(40, 45, 3, 10);
+        assertEquals(3*5+1, midiBands.length);
+        for (int i=0; i<midiBands.length-3; i++) {
+            final float midi0 = frequencyToMidi(midiBands[i]);
+            final float midi1 = frequencyToMidi(midiBands[i+3]);
+            assertEquals("Index/band " + i + " is not the same", midi0, midi1-1, 0.0001);
+        }
+    }
+
+    @Test
     public void testToString() {
         final int frameNumber = 3;
         final float[] realData = {1, 2, 3, 4, 5, 6};
