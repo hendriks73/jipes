@@ -9,6 +9,7 @@ Notes
     * Added support for not-power-of-two DCT.
     * Allow building Mel spectra from powers (not just magnitudes).
     * Fixed bug in MultiBandSpectrum.createMidiBands().
+    * Added SignalPipeline.getProcessorWithClass()
 
 
 * 0.9.14

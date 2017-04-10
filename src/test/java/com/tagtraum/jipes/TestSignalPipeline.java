@@ -7,7 +7,11 @@
 package com.tagtraum.jipes;
 
 import com.tagtraum.jipes.audio.AudioBuffer;
+import com.tagtraum.jipes.audio.FrameNumberFilter;
 import com.tagtraum.jipes.audio.Mono;
+import com.tagtraum.jipes.math.MapFunction;
+import com.tagtraum.jipes.universal.Aggregate;
+import com.tagtraum.jipes.universal.Mapping;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -90,6 +94,29 @@ public class TestSignalPipeline {
         assertEquals(mono1, pipeline.getProcessorWithId("1"));
         assertEquals(mono2, pipeline.getProcessorWithId("2"));
         assertNull(pipeline.getProcessorWithId("3"));
+    }
+
+    @Test
+    public void testGetProcessorWithClass() {
+        final Mono mono = new Mono();
+        mono.setId("0");
+        final FrameNumberFilter frameNumberFilter = new FrameNumberFilter(0, 1);
+        frameNumberFilter.setId("1");
+        final Mapping<AudioBuffer> mapping = new Mapping<AudioBuffer>(new MapFunction<AudioBuffer>() {
+            @Override
+            public AudioBuffer map(final AudioBuffer data) {
+                return data;
+            }
+        });
+        mapping.setId("2");
+
+        final SignalPipeline<AudioBuffer, AudioBuffer> pipeline = new SignalPipeline<AudioBuffer, AudioBuffer>(mono, frameNumberFilter, mapping);
+        assertEquals("2", pipeline.getId());
+
+        assertEquals(mono, pipeline.getProcessorWithClass(Mono.class));
+        assertEquals(frameNumberFilter, pipeline.getProcessorWithClass(FrameNumberFilter.class));
+        assertEquals(mapping, pipeline.getProcessorWithClass(Mapping.class));
+        assertNull(pipeline.getProcessorWithClass(Aggregate.class));
     }
 
     @Test

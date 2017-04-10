@@ -91,7 +91,7 @@ public class SignalPipeline<I, O> implements SignalProcessor<I, O> {
     /**
      * Returns the first processor with the given id.
      *
-     * @param id id must nor be <code>null</null>
+     * @param id id must not be <code>null</null>
      * @return the found processor or <code>null</null>
      * @exception IllegalStateException if this pipeline is not a line, but a tree or graph
      */
@@ -99,6 +99,25 @@ public class SignalPipeline<I, O> implements SignalProcessor<I, O> {
         SignalProcessor<?, ?> processor = first;
         while (true) {
             if (id.equals(processor.getId())) return processor;
+            if (processor == last) break;
+            SignalProcessor<?, ?>[] connectedProcessors = processor.getConnectedProcessors();
+            if (connectedProcessors.length != 1) throw new IllegalStateException("Found a processor that is connected to more than one sub-processors: " + processor);
+            processor = connectedProcessors[0];
+        }
+        return null;
+    }
+
+    /**
+     * Returns the first processor that is an instance of the given {@link Class}.
+     *
+     * @param klass klass must not be <code>null</null>
+     * @return the found processor or <code>null</null>
+     * @exception IllegalStateException if this pipeline is not a line, but a tree or graph
+     */
+    public <T extends SignalProcessor> T getProcessorWithClass(final Class<T> klass) throws IllegalStateException {
+        SignalProcessor<?, ?> processor = first;
+        while (true) {
+            if (klass.isInstance(processor)) return (T)processor;
             if (processor == last) break;
             SignalProcessor<?, ?>[] connectedProcessors = processor.getConnectedProcessors();
             if (connectedProcessors.length != 1) throw new IllegalStateException("Found a processor that is connected to more than one sub-processors: " + processor);
