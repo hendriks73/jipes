@@ -30,8 +30,12 @@ public class TestDCT {
         final DCT dct = new DCT(1024);
         final MockChildProcessor mock = new MockChildProcessor();
         dct.connectTo(mock);
-        dct.process(new RealAudioBuffer(0, new float[512], new AudioFormat(44100f, 16, 1, true, true)));
-        dct.process(new RealAudioBuffer(1, new float[]{1, 2, 4}, new AudioFormat(44100f, 16, 1, true, true)));
+        dct.process(new RealAudioBuffer(0, new float[1024], new AudioFormat(44100f, 16, 1, true, true)));
+        final float[] d = new float[1024];
+        d[0] = 1;
+        d[1] = 2;
+        d[2] = 4;
+        dct.process(new RealAudioBuffer(1, d, new AudioFormat(44100f, 16, 1, true, true)));
         final LinearFrequencySpectrum spectrum = (LinearFrequencySpectrum)mock.getOutput();
 
         final Transform transform = DCTFactory.getInstance().create(1024);

@@ -8,7 +8,6 @@ package com.tagtraum.jipes.audio;
 
 import com.tagtraum.jipes.AbstractSignalProcessor;
 import com.tagtraum.jipes.math.DCTFactory;
-import com.tagtraum.jipes.math.Floats;
 import com.tagtraum.jipes.math.Transform;
 
 import java.io.IOException;
@@ -50,13 +49,13 @@ public class DCT extends AbstractSignalProcessor<AudioBuffer, LinearFrequencySpe
         if (buffer.getAudioFormat() != null && buffer.getAudioFormat().getChannels() != 1) {
             throw new IOException("Source must be mono.");
         }
-        final float[] floats = length != 0 ? Floats.zeroPadAtEnd(length, buffer.getData()) : buffer.getData();
+        final float[] floats = buffer.getData();
         if (dct == null) {
             this.dct = DCTFactory.getInstance().create(floats.length);
             if (length == 0) length = floats.length;
         }
         final float[][] dctResult = dct.transform(floats);
-        assert dctResult[0].length == floats.length;
+        assert dctResult[0].length == floats.length : "DCT result has different length (" + dctResult[0].length + ") than input (" + floats.length + ").";
         if (linearFrequencySpectrum == null) {
             linearFrequencySpectrum = new LinearFrequencySpectrum(buffer.getFrameNumber(), dctResult[0], null, buffer.getAudioFormat());
         } else {
