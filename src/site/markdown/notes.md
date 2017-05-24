@@ -3,18 +3,13 @@
 Notes
 -----
 
-* 0.9.15
+* 0.9.14
 
-    * Added methods to Floats (skewness, deltas).
     * Added support for not-power-of-two DCT.
     * Allow building Mel spectra from powers (not just magnitudes).
     * Fixed bug in MultiBandSpectrum.createMidiBands().
     * Added SignalPipeline.getProcessorWithClass()
-
-
-* 0.9.14
-
-    * Added methods to Floats (unbiased variance, corrected stddev, ...).
+    * Added methods to Floats (unbiased variance, corrected stddev, skewness, deltas, ...).
 
 
 * 0.9.13
