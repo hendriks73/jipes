@@ -25,7 +25,7 @@ repository to the repositories section of your pom:
     <repository>
         <id>beatunes</id>
         <name>beaTunes Repository</name>
-        <url>http://www.beatunes.com/repo/maven2</url>
+        <url>https://www.beatunes.com/repo/maven2</url>
     </repository>
 
 Once you successfully added the dependency, you can create an IDE project for your favorite IDE
