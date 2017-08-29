@@ -3,6 +3,11 @@
 Notes
 -----
 
+* 0.9.15
+
+    * Added support for instantaneous frequency spectra.
+
+
 * 0.9.14
 
     * Added support for not-power-of-two DCT.

@@ -10,9 +10,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * TestFloats.
@@ -554,6 +552,14 @@ public class TestFloats {
     public void testDeltas() {
         final float[] deltas = Floats.deltas(new float[]{1, 2}, 1);
         assertArrayEquals(new float[]{0.5f, 0.5f}, deltas, 0.0001f);
+    }
+
+    @Test
+    public void testAngles() {
+        final float[] angles = Floats.phases(new float[]{1, 0, 1, 1, -1, -1}, new float[]{0, 1, 1, -1, 1, -1});
+        // make comparison easier
+        Floats.multiply(angles, (float)(1/Math.PI));
+        assertArrayEquals(new float[]{0.0f, 0.5f, 0.25f, -0.25f, 0.75f, 0.25f}, angles, 0.00001f);
     }
 
     // TODO: add more tests!!

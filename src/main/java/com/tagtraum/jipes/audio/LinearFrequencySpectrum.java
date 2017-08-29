@@ -6,6 +6,8 @@
  */
 package com.tagtraum.jipes.audio;
 
+import com.tagtraum.jipes.math.Floats;
+
 import javax.sound.sampled.AudioFormat;
 import java.util.Arrays;
 
@@ -229,6 +231,21 @@ public class LinearFrequencySpectrum extends AbstractAudioSpectrum implements Cl
             magnitudes = computeMagnitudes(getNumberOfSamples() / 2, powers);
         }
         return magnitudes;
+    }
+
+    /**
+     * Phases in radians.
+     *
+     * @return phases
+     */
+    public float[] getPhases() {
+        final float[] real = getRealData();
+        final float[] imag = getImaginaryData();
+        if (imag == null) {
+            // phases must all be 0
+            return new float[real.length]; //length??
+        }
+        return Floats.phases(real, imag);
     }
 
     public LinearFrequencySpectrum derive(final float[] real, final float[] imaginary) {

@@ -24,6 +24,7 @@ import static java.lang.Math.sqrt;
 public final class Floats {
 
     private static final double LOG2 = Math.log(2.0);
+    private static final float HALF_PI = (float) (Math.PI / 2);
 
     private Floats() {
     }
@@ -1342,4 +1343,23 @@ public final class Floats {
         return f < 0 ? (int) Math.ceil(f) : (int) Math.floor(f);
     }
 
+
+    /**
+     * Measures the angle/phase between the real and the imaginary part in radians.
+     *
+     * @param r real values
+     * @param i imaginary values
+     * @return angles
+     */
+    public static float[] phases(final float[] r, final float[] i) {
+        final int length = r.length;
+        if (length != i.length) throw new IllegalArgumentException("Real and imaginary part must have equal length");
+        final float[] phases = new float[length];
+        for (int j=0; j<length; j++) {
+            float phase = HALF_PI - (float) Math.atan2(r[j], i[j]);
+            if (phase > Math.PI) phase -= Math.PI;
+            phases[j] = phase;
+        }
+        return phases;
+    }
 }
