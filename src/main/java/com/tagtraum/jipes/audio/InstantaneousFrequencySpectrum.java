@@ -63,8 +63,8 @@ public class InstantaneousFrequencySpectrum extends AbstractAudioSpectrum implem
         float[] phases2 = spectrum2.getPhases();  //phases
         // number of samples
         final int numberOfSamples = spectrum1.getNumberOfSamples();
-        float[] omega = new float[numberOfSamples/2 + 1];
-        float[] dphi = new float[numberOfSamples/2 + 1];
+        float[] omega = new float[numberOfSamples/2];
+        float[] dphi = new float[numberOfSamples/2];
         for (int i=0; i<omega.length; i++) {
             // expected phase increment per sample for every frequency bin in[rad]
             omega[i] = (float) ((2 * Math.PI * i) / numberOfSamples);

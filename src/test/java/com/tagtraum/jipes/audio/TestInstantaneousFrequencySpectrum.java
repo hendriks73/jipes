@@ -205,7 +205,7 @@ public class TestInstantaneousFrequencySpectrum extends TestAudioBuffer {
         assertEquals((long) (instantaneousSpectrum.getFrameNumber() * 1000L * 1000L / audioFormat.getSampleRate()), instantaneousSpectrum.getTimestamp(TimeUnit.MICROSECONDS));
 
         // we have two spectra, that are exactly the same -> frequencies must be 0
-        assertArrayEquals(new float[]{0.0f, 0.0f, 0.0f, 0.0f}, instantaneousSpectrum.getFrequencies(), 0.000001f);
+        assertArrayEquals(new float[]{0.0f, 0.0f, 0.0f}, instantaneousSpectrum.getFrequencies(), 0.000001f);
     }
 
 }
