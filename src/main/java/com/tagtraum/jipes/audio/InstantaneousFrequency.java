@@ -24,6 +24,10 @@ public class InstantaneousFrequency implements SignalProcessor<LinearFrequencySp
     private LinearFrequencySpectrum lastLinearSpectrum;
     private InstantaneousFrequencySpectrum out;
 
+    public InstantaneousFrequency() {
+        this(null);
+    }
+
     public InstantaneousFrequency(final Object id) {
         this.id = id;
     }
