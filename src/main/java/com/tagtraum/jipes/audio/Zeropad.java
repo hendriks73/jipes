@@ -73,7 +73,7 @@ public class Zeropad<T extends AudioBuffer> implements SignalProcessor<T, T> {
         return support.getConnectedProcessors();
     }
 
-    enum Position {
+    public enum Position {
         FRONT() {
             @Override
             float[] pad(final int size, final float[] data) {
