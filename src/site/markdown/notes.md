@@ -6,6 +6,7 @@ Notes
 * 0.9.15
 
     * Added support for instantaneous frequency spectra.
+    * Zero-padding processor.
 
 
 * 0.9.14
