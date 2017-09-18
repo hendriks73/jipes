@@ -243,4 +243,12 @@ public class TestMultiBandSpectrum extends TestAudioBuffer {
             0
         }, spectrum.getData(), 0.0001f);
     }
+
+    @Test
+    public void testCreateLinearBands() {
+        final float[] bands = MultiBandSpectrum.createLinearBands(100, 200, 2);
+        assertEquals(bands[0], 100f, 0.00001f);
+        assertEquals(bands[1], 150f, 0.00001f);
+        assertEquals(bands[2], 200f, 0.00001f);
+    }
 }

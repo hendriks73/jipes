@@ -106,11 +106,34 @@ public class MultiBandSpectrum extends AbstractAudioSpectrum implements Cloneabl
      */
     public static float[] createLogarithmicBands(final float lowFrequency, final float highFrequency, final int numberOfBands) {
         if (numberOfBands == 1) return new float[] {lowFrequency, highFrequency};
+        // for now, avoid div by zero simply be throwing an exception
+        if (lowFrequency == 0) throw new IllegalArgumentException();
         final double factor = numberOfBands / (Math.log(highFrequency / (double) lowFrequency) / LOG2);
         final float scale[] = new float[numberOfBands+1];
         scale[0] = lowFrequency;
-        for (int i=1; i<numberOfBands+1; i++) {
+        scale[scale.length-1] = highFrequency;
+        for (int i=1; i<numberOfBands; i++) {
             scale[i] = lowFrequency * (float)Math.pow(2, i/factor);
+        }
+        return scale;
+    }
+
+    /**
+     * Creates linearly spaced frequency bands.
+     *
+     * @param lowFrequency lower boundary in Hz
+     * @param highFrequency upper boundary in Hz
+     * @param numberOfBands number of bands in between lower and upper boundary
+     * @return array of frequency boundaries in Hz
+     */
+    public static float[] createLinearBands(final float lowFrequency, final float highFrequency, final int numberOfBands) {
+        if (numberOfBands == 1) return new float[] {lowFrequency, highFrequency};
+        final float bandwidth = highFrequency - lowFrequency;
+        final float scale[] = new float[numberOfBands+1];
+        scale[0] = lowFrequency;
+        scale[scale.length-1] = highFrequency;
+        for (int i=1; i<numberOfBands; i++) {
+            scale[i] = lowFrequency  + i * (bandwidth/numberOfBands);
         }
         return scale;
     }
