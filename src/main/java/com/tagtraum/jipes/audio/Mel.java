@@ -24,6 +24,7 @@ import static com.tagtraum.jipes.audio.MelSpectrum.createFilterBank;
  *
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @see MultiBandSpectrum#createLogarithmicBands(float, float, int)
+ * @see MelSpectrum
  */
 public class Mel<T extends LinearFrequencySpectrum> extends AbstractSignalProcessor<T, MelSpectrum> {
 
@@ -31,6 +32,14 @@ public class Mel<T extends LinearFrequencySpectrum> extends AbstractSignalProces
     private float[] channelBoundariesInHz;
     private float[][] filterBank;
 
+    /**
+     * Creates a processor that converts a {@link LinearFrequencySpectrum} to a {@link MelSpectrum}.
+     *
+     * @param lowerFrequency lower frequency boundary
+     * @param upperFrequency upper frequency boundary
+     * @param channels mel channels
+     * @param filterPowers if {@code true}, the power spectrum is filtered, if false, the magnitude spectrum is filtered
+     */
     public Mel(final float lowerFrequency, final float upperFrequency, final int channels, final boolean filterPowers) {
         this(null, channelBoundaries(lowerFrequency, upperFrequency, channels+2), filterPowers);
     }
@@ -44,6 +53,11 @@ public class Mel<T extends LinearFrequencySpectrum> extends AbstractSignalProces
     protected Mel() {
     }
 
+    /**
+     * Band boundaries.
+     *
+     * @return band boundaries
+     */
     public float[] getBandBoundaries() {
         return channelBoundariesInHz;
     }
@@ -52,6 +66,11 @@ public class Mel<T extends LinearFrequencySpectrum> extends AbstractSignalProces
         this.channelBoundariesInHz = bandBoundaries;
     }
 
+    /**
+     * Filterbank.
+     *
+     * @return filterbank
+     */
     public float[][] getFilterBank() {
         return filterBank;
     }
