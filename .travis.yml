@@ -1,4 +1,22 @@
 language: java
+jdk: oraclejdk8
+
+before_install:
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/pubring.gpg.enc -out $GPG_DIR/pubring.gpg -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/secring.gpg.enc -out $GPG_DIR/secring.gpg -d
+
+install: mvn --settings travis/settings.xml install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true  -B -V
+
+deploy:
+  provider: script
+  script: mvn versions:set -DnewVersion=${TRAVIS_TAG} && mvn clean deploy -DskipTests=true
+    -B -U -P release --settings travis/settings.xml
+  on:
+    tags: true
 
 after_success:
-  - mvn clean test jacoco:report coveralls:report
+- mvn clean test jacoco:report coveralls:report
+
+env:
+  global:
+  - GPG_DIR="`pwd`/travis"

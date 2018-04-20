@@ -1,5 +1,6 @@
 # Jipes
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/nz.co.senanque/madura-ampq/badge.svg)](http://mvnrepository.com/artifact/com.tagtraum/jipes)
 [![Build Status](https://travis-ci.org/hendriks73/jipes.svg?branch=master)](https://travis-ci.org/hendriks73/jipes)
 [![Coverage Status](https://coveralls.io/repos/hendriks73/jipes/badge.svg?branch=master)](https://coveralls.io/r/hendriks73/jipes?branch=master)
 
