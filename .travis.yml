@@ -9,8 +9,7 @@ install: mvn --settings travis/settings.xml install -DskipTests=true -Dgpg.skip 
 
 deploy:
   provider: script
-  script: mvn versions:set -DnewVersion=${TRAVIS_TAG} && mvn clean deploy -DskipTests=true
-    -B -U -P release --settings travis/settings.xml
+  script: mvn clean deploy -DskipTests=true -B -U -P release --settings travis/settings.xml
   on:
     branch: master
 
