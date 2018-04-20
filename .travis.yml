@@ -12,7 +12,7 @@ deploy:
   script: mvn versions:set -DnewVersion=${TRAVIS_TAG} && mvn clean deploy -DskipTests=true
     -B -U -P release --settings travis/settings.xml
   on:
-    tags: true
+    branch: master
 
 after_success:
 - mvn clean test jacoco:report coveralls:report
