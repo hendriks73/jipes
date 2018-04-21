@@ -8,7 +8,7 @@
 $H2 Getting Started
 
 The easiest way to use Jipes (other than simply using the
-[jar](https://repo1.maven.org/maven2/com/tagtraum/jipes/)) is to start a
+[jar](https://repo1.maven.org/maven2/com/tagtraum/jipes/${projectversion}/jipes-${projectversion}.jar)) is to start a
 [Maven](http://maven.apache.org/) project and introduce a Jipes dependency.
 
 To do so, add something like this to the dependencies section of your pom:
