@@ -8,7 +8,7 @@
 $H2 Getting Started
 
 The easiest way to use Jipes (other than simply using the
-[jar](http://www.beatunes.com/repo/maven2/com/tagtraum/jipes/)) is to start a
+[jar](https://repo1.maven.org/maven2/com/tagtraum/jipes/)) is to start a
 [Maven](http://maven.apache.org/) project and introduce a Jipes dependency.
 
 To do so, add something like this to the dependencies section of your pom:
@@ -19,21 +19,14 @@ To do so, add something like this to the dependencies section of your pom:
         <version>${projectversion}</version>
     </dependency>
 
-If Maven can't resolve this dependency, you might also want to add the following
-repository to the repositories section of your pom:
-
-    <repository>
-        <id>beatunes</id>
-        <name>beaTunes Repository</name>
-        <url>https://www.beatunes.com/repo/maven2</url>
-    </repository>
-
 Once you successfully added the dependency, you can create an IDE project for your favorite IDE
 by simply opening the `pom.xml` file.
 
 Since the Jipes source code is in the repository and was downloaded during project creation, you can now easily
 access the source code and the javadocs through your IDE.
 
+**Tip:** For most audio formats like mp3 you will need another dependency that allows you to decode the compressed
+signal. [SampledSP](http://www.tagtraum.com/sampledsp.html) libraries come in very handy here.
 
 
 $H3 First Steps
@@ -43,7 +36,7 @@ the next processor in the graph.
 
 To set up and run this processing graph, we first have to define a [SignalSource](apidocs/com/tagtraum/jipes/SignalSource.html).
 The easiest way to do this, is to instantiate an [AudioSignalSource](apidocs/com/tagtraum/jipes/audio/AudioSignalSource.html).
-It uses the Java [AudioSystem](http://docs.oracle.com/javase/7/docs/api/javax/sound/sampled/AudioSystem.html) to obtain an
+It uses the Java [AudioSystem](http://docs.oracle.com/javase/10/docs/api/javax/sound/sampled/AudioSystem.html) to obtain an
 `AudioInputStream` from the given file.
 
     SignalSource<AudioBuffer> source = new AudioSignalSource(new File("mono.wav"));

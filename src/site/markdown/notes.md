@@ -3,6 +3,11 @@
 Notes
 -----
 
+* 0.9.16
+
+    * Artifacts are now signed and deployed to Maven Central.
+
+
 * 0.9.15
 
     * Added support for instantaneous frequency spectra.

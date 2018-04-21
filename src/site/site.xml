@@ -60,7 +60,7 @@
             <item name="Deferring Data Flow" href="defer_dataflow.html"/>
             <item name="Split / Join" href="split_join.html"/>
             <item name="Spectra" href="spectra.html"/>
-            <item name="Release" href="http://www.beatunes.com/repo/maven2/com/tagtraum/jipes/"/>
+            <item name="Release" href="https://repo1.maven.org/maven2/com/tagtraum/jipes/"/>
             <item name="Notes" href="notes.html"/>
             <item name="JavaDocs" href="apidocs/index.html"/>
         </menu>
