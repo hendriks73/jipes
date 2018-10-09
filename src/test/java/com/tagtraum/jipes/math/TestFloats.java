@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static com.tagtraum.jipes.math.Floats.toFloat;
 import static org.junit.Assert.*;
 
 /**
@@ -560,6 +561,17 @@ public class TestFloats {
         // make comparison easier
         Floats.multiply(angles, (float)(1/Math.PI));
         assertArrayEquals(new float[]{0.0f, 0.5f, 0.25f, -0.25f, 0.75f, 0.25f}, angles, 0.00001f);
+    }
+
+    @Test
+    public void testToFloat() {
+        assertEquals(new Float(0f), toFloat(0f));
+        assertEquals(new Float(-1f), toFloat(-1f));
+        assertEquals(new Float(1f), toFloat(1f));
+        assertEquals(new Float(5f), toFloat(5f));
+        assertSame(toFloat(0f), toFloat(0f));
+        assertSame(toFloat(1f), toFloat(1f));
+        assertSame(toFloat(-1f), toFloat(-1f));
     }
 
     // TODO: add more tests!!

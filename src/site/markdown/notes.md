@@ -3,6 +3,11 @@
 Notes
 -----
 
+* 0.9.17
+
+    * Added sparse matrices.
+
+
 * 0.9.16
 
     * Artifacts are now signed and deployed to Maven Central.

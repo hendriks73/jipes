@@ -25,6 +25,9 @@ public final class Floats {
 
     private static final double LOG2 = Math.log(2.0);
     private static final float HALF_PI = (float) (Math.PI / 2);
+    private static final Float ONE = 1f;
+    private static final Float ZERO = 0f;
+    private static final Float MINUS_ONE = -1f;
 
     private Floats() {
     }
@@ -451,6 +454,23 @@ public final class Floats {
             indices[i] = indexValues[i].index;
         }
         return indices;
+    }
+
+    /**
+     * Convert a given float primitive to a Float object.
+     * Make sure that we use the same object for often used
+     * values -1, 0, and 1.
+     *
+     * @param f float primitive
+     * @return Float object
+     */
+    public static Float toFloat(final float f) {
+        final Float object;
+        if (f == 1f) object = ONE;
+        else if (f == 0f) object = ZERO;
+        else if (f == -1f) object = MINUS_ONE;
+        else object = f;
+        return object;
     }
 
     private static class IndexValue {
