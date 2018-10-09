@@ -112,6 +112,49 @@ public class SparseRowMatrix extends MutableAbstractMatrix {
     }
 
     @Override
+    public float sum() {
+        float s = 0f;
+        for (final Map<Integer, Float> m : map.values()) {
+            for (final Float f : m.values()) {
+                s += f;
+            }
+        }
+        return s;
+    }
+
+    @Override
+    public float[] rowSum() {
+        final int numberOfRows = getNumberOfRows();
+        final float[] s = new float[numberOfRows];
+        for (int row=0; row<numberOfRows; row++) {
+            final Map<Integer, Float> rowMap = map.get(row);
+            if (rowMap != null) {
+                for (final Float f : rowMap.values()) {
+                    s[row] += f;
+                }
+            }
+        }
+        return s;
+    }
+
+    @Override
+    public float[] columnSum() {
+        final int numberOfRows = getNumberOfRows();
+        final int numberOfColumns = getNumberOfColumns();
+        final float[] s = new float[numberOfColumns];
+        for (int row=0; row<numberOfRows; row++) {
+            final Map<Integer, Float> rowMap = map.get(row);
+            if (rowMap != null) {
+                for (final Map.Entry<Integer, Float> e : rowMap.entrySet()) {
+                    s[e.getKey()] += e.getValue();
+                }
+            }
+        }
+        return s;
+    }
+
+
+    @Override
     protected void allocate(final MatrixBackingBuffer buffer) {
         throw new RuntimeException(getClass().getSimpleName() + " does not use a regular MatrixBackingBuffer.");
     }

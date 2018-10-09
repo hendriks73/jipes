@@ -273,6 +273,16 @@ public class TestSparseRowMatrix {
         assertTrue(result.isZeroPadded());
     }
 
+    @Test
+    public void testSum() {
+        final SparseRowMatrix matrix = new SparseRowMatrix(3, 2);
+        matrix.setRow(0, new float[]{1, 2});
+        matrix.setRow(1, new float[]{3, 4});
+        matrix.setRow(2, new float[]{5, 6});
+        assertEquals(1f+2f+3f+4f+5f+6f, matrix.sum(), 0.000001f);
+        assertArrayEquals(new float[]{3, 7, 11f}, matrix.rowSum(), 0.000001f);
+        assertArrayEquals(new float[]{9, 12}, matrix.columnSum(), 0.000001f);
+    }
 
     @Test
     public void testWriteAndRead() {

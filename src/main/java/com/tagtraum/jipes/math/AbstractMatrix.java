@@ -80,6 +80,43 @@ public abstract class AbstractMatrix implements Matrix {
     }
 
     @Override
+    public float sum() {
+        float s = 0f;
+        for (int row=0; row<getNumberOfRows(); row++) {
+            for (int column=0; column<getNumberOfColumns(); column++) {
+                s += get(row, column);
+            }
+        }
+        return s;
+    }
+
+    @Override
+    public float[] rowSum() {
+        final int numberOfRows = getNumberOfRows();
+        final int numberOfColumns = getNumberOfColumns();
+        final float[] s = new float[numberOfRows];
+        for (int row = 0; row< numberOfRows; row++) {
+            for (int column = 0; column< numberOfColumns; column++) {
+                s[row] += get(row, column);
+            }
+        }
+        return s;
+    }
+
+    @Override
+    public float[] columnSum() {
+        final int numberOfColumns = getNumberOfColumns();
+        final int numberOfRows = getNumberOfRows();
+        final float[] s = new float[numberOfColumns];
+        for (int row = 0; row< numberOfRows; row++) {
+            for (int column = 0; column< numberOfColumns; column++) {
+                s[column] += get(row, column);
+            }
+        }
+        return s;
+    }
+
+    @Override
     public float[] getRow(final int row) {
         final float[] values = new float[getNumberOfColumns()];
         for (int column=0; column< values.length; column++) {

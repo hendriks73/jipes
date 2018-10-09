@@ -68,6 +68,15 @@ public class SparseMatrix extends MutableAbstractMatrix {
     }
 
     @Override
+    public float sum() {
+        float s = 0f;
+        for (final Float f : map.values()) {
+            s += f;
+        }
+        return s;
+    }
+
+    @Override
     public String toString() {
         return "SparseMatrix{" +
             "rows=" + rows +

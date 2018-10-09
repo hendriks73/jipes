@@ -281,6 +281,13 @@ public class TestFullMatrix {
         assertTrue(result.isZeroPadded());
     }
 
+    @Test
+    public void testSum() {
+        final FullMatrix matrix = new FullMatrix(3, 2, new float[]{1, 2, 3, 4, 5, 6});
+        assertEquals(1f+2f+3f+4f+5f+6f, matrix.sum(), 0.000001f);
+        assertArrayEquals(new float[]{3, 7, 11f}, matrix.rowSum(), 0.000001f);
+        assertArrayEquals(new float[]{9, 12}, matrix.columnSum(), 0.000001f);
+    }
 
     @Test
     public void testWriteAndRead() {

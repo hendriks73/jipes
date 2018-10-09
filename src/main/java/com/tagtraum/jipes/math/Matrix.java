@@ -31,6 +31,27 @@ public interface Matrix {
     float get(final int row, final int column);
 
     /**
+     * Compute the sum of all elements.
+     *
+     * @return sum
+     */
+    float sum();
+
+    /**
+     * Compute the sum for each row.
+     *
+     * @return sum for all rows
+     */
+    float[] rowSum();
+
+    /**
+     * Compute the sum for each column.
+     *
+     * @return sum for all columns
+     */
+    float[] columnSum();
+
+    /**
      * Gets the values from <code>row</code>.
      * If the matrix supports zero-padding, this method may return
      * <code>0f</code> for undefined rows or columns.

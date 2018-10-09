@@ -6,6 +6,7 @@ Notes
 * 0.9.17
 
     * Added sparse matrices.
+    * Added matrix methods sum, rowSum, columnSum.
 
 
 * 0.9.16
