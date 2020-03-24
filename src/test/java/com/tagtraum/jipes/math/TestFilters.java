@@ -102,6 +102,32 @@ public class TestFilters {
     }
 
     @Test
+    public void testBasicFourthOrderIIRFilter() {
+        final Filters.FourthOrderIIRFilter filter = new Filters.FourthOrderIIRFilter(new double[] {1.0, 1.0, 1.0, 1.0, 1.0}, new double[] {1.0, 1.0, 1.0, 1.0, 1.0});
+        final float[] input = {1, 2, 1, 4};
+        final float[] output = filter.map(input);
+        assertArrayEquals(input, output, 0.00001f);
+    }
+
+    @Test
+    public void testFourthOrderIIRFilterReset() {
+        final Filters.FourthOrderIIRFilter filter = new Filters.FourthOrderIIRFilter(new double[] {1.0, 2.0, 3.0, 4.0, 5.0}, new double[] {0.5, 0.9, 0.1, 0.3, 0.1});
+        final float[] input = {1, 2, 1, 4};
+        final float[] output0 = filter.map(input).clone();
+        final float[] output1 = filter.map(input).clone();
+        assertFalse(Arrays.equals(output0, output1));
+        filter.reset();
+        final float[] output2 = filter.map(input);
+        assertArrayEquals(output0, output2, 0.00001f);
+    }
+
+    @Test
+    public void testFourthOrderIIRFilterToString() {
+        final Filters.FourthOrderIIRFilter filter = new Filters.FourthOrderIIRFilter(new double[] {1, 2, 3, 4, 5}, new double[] {3, 4, 5, 6, 9});
+        assertEquals("FourthOrderIIRFilter{b0=1.0, b1=2.0, b2=3.0, b3=4.0, b4=5.0, a0=3.0, a1=4.0, a2=5.0, a3=6.0, a4=9.0}", filter.toString());
+    }
+
+    @Test
     public void testCreateStaticFIRFilters() {
         Filters.createFir1_16thOrderLowpass(1);
         Filters.createFir1_16thOrderLowpass(2);

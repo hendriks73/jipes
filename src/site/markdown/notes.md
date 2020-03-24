@@ -7,6 +7,8 @@ Notes
 
     * Added sparse matrices.
     * Added matrix methods sum, rowSum, columnSum.
+    * Faster implementation of 16 bit AudioSignalSources.
+    * Faster implementation of 4th order IIR filters. 
 
 
 * 0.9.16

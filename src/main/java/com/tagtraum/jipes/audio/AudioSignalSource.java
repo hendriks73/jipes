@@ -171,59 +171,66 @@ public class AudioSignalSource implements SignalSource<AudioBuffer>, Closeable {
             close();
             return null;
         }
-        if (numberOfBytesRead != buf.length) {
-            final byte[] bytes = new byte[numberOfBytesRead];
-            System.arraycopy(buf, 0, bytes, 0, numberOfBytesRead);
-            return toFloatBuffer(bytes, in.getFormat());
-        }
-        return toFloatBuffer(buf, in.getFormat());
+        return toFloatBuffer(buf, numberOfBytesRead, in.getFormat());
     }
 
     /**
      * Convert the multibyte-multichannel buffer to a singlefloat-multichannel buffer.
      *
-     * @param bytes       multibyte-multichannel byte array
+     * @param byteBuf     multibyte-multichannel byte array
+     * @param length      number of bytes to read from {@code byteBuf}
      * @param audioFormat audioFormat
      * @return singlefloat-multichannel buffer
      * @throws java.io.IOException if the buffer cannot be computed
      */
-    private AudioBuffer toFloatBuffer(final byte[] bytes, final AudioFormat audioFormat) throws IOException {
+    private AudioBuffer toFloatBuffer(final byte[] byteBuf, final int length, final AudioFormat audioFormat) throws IOException {
         final int bytesPerChannel = audioFormat.getSampleSizeInBits() / BITS_PER_BYTE;
-        final int samplesToRead = bytes.length / bytesPerChannel;
+        final boolean signed = AudioFormat.Encoding.PCM_SIGNED.equals(audioFormat.getEncoding());
+        final float normalizationFactor = normalize ? normalizationFactor(bytesPerChannel, signed) : 1f;
+        final int samplesToRead = length / bytesPerChannel;
+
         if (block == null || block.length != samplesToRead) {
             block = new float[samplesToRead];
         }
-        final boolean signed = AudioFormat.Encoding.PCM_SIGNED.equals(audioFormat.getEncoding());
-        final float normalizationFactor = normalize ? normalizationFactor(bytesPerChannel, signed) : 1f;
 
-        for (int sampleNumber = 0; sampleNumber < samplesToRead; sampleNumber++) {
-            final int sampleOffset = sampleNumber * bytesPerChannel;
-            final int sample = audioFormat.isBigEndian()
-                    ? byteToIntBigEndian(bytes, sampleOffset, bytesPerChannel)
-                    : byteToIntLittleEndian(bytes, sampleOffset, bytesPerChannel);
-            if (signed) {
-                switch (bytesPerChannel) {
-                    case 1:
-                        final byte byteSample = (byte) sample;
-                        block[sampleNumber] = byteSample / normalizationFactor;
-                        break;
-                    case 2:
-                        final short shortSample = (short) sample;
-                        block[sampleNumber] = shortSample / normalizationFactor;
-                        break;
-                    case 3:
-                        final int threeByteSample = sample > MAX_VALUE_24BIT ? sample + MIN_VALUE_24BIT + MIN_VALUE_24BIT : sample;
-                        block[sampleNumber] = threeByteSample / normalizationFactor;
-                        break;
-                    case 4:
-                        block[sampleNumber] = sample / normalizationFactor;
-                        break;
-                    default:
-                        throw new IOException(bytesPerChannel + " bytes per channel not supported.");
-                        //block[sampleNumber] = sample / (float) (2 << (bytesPerChannel*8-2));
+        // fast lane for the most common case: signed, 16 bit per channel
+        if (signed && bytesPerChannel == 2) {
+            if (audioFormat.isBigEndian()) bytesToSignedShortsBigEndian(byteBuf, samplesToRead, normalizationFactor, this.block);
+            else bytesToSignedShortsLittleEndian(byteBuf, samplesToRead, normalizationFactor, this.block);
+        } else {
+            // convert to samples
+            final int[] samples = audioFormat.isBigEndian()
+                ? bytesToIntsBigEndian(byteBuf, samplesToRead, bytesPerChannel)
+                : bytesToIntsLittleEndian(byteBuf, samplesToRead, bytesPerChannel);
+
+            // cast and normalize
+            for (int sampleNumber = 0; sampleNumber < samplesToRead; sampleNumber++) {
+                final int sample = samples[sampleNumber];
+                if (signed) {
+                    switch (bytesPerChannel) {
+                        case 1:
+                            final byte byteSample = (byte) sample;
+                            block[sampleNumber] = byteSample / normalizationFactor;
+                            break;
+//                        we handle 2 bytes extra for speed
+//                        case 2:
+//                            final short shortSample = (short) sample;
+//                            block[sampleNumber] = shortSample / normalizationFactor;
+//                            break;
+                        case 3:
+                            final int threeByteSample = sample > MAX_VALUE_24BIT ? sample + MIN_VALUE_24BIT + MIN_VALUE_24BIT : sample;
+                            block[sampleNumber] = threeByteSample / normalizationFactor;
+                            break;
+                        case 4:
+                            block[sampleNumber] = sample / normalizationFactor;
+                            break;
+                        default:
+                            throw new IOException(bytesPerChannel + " bytes per channel not supported.");
+                            //block[sampleNumber] = sample / (float) (2 << (bytesPerChannel*8-2));
+                    }
+                } else {
+                    block[sampleNumber] = sample / normalizationFactor;
                 }
-            } else {
-                block[sampleNumber] = sample / normalizationFactor;
             }
         }
         if (realAudioBuffer == null) {
@@ -231,28 +238,53 @@ public class AudioSignalSource implements SignalSource<AudioBuffer>, Closeable {
         } else {
             realAudioBuffer.reuse(getCurrentFrameNumber(), block, realAudioBuffer.getAudioFormat());
         }
-        this.readBytes += bytes.length;
+        this.readBytes += length;
         return realAudioBuffer;
     }
 
-    private static int byteToIntLittleEndian(final byte[] buf, final int offset, final int bytesPerSample) {
-        int sample = 0;
-        for (int byteIndex = 0; byteIndex < bytesPerSample; byteIndex++) {
-            final int aByte = buf[offset + byteIndex] & 0xff;
-            sample += aByte << 8 * (byteIndex);
+    private static int[] bytesToIntsLittleEndian(final byte[] buf, final int samplesToRead, final int bytesPerSample) {
+        final int[] samples = new int[samplesToRead];
+        for (int sampleNumber = 0; sampleNumber < samplesToRead; sampleNumber++) {
+            final int sampleOffset = sampleNumber * bytesPerSample;
+            int sample = 0;
+            for (int byteIndex = 0; byteIndex < bytesPerSample; byteIndex++) {
+                final int aByte = buf[sampleOffset + byteIndex] & 0xff;
+                sample += aByte << 8 * (byteIndex);
+            }
+            samples[sampleNumber] = sample;
         }
-        return sample;
+        return samples;
     }
 
-    private static int byteToIntBigEndian(final byte[] buf, final int offset, final int bytesPerSample) {
-        int sample = 0;
-        for (int byteIndex = 0; byteIndex < bytesPerSample; byteIndex++) {
-            final int aByte = buf[offset + byteIndex] & 0xff;
-            sample += aByte << (8 * (bytesPerSample - byteIndex - 1));
+    private static int[] bytesToIntsBigEndian(final byte[] buf, final int samplesToRead, final int bytesPerSample) {
+        final int[] samples = new int[samplesToRead];
+        for (int sampleNumber = 0; sampleNumber < samplesToRead; sampleNumber++) {
+            final int sampleOffset = sampleNumber * bytesPerSample;
+            int sample = 0;
+            for (int byteIndex = 0; byteIndex < bytesPerSample; byteIndex++) {
+                final int aByte = buf[sampleOffset + byteIndex] & 0xff;
+                sample += aByte << (8 * (bytesPerSample - byteIndex - 1));
+            }
+            samples[sampleNumber] = sample;
         }
-        return sample;
+        return samples;
     }
 
+    private static void bytesToSignedShortsLittleEndian(final byte[] inputBuf, final int samplesToRead, final float normalizationFactor, final float[] outputBuf) {
+        for (int sampleNumber = 0; sampleNumber < samplesToRead; sampleNumber++) {
+            final int sampleOffset = sampleNumber * 2;
+            final short sample = (short) ((inputBuf[sampleOffset] & 0xff) + ((inputBuf[sampleOffset+1] & 0xff) << 8));
+            outputBuf[sampleNumber] = sample / normalizationFactor;
+        }
+    }
+
+    private static void bytesToSignedShortsBigEndian(final byte[] inputBuf, final int samplesToRead, final float normalizationFactor, final float[] outputBuf) {
+        for (int sampleNumber = 0; sampleNumber < samplesToRead; sampleNumber++) {
+            final int sampleOffset = sampleNumber * 2;
+            final short sample = (short) (((inputBuf[sampleOffset] & 0xff) << 8) + (inputBuf[sampleOffset+1] & 0xff));
+            outputBuf[sampleNumber] = sample / normalizationFactor;
+        }
+    }
 
     /**
      * Normalization factor appropriate for the given sample size and sign.

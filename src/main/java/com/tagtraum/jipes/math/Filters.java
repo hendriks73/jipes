@@ -177,6 +177,7 @@ public final class Filters {
      * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
      * @see <a href="http://en.wikipedia.org/wiki/Iir_filter">Wikipedia on IIR</a>
      * @see FIRFilter
+     * @see FourthOrderIIRFilter
      */
     public static class IIRFilter implements StatefulMapFunction<float[]> {
 
@@ -188,6 +189,8 @@ public final class Filters {
         private int order;
         private float[] out;
 
+        protected IIRFilter() {
+        }
 
         public IIRFilter(final double[] inputCoefficients, final double[] outputCoefficients) {
             setInputCoefficients(inputCoefficients);
@@ -221,12 +224,20 @@ public final class Filters {
             if (out == null || out.length != data.length) {
                 out = new float[data.length];
             }
-            for (int i = 0, length = data.length; i < length; i++) {
-                out[i] = (float) filter(data[i]);
+            int offset = 0;
+            if (this.inputValue == null && this.outputValue == null && data.length > 0) {
+                out[offset] = (float)firstFilter(data[offset]);
+                offset++;
+            }
+            if (this.inputValue != null && this.outputValue != null) {
+                followingFilters(data, offset);
+            } else if (data.length > 0) {
+                throw new IllegalArgumentException("Both inputValue and outputValue should either be null or not null.");
             }
             return out;
         }
 
+        @Deprecated
         public double filter(final double currentInputValue) {
             final double result;
             if (this.inputValue != null && this.outputValue != null) {
@@ -253,6 +264,29 @@ public final class Filters {
             }
             this.outputValue[valuePosition] = tempOutputValue;
             return this.outputValue[valuePosition];
+        }
+
+        private void followingFilters(final float[] data, final int offset) {
+            for (int k = offset, length = data.length; k < length; k++) {
+
+                // incrementLowOrderPosition
+                this.valuePosition = (valuePosition + 1) % order;
+
+                this.inputValue[valuePosition] = data[k];
+                this.outputValue[valuePosition] = 0;
+
+                // use temp to avoid at least one array access in the loop
+                double tempOutputValue = this.outputValue[valuePosition];
+                int j = valuePosition;
+                for (int i = 0; i < order; i++) {
+                    tempOutputValue += inputCoefficients[i] * this.inputValue[j] - outputCoefficients[i] * this.outputValue[j];
+                    
+                    // decrementLowOrderPosition
+                    if (--j < 0) j += this.order;
+                }
+                this.outputValue[valuePosition] = tempOutputValue;
+                this.out[k] = (float)tempOutputValue;
+            }
         }
 
         private double firstFilter(final double currentInputValue) {
@@ -310,6 +344,143 @@ public final class Filters {
                     '}';
         }
     }
+
+    /**
+     * (Faster) implementation of a fourth order IIR (infinite impulse response) filter.
+     *
+     * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
+     * @see <a href="http://en.wikipedia.org/wiki/Iir_filter">Wikipedia on IIR</a>
+     * @see FIRFilter
+     * @see IIRFilter
+     */
+    public static class FourthOrderIIRFilter extends IIRFilter {
+
+        private float[] out;
+        private boolean primed;
+
+        private final float b0;
+        private final float b1;
+        private final float b2;
+        private final float b3;
+        private final float b4;
+
+        private final float a0;
+        private final float a1;
+        private final float a2;
+        private final float a3;
+        private final float a4;
+
+        private float in1;
+        private float in2;
+        private float in3;
+        private float in4;
+
+        private float out0;
+        private float out1;
+        private float out2;
+        private float out3;
+        private float out4;
+
+        public FourthOrderIIRFilter(final double[] inputCoefficients, final double[] outputCoefficients) {
+            super();
+            b0 = (float)inputCoefficients[0];
+            b1 = (float)inputCoefficients[1];
+            b2 = (float)inputCoefficients[2];
+            b3 = (float)inputCoefficients[3];
+            b4 = (float)inputCoefficients[4];
+            a0 = (float)outputCoefficients[0];
+            a1 = (float)outputCoefficients[1];
+            a2 = (float)outputCoefficients[2];
+            a3 = (float)outputCoefficients[3];
+            a4 = (float)outputCoefficients[4];
+        }
+
+        @Override
+        public void reset() {
+            this.primed = false;
+        }
+
+        @Override
+        public float[] map(final float[] data) {
+            final int length = data.length;
+            if (length == 0) return new float[0];
+            if (out == null || out.length != length) {
+                out = new float[length];
+            }
+            int offset = 0;
+            if (!primed) {
+                in1 = in2 = in3 = in4 = out0 = out1 = out2 = out3 = out4 = data[0];
+                primed = true;
+                out[0] = in1;
+                offset = 1;
+            }
+            for (int i = offset; i<length; i++) {
+                final float in0 = data[i];
+                out0 = b0*in0+b1*in1+b2*in2+b3*in3+b4*in4 -a1*out1-a2*out2-a3*out3-a4*out4;
+                in4 = in3;
+                in3 = in2;
+                in2 = in1;
+                in1 = in0;
+                out4 = out3;
+                out3 = out2;
+                out2 = out1;
+                out1 = out0;
+                out[i] = out0;
+            }
+            return out;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final FourthOrderIIRFilter that = (FourthOrderIIRFilter) o;
+
+            if (Float.compare(that.b0, b0) != 0) return false;
+            if (Float.compare(that.b1, b1) != 0) return false;
+            if (Float.compare(that.b2, b2) != 0) return false;
+            if (Float.compare(that.b3, b3) != 0) return false;
+            if (Float.compare(that.b4, b4) != 0) return false;
+            if (Float.compare(that.a0, a0) != 0) return false;
+            if (Float.compare(that.a1, a1) != 0) return false;
+            if (Float.compare(that.a2, a2) != 0) return false;
+            if (Float.compare(that.a3, a3) != 0) return false;
+            return Float.compare(that.a4, a4) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = (b0 != +0.0f ? Float.floatToIntBits(b0) : 0);
+            result = 31 * result + (b1 != +0.0f ? Float.floatToIntBits(b1) : 0);
+            result = 31 * result + (b2 != +0.0f ? Float.floatToIntBits(b2) : 0);
+            result = 31 * result + (b3 != +0.0f ? Float.floatToIntBits(b3) : 0);
+            result = 31 * result + (b4 != +0.0f ? Float.floatToIntBits(b4) : 0);
+            result = 31 * result + (a0 != +0.0f ? Float.floatToIntBits(a0) : 0);
+            result = 31 * result + (a1 != +0.0f ? Float.floatToIntBits(a1) : 0);
+            result = 31 * result + (a2 != +0.0f ? Float.floatToIntBits(a2) : 0);
+            result = 31 * result + (a3 != +0.0f ? Float.floatToIntBits(a3) : 0);
+            result = 31 * result + (a4 != +0.0f ? Float.floatToIntBits(a4) : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "FourthOrderIIRFilter{" +
+                "b0=" + b0 +
+                ", b1=" + b1 +
+                ", b2=" + b2 +
+                ", b3=" + b3 +
+                ", b4=" + b4 +
+                ", a0=" + a0 +
+                ", a1=" + a1 +
+                ", a2=" + a2 +
+                ", a3=" + a3 +
+                ", a4=" + a4 +
+                '}';
+        }
+    }
+
 
     /**
      * 16th order Fir1 (Matlab/Octave) lowpass filter that lets <code>factor</code>-th-Nyquist pass (&#x03C9;=1/factor).
@@ -460,7 +631,7 @@ public final class Filters {
      * @return filter
      * @throws IllegalArgumentException if the factor is not supported.
      */
-    public static IIRFilter createButterworth4thOrderLowpass(final int factor) throws IllegalArgumentException {
+    public static FourthOrderIIRFilter createButterworth4thOrderLowpass(final int factor) throws IllegalArgumentException {
         if (factor == 2) return createButterworth4thOrderLowpassCutoffHalf();
         if (factor == 4) return createButterworth4thOrderLowpassCutoffQuarter();
         if (factor == 8) return createButterworth4thOrderLowpassCutoffEighth();
@@ -473,8 +644,8 @@ public final class Filters {
      * @return filter
      * @deprecated use {@link #createButterworth4thOrderLowpass(int)}
      */
-    public static IIRFilter createButterworth4thOrderLowpassCutoffHalf() {
-        return new IIRFilter(
+    public static FourthOrderIIRFilter createButterworth4thOrderLowpassCutoffHalf() {
+        return new FourthOrderIIRFilter(
                 new double[]{0.093981, 0.375923, 0.563885, 0.375923, 0.093981},
                 new double[]{1, -3.0871e-016d, 4.8603e-001d, -4.7269e-017d, 1.7665e-002d}
         );
@@ -486,8 +657,8 @@ public final class Filters {
      * @return filter
      * @deprecated use {@link #createButterworth4thOrderLowpass(int)}
      */
-    public static IIRFilter createButterworth4thOrderLowpassCutoffQuarter() {
-        return new IIRFilter(
+    public static FourthOrderIIRFilter createButterworth4thOrderLowpassCutoffQuarter() {
+        return new FourthOrderIIRFilter(
                 new double[]{0.010209, 0.040838, 0.061257, 0.040838, 0.010209},
                 new double[]{1, -1.96843, 1.73586, -0.72447, 0.12039}
         );
@@ -499,8 +670,8 @@ public final class Filters {
      * @return filter
      * @deprecated use {@link #createButterworth4thOrderLowpass(int)}
      */
-    public static IIRFilter createButterworth4thOrderLowpassCutoffEighth() {
-        return new IIRFilter(
+    public static FourthOrderIIRFilter createButterworth4thOrderLowpassCutoffEighth() {
+        return new FourthOrderIIRFilter(
                 new double[]{9.3350e-004, 3.7340e-003, 5.6010e-003, 3.7340e-003, 9.3350e-004},
                 new double[]{1, -2.97684, 3.42231, -1.78611, 0.35558}
         );
