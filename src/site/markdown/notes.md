@@ -3,6 +3,12 @@
 Notes
 -----
 
+* 0.9.18
+
+    * Replaced javazoom test dependency with
+      [FFSampledSP](http://www.tagtraum.com/ffsampledsp/). 
+
+
 * 0.9.17
 
     * Added sparse matrices.

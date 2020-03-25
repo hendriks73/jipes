@@ -126,9 +126,9 @@ public class AudioSignalSource implements SignalSource<AudioBuffer>, Closeable {
                 new AudioFormat(
                         AudioFormat.Encoding.PCM_SIGNED,
                         origFormat.getSampleRate(),
-                        origFormat.getSampleSizeInBits() == AudioSystem.NOT_SPECIFIED ? 16 : origFormat.getSampleSizeInBits(),
+                        origFormat.getSampleSizeInBits() <= 0 ? 16 : origFormat.getSampleSizeInBits(),
                         origFormat.getChannels(),
-                        origFormat.getFrameSize() == AudioSystem.NOT_SPECIFIED ? origFormat.getChannels() * 2 : origFormat.getFrameSize(),
+                        origFormat.getFrameSize() <= 0 ? origFormat.getChannels() * 2 : origFormat.getFrameSize(),
                         origFormat.getSampleRate(),
                         false),
                 origAudioInputStream

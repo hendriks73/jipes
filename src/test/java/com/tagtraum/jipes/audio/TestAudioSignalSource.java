@@ -24,11 +24,15 @@ import static org.junit.Assert.*;
  */
 public class TestAudioSignalSource {
 
-    // TODO: test audio formats with 1, 3, 4 bytes per channel and big endian
+    private static final boolean WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("win");
+    private static final boolean MAC = System.getProperty("os.name").toLowerCase().contains("mac");
+    private static final boolean NOT_MAC_WINDOWS = !MAC && !WINDOWS;
+
+    // TODO: test big endian
 
     @Test
     public void testBasics() throws IOException, UnsupportedAudioFileException {
-        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("mono_10.wav", ".wav"));
+        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("mono_10_s16le.wav", ".wav"));
         assertTrue(signalSource.isNormalize());
         signalSource.setNormalize(false);
         assertFalse(signalSource.isNormalize());
@@ -36,7 +40,7 @@ public class TestAudioSignalSource {
 
     @Test
     public void testEqualsHashCode() throws IOException, UnsupportedAudioFileException {
-        final File file = extractFile("mono_10.wav", ".wav");
+        final File file = extractFile("mono_10_s16le.wav", ".wav");
         try {
             final AudioInputStream stream0 = AudioSystem.getAudioInputStream(file);
             final AudioInputStream stream1 = AudioSystem.getAudioInputStream(file);
@@ -55,7 +59,7 @@ public class TestAudioSignalSource {
 
     @Test
     public void testToString() throws IOException, UnsupportedAudioFileException {
-        final File file = extractFile("mono_10.wav", ".wav");
+        final File file = extractFile("mono_10_s16le.wav", ".wav");
         try {
             final AudioSignalSource signalSource = new AudioSignalSource(AudioSystem.getAudioInputStream(file));
 
@@ -67,10 +71,12 @@ public class TestAudioSignalSource {
 
     @Test
     public void testMonoSigned16BitSignal() throws IOException, UnsupportedAudioFileException {
-        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("mono_10.wav", ".wav"));
+        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("mono_10_s16le.wav", ".wav"));
         AudioBuffer buffer;
         while ((buffer = signalSource.read()) != null) {
             final AudioFormat audioFormat = buffer.getAudioFormat();
+            // The float buffer returned by AudioSignalSource, always has 32 bits sample size.
+            assertEquals(32, audioFormat.getSampleSizeInBits());
             assertEquals(1, audioFormat.getChannels());
             assertEquals(44100f, audioFormat.getSampleRate(), 0.01f);
             assertEquals(AudioFormat.Encoding.PCM_SIGNED, audioFormat.getEncoding());
@@ -83,10 +89,74 @@ public class TestAudioSignalSource {
 
     @Test
     public void testStereoSigned16BitSignal() throws IOException, UnsupportedAudioFileException {
-        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("audio_10.wav", ".wav"));
+        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("audio_10_s16le.wav", ".wav"));
         AudioBuffer buffer;
         while ((buffer = signalSource.read()) != null) {
             final AudioFormat audioFormat = buffer.getAudioFormat();
+            // The float buffer returned by AudioSignalSource, always has 32 bits sample size.
+            assertEquals(32, audioFormat.getSampleSizeInBits());
+            assertEquals(2, audioFormat.getChannels());
+            assertEquals(44100f, audioFormat.getSampleRate(), 0.01f);
+            assertEquals(AudioFormat.Encoding.PCM_SIGNED, audioFormat.getEncoding());
+            for (final float f : buffer.getData()) {
+                assertTrue(f<=1f);
+                assertTrue(f>=-1f);
+            }
+        }
+    }
+
+    @Test
+    public void testStereoSigned24BitSignal() throws IOException, UnsupportedAudioFileException {
+        if (NOT_MAC_WINDOWS) {
+            System.out.println("Skipped test, as the necessary SPI is not available.\n" + new Exception().getStackTrace()[0]);
+            return;
+        }
+        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("audio_10_s24le.wav", ".wav"));
+        AudioBuffer buffer;
+        while ((buffer = signalSource.read()) != null) {
+            final AudioFormat audioFormat = buffer.getAudioFormat();
+            // The float buffer returned by AudioSignalSource, always has 32 bits sample size.
+            assertEquals(32, audioFormat.getSampleSizeInBits());
+            assertEquals(2, audioFormat.getChannels());
+            assertEquals(44100f, audioFormat.getSampleRate(), 0.01f);
+            assertEquals(AudioFormat.Encoding.PCM_SIGNED, audioFormat.getEncoding());
+            for (final float f : buffer.getData()) {
+                assertTrue(f<=1f);
+                assertTrue(f>=-1f);
+            }
+        }
+    }
+
+    @Test
+    public void testStereoSigned32BitSignal() throws IOException, UnsupportedAudioFileException {
+        if (NOT_MAC_WINDOWS) {
+            System.out.println("Skipped test, as the necessary SPI is not available.\n" + new Exception().getStackTrace()[0]);
+            return;
+        }
+        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("audio_10_s32le.wav", ".wav"));
+        AudioBuffer buffer;
+        while ((buffer = signalSource.read()) != null) {
+            final AudioFormat audioFormat = buffer.getAudioFormat();
+            // The float buffer returned by AudioSignalSource, always has 32 bits sample size.
+            assertEquals(32, audioFormat.getSampleSizeInBits());
+            assertEquals(2, audioFormat.getChannels());
+            assertEquals(44100f, audioFormat.getSampleRate(), 0.01f);
+            assertEquals(AudioFormat.Encoding.PCM_SIGNED, audioFormat.getEncoding());
+            for (final float f : buffer.getData()) {
+                assertTrue(f<=1f);
+                assertTrue(f>=-1f);
+            }
+        }
+    }
+
+    @Test
+    public void testStereoUnsigned8BitSignal() throws IOException, UnsupportedAudioFileException {
+        final AudioSignalSource signalSource = new AudioSignalSource(extractFile("audio_10_u8.wav", ".wav"));
+        AudioBuffer buffer;
+        while ((buffer = signalSource.read()) != null) {
+            final AudioFormat audioFormat = buffer.getAudioFormat();
+            // The float buffer returned by AudioSignalSource, always has 32 bits sample size.
+            assertEquals(32, audioFormat.getSampleSizeInBits());
             assertEquals(2, audioFormat.getChannels());
             assertEquals(44100f, audioFormat.getSampleRate(), 0.01f);
             assertEquals(AudioFormat.Encoding.PCM_SIGNED, audioFormat.getEncoding());
@@ -99,6 +169,10 @@ public class TestAudioSignalSource {
 
     @Test
     public void testStereoMP3Signal() throws IOException, UnsupportedAudioFileException {
+        if (NOT_MAC_WINDOWS) {
+            System.out.println("Skipped test, as the necessary SPI is not available.\n" + new Exception().getStackTrace()[0]);
+            return;
+        }
         final AudioSignalSource signalSource = new AudioSignalSource(extractFile("audio_10.mp3", ".mp3"));
         AudioBuffer buffer;
         while ((buffer = signalSource.read()) != null) {
@@ -139,6 +213,10 @@ public class TestAudioSignalSource {
 
     @Test
     public void testResetMustHaveNoEffect() throws IOException, UnsupportedAudioFileException {
+        if (NOT_MAC_WINDOWS) {
+            System.out.println("Skipped test, as the necessary SPI is not available.\n" + new Exception().getStackTrace()[0]);
+            return;
+        }
         final AudioSignalSource signalSource = new AudioSignalSource(extractFile("audio_10.mp3", ".mp3"));
         signalSource.reset();
         assertNotNull(signalSource.read());
